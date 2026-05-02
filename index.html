@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جائزة — تصميم B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<script src="deck-stage.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+–ink: #0F0F0F;
+–ink-mid: #3A3A3A;
+–ink-light: #6E6E6E;
+–ink-faint: #B8B8B8;
+–paper: #F8F6F1;
+–paper-warm: #F0EDE4;
+–accent: oklch(52% 0.22 24);
+–accent2: oklch(52% 0.22 200);
+–accent-light: oklch(94% 0.06 24);
+–font: ‘Cairo’, sans-serif;
+–t-hero: 140px;
+–t-title: 72px;
+–t-sub: 48px;
+–t-body: 34px;
+–t-small: 26px;
+–px: 120px;
+–pt: 90px;
+–pb: 80px;
+}
+
+deck-stage { –deck-bg: #F8F6F1; }
+
+section {
+width: 1920px;
+height: 1080px;
+font-family: var(–font);
+color: var(–ink);
+background: var(–paper);
+overflow: hidden;
+position: relative;
+}
+
+/* ===== SLIDE 1: COVER ===== */
+.s1 {
+background: var(–ink);
+display: flex;
+height: 100%;
+}
+.s1-left {
+width: 680px;
+background: var(–accent);
+display: flex;
+flex-direction: column;
+justify-content: flex-end;
+padding: 80px;
+position: relative;
+overflow: hidden;
+}
+.s1-left-bg {
+position: absolute;
+inset: 0;
+background-image: repeating-linear-gradient(
+45deg,
+rgba(255,255,255,0.04) 0px,
+rgba(255,255,255,0.04) 1px,
+transparent 1px,
+transparent 40px
+);
+}
+.s1-left-num {
+position: absolute;
+top: 60px;
+right: 80px;
+font-size: 200px;
+font-weight: 900;
+color: rgba(255,255,255,0.08);
+line-height: 1;
+letter-spacing: -0.05em;
+}
+.s1-left-label {
+font-size: var(–t-small);
+font-weight: 600;
+color: rgba(255,255,255,0.7);
+letter-spacing: 0.2em;
+text-transform: uppercase;
+margin-bottom: 24px;
+}
+.s1-left-title {
+font-size: 88px;
+font-weight: 900;
+color: #fff;
+line-height: 1;
+letter-spacing: -0.02em;
+}
+.s1-right {
+flex: 1;
+display: flex;
+flex-direction: column;
+justify-content: center;
+padding: 80px 100px 80px 80px;
+gap: 40px;
+}
+.s1-tagline {
+font-size: var(–t-sub);
+font-weight: 300;
+color: rgba(255,255,255,0.65);
+line-height: 1.6;
+max-width: 800px;
+}
+.s1-tagline strong { color: #fff; font-weight: 600; }
+.s1-divider {
+width: 60px;
+height: 3px;
+background: var(–accent);
+}
+.s1-presenter {
+font-size: var(–t-small);
+color: rgba(255,255,255,0.4);
+font-weight: 300;
+}
+.s1-presenter strong { color: rgba(255,255,255,0.75); font-weight: 600; }
+
+/* ===== SLIDE 2: GAP ===== */
+.s2 {
+display: flex;
+flex-direction: column;
+padding: var(–pt) var(–px) var(–pb);
+gap: 52px;
+height: 100%;
+background: var(–paper);
+}
+.slide-title {
+font-size: var(–t-title);
+font-weight: 700;
+color: var(–ink);
+line-height: 1.2;
+}
+.slide-title em { font-style: normal; color: var(–accent); }
+.s2-row {
+display: flex;
+gap: 0;
+flex: 1;
+border: 2px solid var(–ink);
+}
+.s2-col {
+flex: 1;
+border-left: 2px solid var(–ink);
+padding: 48px 44px;
+display: flex;
+flex-direction: column;
+gap: 20px;
+}
+.s2-col:last-child {
+background: var(–ink);
+color: #fff;
+border-left: none;
+}
+.s2-col-num {
+font-size: var(–t-small);
+font-weight: 700;
+color: var(–ink-faint);
+letter-spacing: 0.1em;
+}
+.s2-col:last-child .s2-col-num { color: rgba(255,255,255,0.35); }
+.s2-col-name {
+font-size: 42px;
+font-weight: 700;
+}
+.s2-col-desc {
+font-size: var(–t-small);
+color: var(–ink-light);
+font-weight: 400;
+line-height: 1.7;
+flex: 1;
+}
+.s2-col:last-child .s2-col-desc { color: rgba(255,255,255,0.6); }
+.s2-col-tag {
+display: inline-flex;
+padding: 8px 18px;
+border: 2px solid currentColor;
+font-size: 22px;
+font-weight: 600;
+color: var(–accent);
+width: fit-content;
+}
+.s2-col:last-child .s2-col-tag {
+color: #fff;
+border-color: rgba(255,255,255,0.4);
+}
+
+/* ===== SLIDE 3: PHILOSOPHY ===== */
+.s3 {
+background: var(–accent);
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+height: 100%;
+padding: 100px 200px;
+text-align: center;
+gap: 52px;
+position: relative;
+overflow: hidden;
+}
+.s3-bg-text {
+position: absolute;
+font-size: 320px;
+font-weight: 900;
+color: rgba(255,255,255,0.05);
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+white-space: nowrap;
+letter-spacing: -0.05em;
+pointer-events: none;
+}
+.s3-quote {
+font-size: 52px;
+font-weight: 400;
+color: #fff;
+line-height: 1.65;
+max-width: 1300px;
+position: relative;
+z-index: 1;
+}
+.s3-quote strong { font-weight: 700; }
+.s3-pillars {
+display: flex;
+gap: 0;
+border: 2px solid rgba(255,255,255,0.35);
+position: relative;
+z-index: 1;
+}
+.s3-pill {
+padding: 18px 48px;
+font-size: var(–t-small);
+font-weight: 600;
+color: rgba(255,255,255,0.85);
+border-left: 2px solid rgba(255,255,255,0.35);
+}
+.s3-pill:last-child { border-left: none; }
+
+/* ===== SLIDE 4: QUOTE ===== */
+.s4 {
+display: flex;
+height: 100%;
+background: var(–paper-warm);
+}
+.s4-line {
+width: 12px;
+background: var(–ink);
+}
+.s4-content {
+flex: 1;
+display: flex;
+flex-direction: column;
+justify-content: center;
+padding: 100px 140px;
+gap: 44px;
+}
+.s4-mark {
+font-size: 120px;
+font-weight: 900;
+color: var(–accent);
+line-height: 0.8;
+font-family: Georgia, serif;
+}
+.s4-quote {
+font-size: 54px;
+font-weight: 400;
+color: var(–ink);
+line-height: 1.65;
+}
+.s4-quote em { font-style: normal; font-weight: 700; }
+
+/* ===== SLIDE 5: TRACKS ===== */
+.s5 {
+display: flex;
+flex-direction: column;
+padding: var(–pt) var(–px) var(–pb);
+height: 100%;
+gap: 48px;
+}
+.s5-tracks {
+display: flex;
+gap: 32px;
+flex: 1;
+}
+.track {
+flex: 1;
+border: 2px solid var(–ink);
+padding: 56px 52px;
+display: flex;
+flex-direction: column;
+gap: 24px;
+position: relative;
+overflow: hidden;
+}
+.track.featured {
+background: var(–ink);
+color: #fff;
+}
+.track-bg-num {
+position: absolute;
+left: 32px;
+bottom: -20px;
+font-size: 200px;
+font-weight: 900;
+color: rgba(0,0,0,0.04);
+line-height: 1;
+pointer-events: none;
+letter-spacing: -0.05em;
+}
+.track.featured .track-bg-num { color: rgba(255,255,255,0.04); }
+.track-badge {
+display: inline-flex;
+padding: 6px 16px;
+border: 2px solid currentColor;
+font-size: 22px;
+font-weight: 700;
+color: var(–accent);
+letter-spacing: 0.1em;
+width: fit-content;
+}
+.track.featured .track-badge {
+color: #fff;
+border-color: rgba(255,255,255,0.5);
+}
+.track-name {
+font-size: var(–t-sub);
+font-weight: 700;
+position: relative;
+z-index: 1;
+}
+.track-desc {
+font-size: var(–t-small);
+font-weight: 400;
+line-height: 1.7;
+color: var(–ink-light);
+flex: 1;
+position: relative;
+z-index: 1;
+}
+.track.featured .track-desc { color: rgba(255,255,255,0.65); }
+.track-unique {
+display: inline-flex;
+align-items: center;
+gap: 10px;
+padding: 10px 20px;
+background: var(–accent);
+font-size: var(–t-small);
+font-weight: 700;
+color: #fff;
+width: fit-content;
+}
+
+/* ===== SLIDE 6: CATEGORIES ===== */
+.s6 {
+display: flex;
+flex-direction: column;
+padding: var(–pt) var(–px) var(–pb);
+height: 100%;
+gap: 44px;
+}
+.s6-grid {
+display: grid;
+grid-template-columns: repeat(6, 1fr);
+gap: 0;
+border: 2px solid var(–ink);
+flex: 1;
+}
+.cat {
+border-left: 2px solid var(–ink);
+padding: 44px 36px;
+display: flex;
+flex-direction: column;
+gap: 20px;
+}
+.cat:last-child { border-left: none; }
+.cat:nth-child(even) { background: var(–paper-warm); }
+.cat-num {
+font-size: 64px;
+font-weight: 900;
+color: var(–accent);
+line-height: 1;
+letter-spacing: -0.02em;
+}
+.cat-name {
+font-size: 36px;
+font-weight: 700;
+}
+.cat-desc {
+font-size: var(–t-small);
+color: var(–ink-light);
+font-weight: 400;
+line-height: 1.6;
+flex: 1;
+}
+
+/* ===== SLIDE 7: SCORING ===== */
+.s7 {
+display: flex;
+height: 100%;
+}
+.s7-main {
+flex: 1;
+display: flex;
+flex-direction: column;
+padding: var(–pt) 80px var(–pb) var(–px);
+gap: 40px;
+}
+.s7-side {
+width: 420px;
+background: var(–ink);
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+gap: 32px;
+padding: 60px 48px;
+}
+.score-item-b {
+display: flex;
+align-items: baseline;
+gap: 24px;
+padding: 20px 0;
+border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+.score-item-b:last-child { border-bottom: none; }
+.score-pct {
+font-size: 52px;
+font-weight: 900;
+color: var(–accent);
+min-width: 180px;
+text-align: center;
+line-height: 1;
+white-space: nowrap;
+}
+.score-pct .score-pct-suffix {
+font-size: 22px;
+font-weight: 600;
+opacity: 0.55;
+margin-right: 6px;
+}
+.score-lbl {
+font-size: var(–t-body);
+font-weight: 400;
+color: var(–ink-mid);
+line-height: 1.4;
+flex: 1;
+}
+.total-b {
+text-align: center;
+}
+.total-b-num {
+font-size: 120px;
+font-weight: 900;
+color: #fff;
+line-height: 1;
+}
+.total-b-lbl {
+font-size: var(–t-small);
+color: rgba(255,255,255,0.45);
+font-weight: 300;
+}
+.qualify-b {
+text-align: center;
+padding-top: 24px;
+border-top: 1px solid rgba(255,255,255,0.15);
+}
+.qualify-b p {
+font-size: var(–t-small);
+color: rgba(255,255,255,0.45);
+}
+.qualify-b strong {
+display: block;
+font-size: 48px;
+font-weight: 900;
+color: var(–accent);
+margin-top: 8px;
+}
+
+/* ===== SLIDE 8: TIERS ===== */
+.s8 {
+display: flex;
+flex-direction: column;
+padding: var(–pt) var(–px) var(–pb);
+height: 100%;
+gap: 44px;
+}
+.s8-tiers {
+display: flex;
+gap: 2px;
+flex: 1;
+}
+.tier-b {
+flex: 1;
+padding: 52px 48px;
+display: flex;
+flex-direction: column;
+gap: 20px;
+}
+.tier-b-gold { background: #0F0F0F; color: #fff; }
+.tier-b-silver { background: var(–paper-warm); }
+.tier-b-bronze { background: var(–paper); border: 2px solid #ddd; }
+.tier-b-label {
+font-size: var(–t-small);
+font-weight: 700;
+letter-spacing: 0.15em;
+opacity: 0.4;
+}
+.tier-b-name {
+font-size: var(–t-sub);
+font-weight: 900;
+}
+.tier-b-gold .tier-b-name { color: #C9A84C; }
+.tier-b-silver .tier-b-name { color: var(–ink); }
+.tier-b-score {
+font-size: var(–t-body);
+font-weight: 300;
+opacity: 0.55;
+}
+.tier-b-perks {
+display: flex;
+flex-direction: column;
+gap: 12px;
+margin-top: 8px;
+}
+.tier-b-perk {
+font-size: var(–t-small);
+font-weight: 400;
+opacity: 0.75;
+display: flex;
+align-items: flex-start;
+gap: 12px;
+line-height: 1.4;
+}
+.tier-b-perk::before {
+content: ‘—’;
+opacity: 0.4;
+flex-shrink: 0;
+}
+
+/* ===== SLIDE 9: IMPACT ===== */
+.s9 {
+display: flex;
+height: 100%;
+}
+.s9-left {
+width: 480px;
+background: var(–ink);
+display: flex;
+flex-direction: column;
+justify-content: flex-end;
+padding: 80px;
+gap: 24px;
+}
+.s9-left-num {
+font-size: 200px;
+font-weight: 900;
+color: rgba(255,255,255,0.06);
+line-height: 1;
+letter-spacing: -0.05em;
+}
+.s9-left-title {
+font-size: var(–t-sub);
+font-weight: 700;
+color: #fff;
+line-height: 1.3;
+}
+.s9-left-sub {
+font-size: var(–t-small);
+color: rgba(255,255,255,0.45);
+font-weight: 300;
+line-height: 1.6;
+}
+.s9-right {
+flex: 1;
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 0;
+}
+.impact-b {
+padding: 52px 48px;
+border-left: 2px solid rgba(0,0,0,0.08);
+border-bottom: 2px solid rgba(0,0,0,0.08);
+display: flex;
+flex-direction: column;
+gap: 16px;
+}
+.impact-b:nth-child(2n) { border-left: none; }
+.impact-b:nth-child(5),
+.impact-b:nth-child(6) { border-bottom: none; }
+.impact-b-n {
+font-size: 52px;
+font-weight: 900;
+color: var(–accent);
+line-height: 1;
+}
+.impact-b-t {
+font-size: 32px;
+font-weight: 700;
+color: var(–ink);
+}
+.impact-b-d {
+font-size: var(–t-small);
+color: var(–ink-light);
+font-weight: 400;
+line-height: 1.6;
+}
+
+/* ===== SLIDE 10: STRATEGIC ===== */
+.s10 {
+display: flex;
+flex-direction: column;
+height: 100%;
+padding: var(–pt) var(–px) var(–pb);
+gap: 52px;
+background: var(–paper-warm);
+}
+.s10-grid {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 28px;
+flex: 1;
+}
+.strat-b {
+display: flex;
+flex-direction: column;
+gap: 20px;
+padding: 44px 40px;
+background: var(–paper);
+border-top: 4px solid var(–ink);
+}
+.strat-b:first-child { border-top-color: var(–accent); }
+.strat-b-num {
+font-size: 80px;
+font-weight: 900;
+color: rgba(0,0,0,0.06);
+line-height: 1;
+}
+.strat-b-title {
+font-size: 34px;
+font-weight: 700;
+color: var(–ink);
+}
+.strat-b-desc {
+font-size: var(–t-small);
+color: var(–ink-light);
+font-weight: 400;
+line-height: 1.65;
+flex: 1;
+}
+
+/* ===== SLIDE 11: ASK ===== */
+.s11 {
+display: flex;
+height: 100%;
+background: var(–ink);
+}
+.s11-left {
+width: 14px;
+background: var(–accent);
+}
+.s11-content {
+flex: 1;
+display: flex;
+flex-direction: column;
+justify-content: center;
+padding: 100px 140px;
+gap: 44px;
+}
+.s11-label {
+font-size: var(–t-small);
+font-weight: 700;
+color: var(–accent);
+letter-spacing: 0.2em;
+text-transform: uppercase;
+}
+.s11-title {
+font-size: var(–t-hero);
+font-weight: 900;
+color: #fff;
+line-height: 1;
+letter-spacing: -0.03em;
+}
+.s11-body {
+font-size: var(–t-body);
+color: rgba(255,255,255,0.5);
+font-weight: 300;
+line-height: 1.7;
+max-width: 1000px;
+}
+</style>
+
+</head>
+<body>
+<deck-stage width="1920" height="1080">
+
+  <!-- SLIDE 1: COVER -->
+
+  <section data-label="01 الغلاف">
+    <div class="s1">
+      <div class="s1-left">
+        <div class="s1-left-bg"></div>
+        <div class="s1-left-num">ج</div>
+        <div class="s1-left-label">تجمع المدينة المنورة الصحي</div>
+        <div class="s1-left-title">مبادرة<br>الجائزة</div>
+      </div>
+      <div class="s1-right">
+        <div class="s1-divider"></div>
+        <div class="s1-tagline">الاحتفاء بمن يصنعون الفرق.<br><strong>توثيق الأثر بالأرقام.</strong><br>بناء ثقافة الابتكار المستمر.</div>
+        <div class="s1-presenter">يقدمها: <strong>المدير التنفيذي للخدمات الصحية المساندة</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 2: GAP -->
+
+  <section data-label="02 المنظومة الحالية">
+    <div class="s2">
+      <div class="slide-title">منظومة الجوائز في التجمع — <em>وزاوية مكمّلة</em></div>
+      <div class="s2-row">
+        <div class="s2-col">
+          <div class="s2-col-num">٠١</div>
+          <div class="s2-col-name">مبادرة رُكن</div>
+          <div class="s2-col-desc">تقيس الممارس الصحي بوصفه قدوة لأسرته ومجتمعه — الالتزام بالفحوصات والتحصينات.</div>
+          <div class="s2-col-tag">الالتزام الصحي</div>
+        </div>
+        <div class="s2-col">
+          <div class="s2-col-num">٠٢</div>
+          <div class="s2-col-name">دليل التميز</div>
+          <div class="s2-col-desc">يقيس تطبيق المنشآت لنموذج الرعاية السعودي — بمؤشرات أداء محددة وأدوات قياس معتمدة.</div>
+          <div class="s2-col-tag">معايير الرعاية</div>
+        </div>
+        <div class="s2-col">
+          <div class="s2-col-num">٠٣</div>
+          <div class="s2-col-name">الابتكار وتطوير الخدمات</div>
+          <div class="s2-col-desc">المبادرتان السابقتان تركّزان على البُعد التطبيقي للمعايير المعتمدة. وهذه المبادرة تفتح زاوية مختلفة تركّز على الأفكار التي تحلّ المشكلات وتُحسّن التكلفة وتُجوّد الخدمات.</div>
+          <div class="s2-col-tag">★ الزاوية الثالثة</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 3: PHILOSOPHY -->
+
+  <section data-label="03 الفلسفة">
+    <div class="s3">
+      <div class="s3-bg-text">ابتكار</div>
+      <div class="s3-quote">
+        في كل خدمة صحية تكمن فرصة لتحسينها، وفي كل عملية فرصة لرفع كفاءتها، وفي كل تجربة مريض فرصة لجعلها أفضل.<br>
+        <strong>التميز الحقيقي لا يأتي من تكرار المألوف، بل من البحث الدائم عن طرق أفضل لتقديم الخدمة.</strong>
+      </div>
+      <div class="s3-pillars">
+        <div class="s3-pill">الاحتفاء بمن يصنعون الفرق</div>
+        <div class="s3-pill">توثيق الأثر بأرقام قابلة للقياس</div>
+        <div class="s3-pill">بناء ثقافة مؤسسية للابتكار</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 4: QUOTE -->
+
+  <section data-label="04 رسالة المبادرة">
+    <div class="s4">
+      <div class="s4-line"></div>
+      <div class="s4-content">
+        <div class="s4-mark">"</div>
+        <div class="s4-quote">
+          خلف كل خدمة متميزة،<br>
+          <em>عقلٌ فكّر، ويدٌ نفّذت، وإرادةٌ صنعت الفرق.</em><br>
+          هذه المبادرة تحتفي بهم جميعاً.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 4.5: SCOPE & MECHANISM -->
+
+  <section data-label="05 نطاق المبادرة">
+    <div style="position: absolute; inset: 0; padding: var(--pt) var(--px) var(--pb); display: flex; flex-direction: column; gap: 50px;">
+      <div>
+        <div class="slide-title">نطاق المبادرة — <em>الإسهامات المستهدفة</em></div>
+        <div style="font-size: var(--t-body); color: var(--ink-mid); font-weight: 400; line-height: 1.6; max-width: 1500px; margin-top: 16px;">تستهدف المبادرة الإسهامات التي تُحدث تحسيناً جوهرياً في الخدمات الصحية المقدمة:</div>
+      </div>
+
+```
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px 60px; flex: 1;">
+    <div style="display: flex; gap: 24px; align-items: flex-start; padding: 28px 0; border-top: 2px solid var(--ink);">
+      <div style="font-size: 64px; font-weight: 900; color: var(--accent); line-height: 1; min-width: 80px;">٠١</div>
+      <div>
+        <div style="font-size: var(--t-body); font-weight: 700; color: var(--ink); margin-bottom: 8px;">حلول لمشكلات تشغيلية مزمنة</div>
+        <div style="font-size: var(--t-small); color: var(--ink-mid); font-weight: 400; line-height: 1.6;">تؤثر على المريض أو على سير العمل</div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 24px; align-items: flex-start; padding: 28px 0; border-top: 2px solid var(--ink);">
+      <div style="font-size: 64px; font-weight: 900; color: var(--accent); line-height: 1; min-width: 80px;">٠٢</div>
+      <div>
+        <div style="font-size: var(--t-body); font-weight: 700; color: var(--ink); margin-bottom: 8px;">ابتكارات تُطوّر نماذج العمل</div>
+        <div style="font-size: var(--t-small); color: var(--ink-mid); font-weight: 400; line-height: 1.6;">تنقل الخدمة القائمة إلى مستوى أفضل</div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 24px; align-items: flex-start; padding: 28px 0; border-top: 2px solid var(--ink);">
+      <div style="font-size: 64px; font-weight: 900; color: var(--accent); line-height: 1; min-width: 80px;">٠٣</div>
+      <div>
+        <div style="font-size: var(--t-body); font-weight: 700; color: var(--ink); margin-bottom: 8px;">تحسينات في الكفاءة والتكلفة</div>
+        <div style="font-size: var(--t-small); color: var(--ink-mid); font-weight: 400; line-height: 1.6;">رفع كفاءة العمليات وتحسين التكلفة التشغيلية</div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 24px; align-items: flex-start; padding: 28px 0; border-top: 2px solid var(--ink);">
+      <div style="font-size: 64px; font-weight: 900; color: var(--accent); line-height: 1; min-width: 80px;">٠٤</div>
+      <div>
+        <div style="font-size: var(--t-body); font-weight: 700; color: var(--ink); margin-bottom: 8px;">تقصير مسار وصول المريض</div>
+        <div style="font-size: var(--t-small); color: var(--ink-mid); font-weight: 400; line-height: 1.6;">تسهيل الوصول للخدمة وتقليل وقت الانتظار</div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 24px; align-items: flex-start; padding: 28px 0; border-top: 2px solid var(--ink); grid-column: 1 / -1; max-width: 900px;">
+      <div style="font-size: 64px; font-weight: 900; color: var(--accent); line-height: 1; min-width: 80px;">٠٥</div>
+      <div>
+        <div style="font-size: var(--t-body); font-weight: 700; color: var(--ink); margin-bottom: 8px;">تطويرات في جودة الخدمات</div>
+        <div style="font-size: var(--t-small); color: var(--ink-mid); font-weight: 400; line-height: 1.6;">بمؤشرات قابلة للقياس وأرقام موثقة</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 28px 36px; background: var(--accent); color: var(--paper); border-radius: 12px; display: flex; gap: 32px; align-items: center;">
+    <div style="font-size: var(--t-small); font-weight: 700; letter-spacing: 0.05em;">آلية العمل</div>
+    <div style="width: 1px; height: 40px; background: rgba(255,255,255,0.3);"></div>
+    <div style="font-size: var(--t-small); font-weight: 400; line-height: 1.6; flex: 1;">استقبال إلكتروني للمشاركات وفق نموذج موحد، وتقييم بمعايير علمية، وتتويج في حفل رسمي. المشاركة متاحة للأفراد والإدارات والفرق المشتركة.</div>
+  </div>
+</div>
+```
+
+  </section>
+
+  <!-- SLIDE 5: TRACKS -->
+
+  <section data-label="06 المساران">
+    <div class="s5">
+      <div class="slide-title">مساران متوازيان — <em>تغطيان كل حالة</em></div>
+      <div class="s5-tracks">
+        <div class="track">
+          <div class="track-bg-num">١</div>
+          <div class="track-badge">المسار الأول</div>
+          <div class="track-name">مسار الإنجازات</div>
+          <div class="track-desc">لمن طبّق فكرته فعلياً وأحدث أثراً موثقاً بالأرقام والإثباتات.</div>
+        </div>
+        <div class="track featured">
+          <div class="track-bg-num">٢</div>
+          <div class="track-badge">المسار الثاني</div>
+          <div class="track-name">مسار الأفكار</div>
+          <div class="track-desc">لمن يملك فكرة قابلة للتطبيق ولا يملك بعد أدوات تنفيذها. عند تأهلها، يتم تبنّيها وتنفيذها رسمياً باسم صاحبها.</div>
+          <div class="track-unique">الميزة الفريدة للمبادرة ←</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 6: CATEGORIES -->
+
+  <section data-label="07 الفئات التنافسية">
+    <div class="s6">
+      <div class="slide-title">ست فئات تنافسية — تغطي كل أوجه التميز</div>
+      <div class="s6-grid">
+        <div class="cat">
+          <div class="cat-num">01</div>
+          <div class="cat-name">الحلول</div>
+          <div class="cat-desc">حل مشكلة مزمنة كانت تؤثر على المريض أو على سير العمل</div>
+        </div>
+        <div class="cat">
+          <div class="cat-num">02</div>
+          <div class="cat-name">الكفاءة</div>
+          <div class="cat-desc">رفع كفاءة العمل أو تحسين التكلفة التشغيلية</div>
+        </div>
+        <div class="cat">
+          <div class="cat-num">03</div>
+          <div class="cat-name">الوصول</div>
+          <div class="cat-desc">تسهيل وصول المريض للخدمة أو تقليل وقت الانتظار</div>
+        </div>
+        <div class="cat">
+          <div class="cat-num">04</div>
+          <div class="cat-name">الجودة</div>
+          <div class="cat-desc">تحسين جودة خدمة قائمة بمؤشر قابل للقياس</div>
+        </div>
+        <div class="cat">
+          <div class="cat-num">05</div>
+          <div class="cat-name">الابتكار</div>
+          <div class="cat-desc">ابتكار مسار جديد أو خدمة لم تكن موجودة من قبل</div>
+        </div>
+        <div class="cat">
+          <div class="cat-num">06</div>
+          <div class="cat-name">الفكرة</div>
+          <div class="cat-desc">فكرة لم تُطبق بعد لكنها تستحق التبني والتنفيذ</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 7: SCORING -->
+
+  <section data-label="08 معايير التقييم">
+    <div class="s7">
+      <div class="s7-main">
+        <div class="slide-title">نظام نقاط شفاف — <em>١٠٠ نقطة</em></div>
+        <div style="display: flex; flex-direction: column; flex: 1; justify-content: center;">
+          <div class="score-item-b">
+            <div class="score-pct">١٥<span class="score-pct-suffix">/١٥٪</span></div>
+            <div class="score-lbl">وضوح المشكلة والحل</div>
+          </div>
+          <div class="score-item-b">
+            <div class="score-pct">٢٠<span class="score-pct-suffix">/٢٠٪</span></div>
+            <div class="score-lbl">القابلية للقياس بالأرقام والمؤشرات</div>
+          </div>
+          <div class="score-item-b">
+            <div class="score-pct">٢٥<span class="score-pct-suffix">/٢٥٪</span></div>
+            <div class="score-lbl">حجم الأثر على المستفيدين أو الخدمة</div>
+          </div>
+          <div class="score-item-b">
+            <div class="score-pct">٢٠<span class="score-pct-suffix">/٢٠٪</span></div>
+            <div class="score-lbl">المواءمة مع الأهداف الاستراتيجية</div>
+          </div>
+          <div class="score-item-b">
+            <div class="score-pct">٢٠<span class="score-pct-suffix">/٢٠٪</span></div>
+            <div class="score-lbl">الأصالة وقابلية التعميم</div>
+          </div>
+        </div>
+      </div>
+      <div class="s7-side">
+        <div class="total-b">
+          <div class="total-b-num">١٠٠</div>
+          <div class="total-b-lbl">إجمالي النقاط</div>
+        </div>
+        <div class="qualify-b">
+          <p>الحد الأدنى للتأهل</p>
+          <strong>٧٠</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 8: TIERS -->
+
+  <section data-label="09 آلية التتويج">
+    <div class="s8">
+      <div class="slide-title">آلية التصنيف — <em>النقاط + الترتيب التنافسي</em></div>
+      <div style="font-size: var(--t-small); color: var(--ink-mid); font-weight: 400; line-height: 1.7; max-width: 1500px; margin-bottom: 40px;">يعتمد التصنيف على معادلة تجمع بين النقاط المُحققة والمرتبة التنافسية داخل كل فئة. لا يقتصر التصنيف على شريحة النقاط فقط، بل يأخذ في الاعتبار الترتيب النسبي بين المشاركات المتأهلة — لضمان العدالة عند تشابه النقاط، وتمييز الأفضل من بين المتميزين.</div>
+      <div class="s8-tiers">
+        <div class="tier-b tier-b-gold">
+          <div class="tier-b-label">GOLD</div>
+          <div class="tier-b-name">الذهبية</div>
+          <div class="tier-b-score">نطاق نقاط مرتفع<br>+ ترتيب متقدم في الفئة</div>
+        </div>
+        <div class="tier-b tier-b-silver">
+          <div class="tier-b-label">SILVER</div>
+          <div class="tier-b-name">الفضية</div>
+          <div class="tier-b-score">نطاق نقاط متميز<br>+ ترتيب لاحق في الفئة</div>
+        </div>
+        <div class="tier-b tier-b-bronze">
+          <div class="tier-b-label">BRONZE</div>
+          <div class="tier-b-name">البرونزية</div>
+          <div class="tier-b-score">نطاق نقاط جيد<br>+ تأهل ضمن الفئة</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 9: IMPACT -->
+
+  <section data-label="10 الأثر المتوقع">
+    <div class="s9">
+      <div class="s9-left">
+        <div class="s9-left-num">٦</div>
+        <div class="s9-left-title">محاور أثر مؤسسي</div>
+        <div class="s9-left-sub">رافد متعدد الأبعاد يخدم التجمع</div>
+      </div>
+      <div class="s9-right">
+        <div class="impact-b">
+          <div class="impact-b-n">↑</div>
+          <div class="impact-b-t">تطوير الخدمات الصحية</div>
+          <div class="impact-b-d">حلول عملية تُعالج تحديات حقيقية على الأرض</div>
+        </div>
+        <div class="impact-b">
+          <div class="impact-b-n">↓</div>
+          <div class="impact-b-t">رفع الكفاءة التشغيلية</div>
+          <div class="impact-b-d">تحسين التكلفة بصورة تنعكس على جودة الخدمات</div>
+        </div>
+        <div class="impact-b">
+          <div class="impact-b-n">⟷</div>
+          <div class="impact-b-t">تعزيز التكامل بين الإدارات</div>
+          <div class="impact-b-d">منصة موحدة تحفّز التعاون والتنافس البنّاء</div>
+        </div>
+        <div class="impact-b">
+          <div class="impact-b-n">◎</div>
+          <div class="impact-b-t">توثيق الذاكرة المؤسسية</div>
+          <div class="impact-b-d">أرشيف من الحلول والأفكار يخدم التجمع طويلاً</div>
+        </div>
+        <div class="impact-b">
+          <div class="impact-b-n">♡</div>
+          <div class="impact-b-t">الارتقاء بتجربة المريض</div>
+          <div class="impact-b-d">انعكاس مباشر للتطوير المستمر في الخدمات</div>
+        </div>
+        <div class="impact-b">
+          <div class="impact-b-n">★</div>
+          <div class="impact-b-t">ترسيخ ثقافة التميز</div>
+          <div class="impact-b-d">سمة مؤسسية متجذرة في كل مستويات العمل</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 10: THANK YOU -->
+
+  <section data-label="11 شكراً لكم">
+    <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 56px; background: var(--paper);">
+      <div style="width: 140px; height: 4px; background: var(--accent);"></div>
+      <div style="font-size: 200px; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; line-height: 1;">شكراً لكم</div>
+      <div style="font-size: var(--t-small); color: var(--ink-light); font-weight: 400; letter-spacing: 0.1em;">تجمع المدينة المنورة الصحي</div>
+      <div style="width: 140px; height: 4px; background: var(--accent);"></div>
+    </div>
+  </section>
+
+</deck-stage>
+</body>
+</html>
