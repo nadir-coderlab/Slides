@@ -1,40 +1,37 @@
+```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>مبادرة صُنّاع الأثر - النهائي</title>
+<title>مبادرة صُنّاع الأثر — عرض القيادة العليا</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
   /* =========================================
-     Editorial Print Style Design System
-     (The Original Black & Red Palette)
+     The Royal Editorial System
+     Colors: Navy (#2C4A7C), Gold (#C9A14A), Emerald (#5BA89A)
      ========================================= */
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --ink: #0F0F0F;          
-    --ink-mid: #3A3A3A;      
-    --ink-light: #6E6E6E;    
-    --ink-faint: #B8B8B8;    
-    
-    --paper: #F8F6F1;        
-    --paper-warm: #F0EDE4;   
-    
-    --accent: oklch(52% 0.22 24); /* الأحمر الفخم */
+    --ink: #2C4A7C;              /* نيلي متوسط للنصوص والكتل الأساسية */
+    --ink-mid: #4A6A9A;          /* أزرق متوسط */
+    --ink-light: #7A92B5;        /* أزرق فاتح للأوصاف */
+    --ink-faint: #C8D3E0;        /* أزرق باهت للهوامش */
+
+    --paper: #FFFFFF;            /* أبيض نقي */
+    --paper-warm: #F7F9FC;       /* أبيض مائل للأزرق فاتح جداً */
+
+    --accent: #C9A14A;           /* ذهبي ترابي */
+    --accent-light: #F3E9D0;     /* ذهبي فاتح للخلفيات */
+
+    --emerald: #5BA89A;          /* زمردي فاتح ولطيف */
     
     --font: 'Cairo', sans-serif;
-    
-    --t-hero: 140px;
     --t-title: 72px;
-    --t-sub: 48px;
     --t-body: 34px;
-    --t-small: 26px;
-    
     --px: 120px;
-    --pt: 90px;
-    --pb: 80px;
+    --pt: 100px;
   }
 
   body, html {
@@ -43,281 +40,216 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    margin: 0;
+    width: 100vw;
     overflow: hidden;
+    font-family: var(--font);
   }
 
-  /* الحاوية الأساسية بمقاس ثابت 1920x1080 للباوربوينت */
+  /* الحاوية الأساسية — مقاس السلايد 1920x1080 */
   #stage {
     width: 1920px;
     height: 1080px;
     background-color: var(--paper);
     position: relative;
-    box-shadow: 0 0 60px rgba(0,0,0,0.5);
+    box-shadow: 0 50px 100px rgba(0,0,0,0.5);
     flex-shrink: 0;
-    transform-origin: center center;
     overflow: hidden;
   }
 
   section {
     width: 1920px;
     height: 1080px;
-    font-family: var(--font);
-    color: var(--ink);
-    background: var(--paper);
     position: absolute;
     top: 0; left: 0;
-    overflow: hidden;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--paper);
+    display: flex;
+    flex-direction: column;
   }
 
   section.active {
     opacity: 1;
     pointer-events: auto;
-    z-index: 2;
+    z-index: 10;
   }
 
-  /* زر تحميل الـ PDF المخصص */
-  .pdf-btn {
-    position: fixed; top: 30px; left: 30px; background: var(--accent); color: #fff; border: none; padding: 15px 30px; font-size: 24px; font-family: var(--font); font-weight: 700; border-radius: 8px; cursor: pointer; z-index: 9999; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: transform 0.2s; display: flex; align-items: center; gap: 10px;
-  }
-  .pdf-btn:hover { transform: scale(1.05); }
-
-  /* Global Typographic Elements */
-  .slide-title { font-size: var(--t-title); font-weight: 900; color: var(--ink); line-height: 1.2; margin-bottom: 40px; }
+  /* Global Elements */
+  .container { padding: var(--pt) var(--px) 80px; height: 100%; display: flex; flex-direction: column; }
+  .slide-title { font-size: var(--t-title); font-weight: 900; color: var(--ink); line-height: 1.2; margin-bottom: 50px; }
   .slide-title em { font-style: normal; color: var(--accent); }
-  .eyebrow { font-size: var(--t-small); font-weight: 700; color: var(--ink-light); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px; display: block; }
-  .divider { width: 80px; height: 4px; background: var(--accent); margin: 40px 0; }
-  
+  .eyebrow { font-size: 24px; font-weight: 700; color: var(--ink-mid); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 20px; border-right: 4px solid var(--emerald); padding-right: 20px; }
+  .divider { width: 100px; height: 5px; background: var(--accent); margin: 40px 0; border-radius: 5px; }
+
   /* S1: Cover */
-  .s1 { background: var(--ink); display: flex; height: 100%; }
-  .s1-left { width: 680px; background: var(--accent); display: flex; flex-direction: column; justify-content: flex-end; padding: 80px; position: relative; overflow: hidden; }
-  .s1-left-bg { position: absolute; inset: 0; background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 1px, transparent 40px); }
-  .s1-left-num { position: absolute; top: 60px; right: 80px; font-size: 200px; font-weight: 900; color: rgba(255,255,255,0.08); line-height: 1; letter-spacing: -0.05em; }
-  .s1-left-label { font-size: var(--t-small); font-weight: 600; color: rgba(255,255,255,0.7); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 24px; z-index: 1; }
-  .s1-left-title { font-size: 140px; font-weight: 900; color: #fff; line-height: 1; letter-spacing: -0.02em; z-index: 1; }
-  .s1-right { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 80px 100px 80px 80px; }
-  .s1-quote { font-size: 52px; font-weight: 400; color: rgba(255,255,255,0.8); line-height: 1.6; max-width: 900px; }
+  .s1-hero { background: var(--ink); display: flex; height: 100%; width: 100%; }
+  .s1-left { width: 750px; background: var(--accent); display: flex; flex-direction: column; justify-content: flex-end; padding: 100px; position: relative; overflow: hidden; }
+  .s1-num-bg { position: absolute; top: 40px; right: 60px; font-size: 280px; font-weight: 900; color: rgba(255,255,255,0.12); line-height: 1; }
+  .s1-label { font-size: 26px; font-weight: 700; color: rgba(255,255,255,0.8); margin-bottom: 25px; z-index: 2; letter-spacing: 2px; }
+  .s1-title { font-size: 150px; font-weight: 900; color: #fff; line-height: 1; z-index: 2; }
+  .s1-right { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 120px; }
+  .s1-quote { font-size: 54px; font-weight: 400; color: rgba(255,255,255,0.85); line-height: 1.6; max-width: 900px; }
   .s1-quote strong { color: #fff; font-weight: 700; }
-  .s1-presenter { font-size: var(--t-small); color: rgba(255,255,255,0.5); font-weight: 400; margin-top: auto; }
+  .s1-footer { margin-top: auto; font-size: 30px; color: var(--ink-faint); font-weight: 600; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 40px; }
 
-  /* S2: Ecosystem Grid */
-  .s2 { padding: var(--pt) var(--px) var(--pb); height: 100%; display: flex; flex-direction: column; }
-  .s2-grid { display: flex; border: 2px solid var(--ink); flex: 1; }
-  .s2-col { flex: 1; border-left: 2px solid var(--ink); padding: 50px 40px; display: flex; flex-direction: column; }
-  .s2-col:last-child { border-left: none; background: var(--ink); color: #fff; }
-  .s2-col-name { font-size: 42px; font-weight: 800; margin-bottom: 24px; }
-  .s2-col-desc { font-size: var(--t-body); line-height: 1.7; color: var(--ink-mid); flex: 1; font-weight: 600; }
-  .s2-col:last-child .s2-col-desc { color: rgba(255,255,255,0.8); }
-  .s2-col-tag { display: inline-flex; padding: 10px 20px; border: 2px solid var(--accent); font-size: 22px; font-weight: 700; color: var(--accent); align-self: flex-start; }
-  .s2-col:last-child .s2-col-tag { color: #fff; border-color: rgba(255,255,255,0.4); }
+  /* S2: Comparison Grid */
+  .s2-grid { display: flex; gap: 35px; flex: 1; }
+  .s2-card { flex: 1; background: var(--paper-warm); padding: 60px 50px; border-radius: 20px; border: 1px solid var(--ink-faint); display: flex; flex-direction: column; }
+  .s2-card.featured { border: 3px solid var(--emerald); background: var(--paper); box-shadow: 0 30px 60px rgba(15, 44, 89, 0.05); }
+  .s2-tag { display: inline-block; padding: 10px 24px; background: var(--ink-faint); font-size: 20px; font-weight: 800; color: var(--ink); border-radius: 30px; margin-bottom: 30px; align-self: flex-start; }
+  .s2-card.featured .s2-tag { background: var(--emerald); color: #fff; }
+  .s2-name { font-size: 42px; font-weight: 800; margin-bottom: 25px; color: var(--ink); }
+  .s2-desc { font-size: 32px; line-height: 1.7; color: var(--ink-mid); flex: 1; }
+  .s2-card.featured .s2-desc { color: var(--ink); font-weight: 600; }
 
-  /* S3 & S4: Khaled Story (Split Layout) */
-  .s34 { display: flex; height: 100%; background: var(--paper-warm); }
-  .s34-left { width: 35%; background: var(--ink); padding: 100px 80px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
-  .s34-num { position: absolute; bottom: 20px; right: 40px; font-size: 300px; font-weight: 900; color: rgba(255,255,255,0.03); line-height: 0.8; }
-  .s34-left h2 { font-size: 64px; font-weight: 900; color: #fff; line-height: 1.2; z-index: 1; }
-  .s34-right { width: 65%; padding: 100px 120px; display: flex; flex-direction: column; justify-content: center; }
-  .s34-quote { font-size: 42px; font-weight: 700; color: var(--accent); line-height: 1.6; margin-bottom: 40px; border-right: 4px solid var(--accent); padding-right: 30px; }
-  .s34-body { font-size: var(--t-body); line-height: 1.7; color: var(--ink-mid); font-weight: 600; }
-  .s34-path { font-size: 28px; font-weight: 700; color: var(--ink); line-height: 2; margin: 30px 0; padding: 30px; background: rgba(0,0,0,0.03); border: 2px solid rgba(0,0,0,0.1); }
-  .s34-highlight { font-size: var(--t-body); font-weight: 800; color: var(--ink); border-top: 2px solid var(--ink); padding-top: 30px; margin-top: 20px; }
+  /* S3 & S4: Split Story */
+  .split { display: flex; height: 100%; }
+  .split-side { width: 38%; background: var(--ink); padding: 100px 80px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
+  .split-side-light { background: var(--paper-warm); border-left: 2px solid var(--ink-faint); }
+  .split-side-light h2 { color: var(--ink) !important; }
+  .split-num { font-size: 300px; font-weight: 900; color: rgba(201, 161, 74, 0.1); position: absolute; bottom: 20px; right: 40px; line-height: 0.8; }
+  .split-side h2 { font-size: 72px; font-weight: 900; color: #fff; line-height: 1.2; z-index: 2; }
+  .split-main { width: 62%; padding: 100px 120px; display: flex; flex-direction: column; justify-content: center; background: #fff; }
+  .story-quote { font-size: 46px; font-weight: 700; color: var(--ink); line-height: 1.6; margin-bottom: 45px; border-right: 8px solid var(--accent); padding-right: 35px; }
+  .story-body { font-size: 36px; line-height: 1.7; color: var(--ink-mid); }
+  .story-path { font-size: 30px; font-weight: 700; color: var(--ink-mid); line-height: 2.2; margin: 35px 0; padding: 35px; background: var(--paper-warm); border: 1px solid var(--ink-faint); border-radius: 15px; }
+  .story-path.active { border-color: var(--emerald); background: rgba(91, 168, 154, 0.05); color: var(--emerald); }
+  .story-footer { font-size: 38px; font-weight: 800; color: var(--ink); border-top: 2px solid var(--ink-faint); padding-top: 35px; margin-top: 20px; }
 
-  /* S5: 6-Cell Grid */
-  .s5 { padding: var(--pt) var(--px) var(--pb); height: 100%; display: flex; flex-direction: column; }
-  .s5-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); border: 2px solid var(--ink); flex: 1; }
-  .s5-cell { padding: 40px; border-left: 2px solid var(--ink); border-bottom: 2px solid var(--ink); display: flex; flex-direction: column; }
-  .s5-cell:nth-child(3n) { border-left: none; }
-  .s5-cell:nth-child(n+4) { border-bottom: none; }
-  .s5-cell:nth-child(even) { background: var(--paper-warm); }
-  .s5-cell.special { background: var(--ink); color: #fff; }
-  .s5-title { font-size: 36px; font-weight: 800; color: var(--accent); margin-bottom: 15px; }
-  .s5-cell.special .s5-title { color: #fff; }
-  .s5-desc { font-size: var(--t-small); line-height: 1.6; color: var(--ink-mid); font-weight: 600; }
-  .s5-cell.special .s5-desc { color: rgba(255,255,255,0.9); font-size: 30px; font-weight: 700; }
+  /* Grid 6 (Services) */
+  .grid-6 { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 30px; flex: 1; }
+  .cell { padding: 45px; background: var(--paper-warm); border-radius: 20px; border: 1px solid var(--ink-faint); display: flex; flex-direction: column; }
+  .cell.special { background: var(--ink); color: #fff; border: none; }
+  .cell-title { font-size: 38px; font-weight: 800; color: var(--accent); margin-bottom: 15px; }
+  .cell-desc { font-size: 28px; line-height: 1.6; color: var(--ink-mid); }
+  .cell.special .cell-desc { color: rgba(255,255,255,0.9); font-weight: 700; }
 
-  /* S6: Two Cards Pattern */
-  .s69 { padding: var(--pt) var(--px) var(--pb); height: 100%; display: flex; flex-direction: column; }
-  .s69-cards { display: flex; gap: 40px; flex: 1; }
-  .s69-card { flex: 1; border: 2px solid var(--ink); padding: 60px; display: flex; flex-direction: column; position: relative; overflow: hidden; }
-  .s69-card.dark { background: var(--ink); color: #fff; }
-  .s69-badge { display: inline-block; padding: 12px 24px; border: 2px solid currentColor; font-size: 26px; font-weight: 800; letter-spacing: 0.1em; margin-bottom: 40px; align-self: flex-start; }
-  .s69-card.dark .s69-badge { color: var(--accent); border-color: var(--accent); }
-  .s69-title { font-size: 52px; font-weight: 900; margin-bottom: 30px; z-index: 1; }
-  .s69-list { list-style: none; z-index: 1; flex: 1; }
-  .s69-list li { font-size: 40px; line-height: 1.6; margin-bottom: 24px; display: flex; gap: 15px; font-weight: 700; }
-  .s69-list li::before { content: '—'; color: var(--accent); font-weight: 900; }
-  .s69-card.dark .s69-list li { color: rgba(255,255,255,0.9); }
-  .s69-question { margin-top: auto; font-size: 46px; font-weight: 800; border-top: 2px solid currentColor; padding-top: 30px; z-index: 1; line-height: 1.4; color: var(--ink); }
-  .s69-card.dark .s69-question { color: #fff; }
+  /* S6: The Two Questions (Moment of Truth) */
+  .q-cards { display: flex; gap: 50px; flex: 1; }
+  .q-card { flex: 1; background: var(--paper-warm); border-radius: 25px; padding: 80px 70px; display: flex; flex-direction: column; border: 1px solid var(--ink-faint); }
+  .q-card.navy { background: var(--ink); color: #fff; border: none; }
+  .q-badge { display: inline-block; padding: 12px 28px; background: var(--accent); color: #fff; font-size: 26px; font-weight: 800; border-radius: 10px; margin-bottom: 50px; align-self: flex-start; }
+  .q-list { list-style: none; flex: 1; }
+  .q-list li { font-size: 44px; font-weight: 700; line-height: 1.5; margin-bottom: 35px; display: flex; gap: 20px; color: var(--ink); }
+  .q-card.navy .q-list li { color: #fff; }
+  .q-list li::before { content: '■'; color: var(--accent); font-size: 26px; margin-top: 10px; }
+  .q-ask { font-size: 52px; font-weight: 900; border-top: 3px solid var(--accent-light); padding-top: 40px; line-height: 1.4; color: var(--ink); }
+  .q-card.navy .q-ask { color: var(--accent); border-color: rgba(255,255,255,0.1); }
 
-  /* S7: Philosophy (Full Accent) */
-  .s7-ph { background: var(--accent); display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 0 150px; text-align: center; position: relative; overflow: hidden; }
-  .s7-bg-txt { position: absolute; font-size: 400px; font-weight: 900; color: rgba(255,255,255,0.05); top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
-  .s7-quote { font-size: 64px; font-weight: 500; color: #fff; line-height: 1.5; z-index: 1; max-width: 1400px; margin-bottom: 60px; }
-  .s7-quote strong { font-weight: 800; }
-  .s7-pillars { display: flex; border: 2px solid rgba(255,255,255,0.3); z-index: 1; }
-  .s7-pill { padding: 20px 50px; font-size: var(--t-body); font-weight: 700; color: #fff; border-left: 2px solid rgba(255,255,255,0.3); }
+  /* S7: Philosophy (Full Navy) */
+  .s7-full { background: var(--ink); display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; position: relative; overflow: hidden; }
+  .s7-watermark { position: absolute; font-size: 450px; font-weight: 900; color: rgba(201, 161, 74, 0.05); top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+  .s7-quote { font-size: 72px; font-weight: 400; color: #fff; line-height: 1.6; z-index: 2; max-width: 1500px; margin-bottom: 80px; }
+  .s7-quote strong { font-weight: 800; color: var(--accent); }
+  .s7-pillars { display: flex; border: 2px solid var(--accent); border-radius: 15px; z-index: 2; overflow: hidden; }
+  .s7-pill { padding: 35px 70px; font-size: 36px; font-weight: 700; color: #fff; border-left: 2px solid var(--accent); background: rgba(255,255,255,0.03); }
   .s7-pill:last-child { border-left: none; }
 
-  /* S8: Scope Vertical List */
-  .s8-list { display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
-  .s8-item { display: flex; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.1); padding: 20px 0; }
-  .s8-item:last-child { border-bottom: none; }
-  .s8-num { font-size: 48px; font-weight: 900; color: var(--accent); width: 120px; }
-  .s8-name { font-size: 36px; font-weight: 800; color: var(--ink); width: 450px; }
-  .s8-desc { font-size: var(--t-small); color: var(--ink-mid); flex: 1; font-weight: 600; }
-  .s8-banner { background: var(--ink); color: #fff; padding: 40px; margin-top: 40px; display: flex; gap: 30px; align-items: center; }
-  .s8-banner-lbl { font-size: 20px; font-weight: 800; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; }
-  .s8-banner-txt { font-size: 24px; font-weight: 600; line-height: 1.6; opacity: 0.9; }
-
-  /* S10: 6 Categories Grid */
-  .s10-grid { display: grid; grid-template-columns: repeat(6, 1fr); border: 2px solid var(--ink); flex: 1; }
-  .s10-cat { border-left: 2px solid var(--ink); padding: 40px 30px; display: flex; flex-direction: column; }
-  .s10-cat:last-child { border-left: none; }
-  .s10-cat:nth-child(even) { background: var(--paper-warm); }
-  .s10-num { font-size: 80px; font-weight: 900; color: var(--accent); line-height: 1; margin-bottom: 20px; }
-  .s10-name { font-size: 40px; font-weight: 800; margin-bottom: 20px; }
-  .s10-desc { font-size: 24px; line-height: 1.6; color: var(--ink-mid); font-weight: 600; }
+  /* S8: Scope List */
+  .sc-list { display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
+  .sc-item { display: flex; align-items: center; border-bottom: 1px solid var(--ink-faint); padding: 25px 0; }
+  .sc-num { font-size: 56px; font-weight: 900; color: var(--accent); width: 140px; opacity: 0.8; }
+  .sc-name { font-size: 44px; font-weight: 800; color: var(--ink); width: 450px; }
+  .sc-desc { font-size: 32px; color: var(--ink-mid); flex: 1; }
+  .sc-banner { background: var(--paper-warm); border: 1px solid var(--accent-light); padding: 40px 60px; border-radius: 20px; display: flex; gap: 40px; align-items: center; margin-top: 40px; }
+  .sc-banner-lbl { font-size: 26px; font-weight: 900; color: #fff; background: var(--emerald); padding: 12px 30px; border-radius: 10px; white-space: nowrap; }
+  .sc-banner-txt { font-size: 32px; font-weight: 700; color: var(--ink); }
 
   /* S11: Scoring */
-  .s11-main { display: flex; height: 100%; }
-  .s11-left { flex: 1; padding: var(--pt) 80px var(--pb) var(--px); display: flex; flex-direction: column; justify-content: center; }
-  .s11-right { width: 450px; background: var(--ink); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px; text-align: center; }
-  .score-row { display: flex; align-items: center; padding: 30px 0; border-bottom: 1px solid rgba(0,0,0,0.1); }
-  .score-row:last-child { border-bottom: none; }
-  .score-val { font-size: 64px; font-weight: 900; color: var(--accent); width: 220px; }
-  .score-txt { font-size: 36px; font-weight: 700; color: var(--ink); }
-  .s11-total { font-size: 140px; font-weight: 900; color: #fff; line-height: 1; }
-  .s11-lbl { font-size: 24px; color: rgba(255,255,255,0.5); font-weight: 600; margin-bottom: 60px; }
-  .s11-min { border-top: 1px solid rgba(255,255,255,0.2); padding-top: 40px; width: 100%; }
-  .s11-min p { font-size: 20px; color: rgba(255,255,255,0.5); margin-bottom: 10px; }
-  .s11-min strong { font-size: 64px; font-weight: 900; color: var(--accent); }
+  .scr-layout { display: flex; height: 100%; border: 2px solid var(--ink-faint); border-radius: 30px; overflow: hidden; }
+  .scr-left { flex: 1; padding: 80px; display: flex; flex-direction: column; justify-content: center; background: #fff; }
+  .scr-right { width: 500px; background: var(--ink); padding: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border-left: 10px solid var(--accent); }
+  .scr-row { display: flex; align-items: center; padding: 30px 0; border-bottom: 1px solid var(--ink-faint); }
+  .scr-val { font-size: 64px; font-weight: 900; color: var(--accent); width: 220px; text-align: center; }
+  .scr-txt { font-size: 40px; font-weight: 700; color: var(--ink); }
+  .scr-total { font-size: 180px; font-weight: 900; color: #fff; line-height: 1; }
+  .scr-min { margin-top: 60px; padding: 35px; background: rgba(255,255,255,0.05); border-radius: 20px; width: 100%; }
+  .scr-min p { font-size: 26px; color: rgba(255,255,255,0.7); margin-bottom: 10px; }
+  .scr-min strong { font-size: 90px; font-weight: 900; color: var(--emerald); line-height: 1; }
 
   /* S12: Impact */
-  .s13 { display: flex; height: 100%; }
-  .s13-side { width: 500px; background: var(--ink); padding: 100px 80px; display: flex; flex-direction: column; justify-content: flex-end; position: relative; }
-  .s13-num { font-size: 240px; font-weight: 900; color: rgba(255,255,255,0.05); position: absolute; top: 40px; right: 60px; line-height: 1; }
-  .s13-title { font-size: 56px; font-weight: 900; color: #fff; line-height: 1.2; margin-bottom: 20px; }
-  .s13-sub { font-size: 28px; color: rgba(255,255,255,0.5); font-weight: 500; }
-  .s13-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr); }
-  .imp-cell { padding: 50px 60px; border-bottom: 2px solid rgba(0,0,0,0.08); border-left: 2px solid rgba(0,0,0,0.08); display: flex; flex-direction: column; justify-content: center; }
-  .imp-cell:nth-child(odd) { border-left: none; }
-  .imp-cell:nth-last-child(-n+2) { border-bottom: none; }
-  .imp-icon { font-size: 40px; font-weight: 900; color: var(--accent); margin-bottom: 15px; }
-  .imp-title { font-size: 34px; font-weight: 800; color: var(--ink); margin-bottom: 10px; }
-  .imp-desc { font-size: 26px; color: var(--ink-mid); line-height: 1.5; font-weight: 600; }
+  .imp-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr); gap: 25px; flex: 1; }
+  .imp-box { padding: 45px; background: var(--paper-warm); border-radius: 20px; border: 1px solid var(--ink-faint); display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
+  .imp-box::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 6px; background: var(--emerald); opacity: 0.3; }
+  .imp-title { font-size: 38px; font-weight: 900; color: var(--ink); margin-bottom: 15px; }
+  .imp-desc { font-size: 28px; line-height: 1.5; color: var(--ink-mid); font-weight: 600; }
 
-  /* S13: Thank You */
-  .s14 { background: var(--paper); height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .s14-line { width: 140px; height: 4px; background: var(--accent); margin: 40px 0; }
-  .s14-thx { font-size: 200px; font-weight: 900; color: var(--ink); line-height: 1; letter-spacing: -0.02em; }
+  /* Controls */
+  .nav-dots { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; z-index: 100; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--ink-faint); cursor: pointer; transition: 0.3s; }
+  .dot.active { background: var(--accent); transform: scale(1.5); }
+  .nav-arrows { position: absolute; bottom: 30px; right: 60px; display: flex; gap: 20px; z-index: 100; }
+  .nav-btn { background: var(--ink); color: #fff; border: none; width: 60px; height: 60px; border-radius: 50%; cursor: pointer; font-size: 24px; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+  .nav-btn:hover { background: var(--accent); }
 
-  /* Slide Counter */
-  .slide-counter { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); font-size: 24px; font-weight: 700; color: var(--ink-light); z-index: 10; font-family: var(--font); background: var(--paper); padding: 5px 15px; border-radius: 20px; border: 1px solid var(--ink-faint); }
-  
-  /* AI Assistant Styles (Subtle integration) */
-  .ai-fab { position: fixed; bottom: 30px; right: 30px; background: var(--ink); color: #fff; border: 1px solid var(--accent); border-radius: 50%; width: 60px; height: 60px; font-size: 24px; cursor: pointer; z-index: 1000; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-  .ai-fab:hover { transform: scale(1.1); background: var(--accent); border-color: var(--ink); }
-  .ai-panel { position: fixed; bottom: 100px; right: 30px; width: 400px; background: var(--paper); border: 2px solid var(--ink); box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 1000; display: none; flex-direction: column; font-family: var(--font); }
-  .ai-panel.show { display: flex; }
-  .ai-header { background: var(--ink); color: #fff; padding: 15px 20px; font-weight: 800; font-size: 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent); }
-  .ai-header-close { cursor: pointer; font-size: 24px; line-height: 1; }
-  .ai-content { padding: 20px; max-height: 400px; overflow-y: auto; font-size: 16px; color: var(--ink); line-height: 1.6; font-weight: 600; }
-  .ai-actions { padding: 15px 20px; border-top: 1px solid var(--ink-faint); display: flex; gap: 10px; flex-direction: column; background: var(--paper-warm); }
-  .ai-btn { background: var(--paper); border: 1px solid var(--ink); padding: 10px; cursor: pointer; font-family: var(--font); font-weight: 800; color: var(--ink); transition: background 0.2s; text-align: right; display: flex; justify-content: space-between; align-items: center; }
-  .ai-btn:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
-  .ai-loading { display: none; text-align: center; color: var(--accent); font-weight: bold; padding: 20px; }
-  .ai-result-box { background: rgba(0,0,0,0.03); padding: 15px; margin-bottom: 15px; display: none; border-right: 4px solid var(--accent); direction: rtl; }
-
-  /* =========================================
-     إعدادات الطباعة للـ PDF
-     ========================================= */
-  @media print {
-    body, html { background-color: var(--paper) !important; height: auto !important; overflow: visible !important; display: block !important; }
-    #stage { box-shadow: none !important; width: 1920px !important; height: auto !important; transform: none !important; position: relative !important; overflow: visible !important; }
-    section { position: relative !important; opacity: 1 !important; pointer-events: auto !important; display: flex !important; page-break-after: always !important; break-after: page !important; width: 1920px !important; height: 1080px !important; box-shadow: none !important; transform: none !important; }
-    .slide-counter, .ai-fab, .ai-panel, .pdf-btn { display: none !important; }
-    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-    @page { size: 1920px 1080px; margin: 0; }
-  }
+  /* AI Assistant Button (Subtle) */
+  .ai-trigger { position: fixed; bottom: 40px; left: 40px; background: var(--ink); color: #fff; border: 2px solid var(--accent); border-radius: 50%; width: 70px; height: 70px; font-size: 30px; cursor: pointer; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
 </style>
 </head>
 <body>
 
-<!-- زر تحميل الـ PDF -->
-<button class="pdf-btn" onclick="window.print()" title="اضغط لتحميل العرض كملف PDF">
-  حفظ كملف PDF 📄
-</button>
-
 <div id="stage">
   
-  <!-- السلايد ٠١: الغلاف -->
-  <section data-label="٠١ الغلاف" class="active">
-    <div class="s1">
+  <!-- Slide 1: Cover -->
+  <section class="active" data-label="01 الغلاف">
+    <div class="s1-hero">
       <div class="s1-left">
-        <div class="s1-left-bg"></div>
-        <div class="s1-left-num">أ</div>
-        <div class="s1-left-label">مشروع مبادرة داخلية</div>
-        <div class="s1-left-title">صُنّاع<br>الأثر</div>
+        <div class="s1-num-bg">أ</div>
+        <div class="s1-label">مشروع مبادرة داخلية</div>
+        <div class="s1-title">صُنّاع<br>الأثر</div>
       </div>
       <div class="s1-right">
-        <div class="divider"></div>
+        <div class="divider" style="width: 150px; height: 8px;"></div>
         <div class="s1-quote">
           "خلف كل خدمة متميزة،<br>
           <strong>عقلٌ فكّر، ويدٌ نفّذت، وإرادةٌ صنعت الفرق.</strong><br>
           هذه المبادرة تحتفي بهم جميعاً."
         </div>
-        <div class="s1-presenter">الإدارة التنفيذية للخدمات الصحية المساندة</div>
+        <div class="s1-footer">الإدارة التنفيذية للخدمات الصحية المساندة</div>
       </div>
     </div>
   </section>
 
-  <!-- السلايد ٠٢: المنظومة -->
-  <section data-label="٠٢ المبادرات الحالية">
-    <div class="s2">
-      <div class="slide-title">مبادرات متميزة... <em>وزاوية مكمّلة</em></div>
+  <!-- Slide 2: Ecosystem -->
+  <section data-label="02 المبادرات الحالية">
+    <div class="container">
+      <span class="eyebrow">السياق المؤسسي</span>
+      <h2 class="slide-title">مبادرات متميزة... <em>وزاوية مكمّلة</em></h2>
       <div class="s2-grid">
-        <div class="s2-col">
-          <div class="s2-col-tag">الالتزام الصحي</div>
-          <div class="divider" style="width: 40px;"></div>
-          <div class="s2-col-name">مبادرة "رُكن"</div>
-          <div class="s2-col-desc">تركز على الممارس الصحي ومدى التزامه بالامتثال الصحي والفحوصات المبكرة.</div>
+        <div class="s2-card">
+          <div class="s2-tag">الالتزام الصحي</div>
+          <h3 class="s2-name">مبادرة "رُكن"</h3>
+          <p class="s2-desc">تركز على الممارس الصحي ومدى التزامه بالامتثال الصحي والفحوصات المبكرة والتحصينات.</p>
         </div>
-        <div class="s2-col">
-          <div class="s2-col-tag">معايير الرعاية</div>
-          <div class="divider" style="width: 40px;"></div>
-          <div class="s2-col-name">دليل التميز</div>
-          <div class="s2-col-desc">تركز على تقييم وتطبيق مسارات الرعاية الصحية عبر مؤشرات أداء معتمدة.</div>
+        <div class="s2-card">
+          <div class="s2-tag">معايير الرعاية</div>
+          <h3 class="s2-name">دليل التميز</h3>
+          <p class="s2-desc">تركز على تقييم وتطبيق مسارات الرعاية الصحية السعودية عبر مؤشرات أداء معتمدة.</p>
         </div>
-        <div class="s2-col">
-          <div class="s2-col-tag">★ الزاوية الثالثة</div>
-          <div class="divider" style="width: 40px; background: rgba(255,255,255,0.4);"></div>
-          <div class="s2-col-name">صُنّاع الأثر</div>
-          <div class="s2-col-desc">"رُكن" تنظر للممارس كقدوة. "دليل التميز" يقيس تطبيق المعايير.<br><br>"صُنّاع الأثر" تسأل سؤالاً لم يُسأل بعد: من الذي طوّر الخدمة من تلقاء نفسه؟ ومن لديه فكرة تنتظر الاحتضان؟</div>
+        <div class="s2-card featured">
+          <div class="s2-tag">★ الزاوية الثالثة</div>
+          <h3 class="s2-name">صُنّاع الأثر</h3>
+          <p class="s2-desc">"رُكن" تنظر للممارس كقدوة. "دليل التميز" يقيس تطبيق المعايير.<br><br><strong>"صُنّاع الأثر"</strong> تسأل سؤالاً لم يُسأل بعد: من الذي طوّر الخدمة من تلقاء نفسه؟ ومن لديه فكرة تنتظر الاحتضان؟</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- السلايد ٠٣: قصة خالد (المشكلة) -->
-  <section data-label="٠٣ الواقع الميداني">
-    <div class="s34">
-      <div class="s34-left">
-        <div class="s34-num">٠١</div>
+  <!-- Slide 3: Khaled Story (Problem) -->
+  <section data-label="03 الواقع الميداني">
+    <div class="split">
+      <div class="split-side">
+        <div class="split-num">٠١</div>
         <h2>خالد...<br>ورحلة<br>لا تنتهي</h2>
       </div>
-      <div class="s34-right">
-        <div class="s34-quote">
-          خالد، مريض مزمن، يحتاج كل فترة إلى إعادة صرف أدويته.
-        </div>
-        <div class="s34-body">ولاستلام دواء يستخدمه منذ سنوات، يخوض الرحلة التالية:</div>
-        <div class="s34-path">
+      <div class="split-main">
+        <div class="story-quote">خالد، مريض مزمن، يحتاج كل فترة إلى إعادة صرف أدويته.</div>
+        <div class="story-body">ولاستلام دواء يستخدمه منذ سنوات، يخوض الرحلة التالية:</div>
+        <div class="story-path">
           حجز موعد — التنقل للمستشفى — البحث عن موقف — الاستقبال — انتظار العيادة — لقاء الطبيب — التوجه للصيدلية — انتظار الصيدلية — استلام الدواء — العودة.
         </div>
-        <div class="s34-highlight">
+        <div class="story-footer">
           رحلة طويلة... لخدمة بسيطة جداً.<br>
           والخسارة لا تقع على خالد وحده.
         </div>
@@ -325,93 +257,76 @@
     </div>
   </section>
 
-  <!-- السلايد ٠٤: قصة خالد (الحل) -->
-  <section data-label="٠٤ الحل الممكن">
-    <div class="s34">
-      <div class="s34-left" style="background: var(--accent);">
-        <div class="s34-num" style="color: rgba(255,255,255,0.15);">٠٢</div>
-        <h2 style="color: #fff;">الفكرة<br>موجودة...<br>والتطبيق<br>ممكن</h2>
+  <!-- Slide 4: Khaled Story (Solution) -->
+  <section data-label="04 الحل الممكن">
+    <div class="split">
+      <div class="split-side split-side-light">
+        <div class="split-num">٠٢</div>
+        <h2>الفكرة<br>موجودة...<br>والتطبيق<br>ممكن</h2>
       </div>
-      <div class="s34-right">
-        <div class="s34-body">تخيلوا معي... موظف في إحدى منشآتنا يتساءل:</div>
-        <div class="s34-quote" style="border-color: var(--ink); color: var(--ink); font-size: 48px;">
+      <div class="split-main">
+        <div class="story-body">تخيلوا معي... موظف في إحدى منشآتنا يتساءل:</div>
+        <div class="story-quote" style="font-size: 52px; border-color: var(--emerald); color: var(--ink);">
           "لماذا يأتي خالد أصلاً؟ هو لا يحتاج إلا إعادة الدواء. لماذا لا يصل إليه في بيته؟"
         </div>
-        <div class="s34-path" style="background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.2);">
-          طلب الدواء إلكترونياً — مراجعة الطبيب للوصفة عبر النظام — توصيل الدواء.
+        <div class="story-path active">
+          طلب الدواء إلكترونياً — مراجعة الطبيب للوصفة عبر النظام — توصيل الدواء للمنزل.
         </div>
-        <div class="s34-highlight">
-          القدرة موجودة. الفكرة موجودة. الحلقة المفقودة: من يتبناها أو يحتفي بمن يطبقها.
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- السلايد ٠٥: التعميم على كل خدمة -->
-  <section data-label="٠٥ شمولية الأثر">
-    <div class="s5">
-      <div class="slide-title">قصة خالد <em>تتكرر في كل خدمة</em></div>
-      <div class="eyebrow" style="margin-top: -20px; margin-bottom: 30px; text-transform: none;">ما رأيناه في الصيدلية، له نظير في كل قسم</div>
-      <div class="s5-grid">
-        <div class="s5-cell">
-          <div class="s5-title">المختبر</div>
-          <div class="s5-desc">تنبيه استباقي بالنتائج، وتحسين جذري في زمن الاستجابة (TAT).</div>
-        </div>
-        <div class="s5-cell">
-          <div class="s5-title">الأشعة</div>
-          <div class="s5-desc">تقصير مسار التحويل، وجدولة ذكية تستثمر أوقات الفراغ.</div>
-        </div>
-        <div class="s5-cell">
-          <div class="s5-title">الصيدلية</div>
-          <div class="s5-desc">تجهيز مسبق للوصفات المتكررة، وابتكار خدمات توصيل آمنة.</div>
-        </div>
-        <div class="s5-cell">
-          <div class="s5-title">العلاج الطبيعي</div>
-          <div class="s5-desc">برامج متابعة عن بُعد للحالات المستقرة لتوفير السعة.</div>
-        </div>
-        <div class="s5-cell">
-          <div class="s5-title">التثقيف الصحي</div>
-          <div class="s5-desc">تطوير وسائل تثقيف رقمية للوصول لشريحة أكبر بجهد أقل.</div>
-        </div>
-        <div class="s5-cell special">
-          <div class="s5-title">وفي كل خدمة لم تُذكر هنا...</div>
-          <div class="s5-desc">كنوز مخفية تنتظر الاكتشاف.</div>
+        <div class="story-footer" style="border: none;">
+          القدرة موجودة. الفكرة موجودة.<br>
+          <span style="color: var(--emerald);">الحلقة المفقودة: من يتبناها أو يحتفي بمن يطبقها.</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- السلايد ٠٦: التوازن -->
-  <section data-label="٠٦ منطق المبادرة">
-    <div class="s69">
-      <div class="slide-title">المبادرة تجيب على <em>سؤالين متوازيين</em></div>
-      <div class="s69-cards">
-        <div class="s69-card">
-          <div class="s69-badge">للذين أنجزوا فعلاً</div>
-          <ul class="s69-list">
+  <!-- Slide 5: Generalization -->
+  <section data-label="05 شمولية الأثر">
+    <div class="container">
+      <span class="eyebrow">التحديات الميدانية</span>
+      <h2 class="slide-title">قصة خالد <em>تتكرر في كل خدمة</em></h2>
+      <div class="grid-6">
+        <div class="cell"><h3 class="cell-title">المختبر</h3><p class="cell-desc">تنبيه استباقي بالنتائج، وتحسين جذري في زمن الاستجابة (TAT).</p></div>
+        <div class="cell"><h3 class="cell-title">الأشعة</h3><p class="cell-desc">تقصير مسار التحويل، وجدولة ذكية تستثمر أوقات الفراغ.</p></div>
+        <div class="cell"><h3 class="cell-title">الصيدلية</h3><p class="cell-desc">تجهيز مسبق للوصفات المتكررة، وابتكار خدمات توصيل آمنة.</p></div>
+        <div class="cell"><h3 class="cell-title">العلاج الطبيعي</h3><p class="cell-desc">برامج متابعة عن بُعد للحالات المستقرة لتوفير السعة.</p></div>
+        <div class="cell"><h3 class="cell-title">التثقيف الصحي</h3><p class="cell-desc">تطوير وسائل تثقيف رقمية تفاعلية للوصول لشريحة أكبر.</p></div>
+        <div class="cell special"><h3 class="cell-title">وفي كل خدمة أخرى...</h3><p class="cell-desc">كنوز مخفية تنتظر الاكتشاف.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 6: The Two Questions -->
+  <section data-label="06 منطق المبادرة">
+    <div class="container">
+      <h2 class="slide-title">المبادرة تجيب على <em>سؤالين متوازيين</em></h2>
+      <div class="q-cards">
+        <div class="q-card">
+          <div class="q-badge">للذين أنجزوا فعلاً</div>
+          <ul class="q-list">
             <li>ابتكارات حقيقية حدثت في إداراتنا.</li>
             <li>تحسينات وفّرت وقتاً وتكلفة وموارد.</li>
             <li>مبادرات لها أرقام قابلة للقياس.</li>
           </ul>
-          <div class="s69-question">السؤال:<br>هل حصلت هذه الإنجازات على ما تستحقه من التقدير والتوثيق؟</div>
+          <div class="q-ask">هل حصلت هذه الإنجازات على ما تستحقه من التقدير والتوثيق؟</div>
         </div>
-        <div class="s69-card dark">
-          <div class="s69-badge">للذين يملكون أفكاراً</div>
-          <ul class="s69-list">
+        <div class="q-card navy">
+          <div class="q-badge">للذين يملكون أفكاراً</div>
+          <ul class="q-list">
             <li>أفكار عاشت في عقول أصحابها لسنوات.</li>
-            <li>حلول رآها صاحبها ولم يجد كيف يطبقها.</li>
+            <li>حلول رآها صاحبها في الميدان ولم يجد كيف يطبقها.</li>
             <li>تصورات تحتاج فقط من يتبناها.</li>
           </ul>
-          <div class="s69-question">السؤال:<br>هل وجدت من يحتضنها؟</div>
+          <div class="q-ask">هل وجدت من يحتضنها؟</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- السلايد ٠٧: الفلسفة -->
-  <section data-label="٠٧ رسالة المبادرة">
-    <div class="s7-ph">
-      <div class="s7-bg-txt">أثر</div>
+  <!-- Slide 7: Philosophy -->
+  <section data-label="07 رسالة المبادرة">
+    <div class="s7-full">
+      <div class="s7-watermark">أثر</div>
       <div class="s7-quote">
         "التميز الحقيقي لا يأتي من تكرار المألوف،<br>
         <strong>بل من البحث الدائم عن طرق أفضل لتقديم الخدمة.</strong>"
@@ -424,330 +339,180 @@
     </div>
   </section>
 
-  <!-- السلايد ٠٨: نطاق المبادرة -->
-  <section data-label="٠٨ نطاق المبادرة">
-    <div class="s69">
-      <div class="slide-title">نطاق المبادرة — <em>الإسهامات المستهدفة</em></div>
-      <div class="eyebrow" style="margin-top:-20px; margin-bottom:30px; text-transform: none;">ماذا نبحث عنه تحديداً؟</div>
-      
-      <div class="s8-list">
-        <div class="s8-item">
-          <div class="s8-num">٠١</div>
-          <div class="s8-name">حلول لمشكلات مزمنة</div>
-          <div class="s8-desc">تحديات تشغيلية تؤثر على المريض أو على سلاسة سير العمل اليومي.</div>
-        </div>
-        <div class="s8-item">
-          <div class="s8-num">٠٢</div>
-          <div class="s8-name">تطوير نماذج العمل</div>
-          <div class="s8-desc">ابتكارات تنقل الخدمة القائمة من مستواها الحالي إلى مستوى أداء أفضل.</div>
-        </div>
-        <div class="s8-item">
-          <div class="s8-num">٠٣</div>
-          <div class="s8-name">تحسين الكفاءة والتكلفة</div>
-          <div class="s8-desc">مبادرات ترفع كفاءة العمليات التشغيلية وتُقلل الهدر وتُحسّن التكلفة.</div>
-        </div>
-        <div class="s8-item">
-          <div class="s8-num">٠٤</div>
-          <div class="s8-name">تقصير مسار المريض</div>
-          <div class="s8-desc">إجراءات تُسهّل الوصول للخدمة وتُقلص أوقات الانتظار غير المبررة.</div>
-        </div>
-        <div class="s8-item">
-          <div class="s8-num">٠٥</div>
-          <div class="s8-name">الارتقاء بجودة الخدمات</div>
-          <div class="s8-desc">تحسينات تنعكس مباشرة بمؤشرات قابلة للقياس وأرقام دقيقة وموثقة.</div>
-        </div>
+  <!-- Slide 8: Scope -->
+  <section data-label="08 نطاق البحث">
+    <div class="container">
+      <span class="eyebrow">نطاق المبادرة</span>
+      <h2 class="slide-title">ماذا نبحث عنه تحديداً؟</h2>
+      <div class="sc-list">
+        <div class="sc-item"><div class="sc-num">٠١</div><div class="sc-name">حلول لمشكلات مزمنة</div><div class="sc-desc">تحديات تشغيلية تؤثر على المريض أو على سلاسة سير العمل اليومي.</div></div>
+        <div class="sc-item"><div class="sc-num">٠٢</div><div class="sc-name">تطوير نماذج العمل</div><div class="sc-desc">ابتكارات تنقل الخدمة القائمة من مستواها الحالي إلى مستوى أداء أفضل.</div></div>
+        <div class="sc-item"><div class="sc-num">٠٣</div><div class="sc-name">تحسين الكفاءة والتكلفة</div><div class="sc-desc">مبادرات ترفع كفاءة العمليات التشغيلية وتُقلل الهدر وتُحسّن التكلفة.</div></div>
+        <div class="sc-item"><div class="sc-num">٠٤</div><div class="sc-name">تقصير مسار المريض</div><div class="sc-desc">إجراءات تُسهّل الوصول للخدمة وتُقلص أوقات الانتظار غير المبررة.</div></div>
+        <div class="sc-item"><div class="sc-num">٠٥</div><div class="sc-name">الارتقاء بالجودة</div><div class="sc-desc">تحسينات تنعكس مباشرة بمؤشرات قابلة للقياس وأرقام دقيقة وموثقة.</div></div>
       </div>
-      
-      <div class="s8-banner">
-        <div class="s8-banner-lbl">آلية العمل</div>
-        <div class="s8-banner-txt">استقبال إلكتروني للمشاركات، تقييم بمعايير علمية، وتتويج. <strong>المشاركة متاحة للأفراد، الإدارات، والفرق.</strong></div>
+      <div class="sc-banner">
+        <div class="sc-banner-lbl">آلية العمل</div>
+        <div class="sc-banner-txt">استقبال إلكتروني للمشاركات، تقييم بمعايير علمية، وتتويج رسمي للأفراد والإدارات والفرق.</div>
       </div>
     </div>
   </section>
 
-  <!-- السلايد ٠٩: المساران المتوازيان -->
-  <section data-label="٠٩ مسارات التنافس">
-    <div class="s69">
-      <div class="slide-title" style="text-align: center;">مساران متوازيان — <em>للمنفّذ، ولصاحب الفكرة</em></div>
-      <div class="s69-cards" style="margin-top: 20px;">
-        <div class="s69-card" style="justify-content: center; text-align: center;">
-          <div class="s69-badge" style="align-self: center;">المسار الأول</div>
-          <div class="s69-title">مسار الإنجازات</div>
-          <div class="s69-question" style="border: none; padding: 0; font-weight: 600; font-size: 38px; color: var(--ink);">
-            لمن طبّق ابتكاراً أو حسّن خدمةً وأحدث أثراً موثقاً.<br><br>
-            <strong>هذه إنجازات حقيقية تستحق التقدير والتوثيق المؤسسي.</strong>
+  <!-- Slide 9: The Tracks -->
+  <section data-label="09 المساران">
+    <div class="container">
+      <h2 class="slide-title" style="text-align: center;">مساران متوازيان — <em>للمنفّذ، ولصاحب الفكرة</em></h2>
+      <div class="q-cards" style="margin-top: 20px;">
+        <div class="q-card" style="text-align: center; justify-content: center;">
+          <div class="q-badge" style="align-self: center;">المسار الأول: الإنجازات</div>
+          <p style="font-size: 38px; line-height: 1.6; color: var(--ink);">لمن طبّق ابتكاراً أو حسّن خدمةً وأحدث أثراً موثقاً.<br><br><strong>إنجازات حقيقية تستحق التقدير والتوثيق المؤسسي.</strong></p>
+        </div>
+        <div class="q-card navy" style="text-align: center; justify-content: center; border: 2px solid var(--accent);">
+          <div class="q-badge" style="align-self: center; background: #fff; color: var(--ink);">المسار الثاني: الأفكار</div>
+          <p style="font-size: 38px; line-height: 1.6; color: #fff;">لمن يملك فكرة قابلة للتطبيق ولا يملك بعد أدوات تنفيذها.<br><br>عند تأهلها، <strong>يتم تبنّيها وتنفيذها رسمياً باسم صاحبها.</strong></p>
+          <div style="margin-top: 40px; color: var(--accent); font-weight: 800; font-size: 28px;">★ الميزة الفريدة للمبادرة</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 10: 6 Categories Grid -->
+  <section data-label="10 الفئات الست">
+    <div class="container">
+      <span class="eyebrow">مجالات التنافس</span>
+      <h2 class="slide-title">ست فئات تنافسية — <em>تغطي كل أوجه التميز</em></h2>
+      <div class="grid-6">
+        <div class="cell"><h3 class="cell-title">٠١. الحلول</h3><p class="cell-desc">حل مشكلة مزمنة كانت تؤثر على المريض أو على سير العمل.</p></div>
+        <div class="cell"><h3 class="cell-title">٠٢. الكفاءة</h3><p class="cell-desc">رفع كفاءة العمل أو تحسين التكلفة التشغيلية والموارد.</p></div>
+        <div class="cell"><h3 class="cell-title">٠٣. الوصول</h3><p class="cell-desc">تسهيل وصول المريض للخدمة أو تقليل وقت الانتظار.</p></div>
+        <div class="cell" style="border: 2px solid var(--emerald);"><h3 class="cell-title" style="color: var(--emerald);">٠٤. الجودة</h3><p class="cell-desc">تحسين جودة خدمة قائمة بمؤشر قابل للقياس.</p></div>
+        <div class="cell"><h3 class="cell-title">٠٥. الابتكار</h3><p class="cell-desc">ابتكار مسار جديد أو خدمة لم تكن موجودة من قبل.</p></div>
+        <div class="cell special"><h3 class="cell-title">٠٦. الفكرة</h3><p class="cell-desc">فكرة لم تُطبق بعد لكنها تستحق التبني والتنفيذ.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 11: Criteria -->
+  <section data-label="11 معايير التقييم">
+    <div class="container">
+      <h2 class="slide-title">نظام تقييم شفاف — <em>١٠٠ نقطة</em></h2>
+      <div class="scr-layout">
+        <div class="scr-left">
+          <div class="scr-row"><div class="scr-val">١٥٪</div><div class="scr-txt">وضوح المشكلة والحل</div></div>
+          <div class="scr-row"><div class="scr-val">٢٠٪</div><div class="scr-txt">القابلية للقياس بالأرقام والمؤشرات</div></div>
+          <div class="scr-row"><div class="scr-val">٢٥٪</div><div class="scr-txt">حجم الأثر على المستفيدين أو الخدمة</div></div>
+          <div class="scr-row"><div class="scr-val">٢٠٪</div><div class="scr-txt">المواءمة مع الأهداف الاستراتيجية</div></div>
+          <div class="scr-row" style="border: none;"><div class="scr-val">٢٠٪</div><div class="scr-txt">الأصالة وقابلية التعميم</div></div>
+        </div>
+        <div class="scr-right">
+          <div class="scr-total">١٠٠</div>
+          <div class="s-lbl">إجمالي النقاط</div>
+          <div class="scr-min">
+            <p>الحد الأدنى للتأهل</p>
+            <strong>٧٠</strong>
           </div>
         </div>
-        <div class="s69-card dark" style="justify-content: center; text-align: center;">
-          <div class="s69-badge" style="align-self: center; background: var(--ink);">المسار الثاني</div>
-          <div class="s69-title" style="color: var(--accent);">مسار الأفكار</div>
-          <div class="s69-question" style="border: none; padding: 0; font-weight: 600; font-size: 38px; color: #fff;">
-            لمن يملك فكرة قابلة للتطبيق ولا يملك بعد أدوات تنفيذها.<br><br>
-            عند تأهلها، <strong>يتم تبنّيها وتنفيذها باسم صاحبها.</strong>
-          </div>
-          <div style="margin-top: 30px; font-weight: 800; color: var(--accent); font-size: 30px; border-top: 2px dashed rgba(255,255,255,0.2); padding-top: 30px;">★ الميزة الفريدة للمبادرة</div>
-        </div>
       </div>
     </div>
   </section>
 
-  <!-- السلايد ١٠: الفئات الست -->
-  <section data-label="١٠ الفئات الست">
-    <div class="s69">
-      <div class="slide-title">ست فئات تنافسية — <em>تغطي كل أوجه التميز</em></div>
-      <div class="s10-grid">
-        <div class="s10-cat">
-          <div class="s10-num">٠١</div>
-          <div class="s10-name">الحلول</div>
-          <div class="s10-desc">حل مشكلة مزمنة كانت تؤثر على المريض أو على سير العمل.</div>
-        </div>
-        <div class="s10-cat">
-          <div class="s10-num">٠٢</div>
-          <div class="s10-name">الكفاءة</div>
-          <div class="s10-desc">رفع كفاءة العمل أو تحسين التكلفة التشغيلية.</div>
-        </div>
-        <div class="s10-cat">
-          <div class="s10-num">٠٣</div>
-          <div class="s10-name">الوصول</div>
-          <div class="s10-desc">تسهيل وصول المريض للخدمة أو تقليل وقت الانتظار.</div>
-        </div>
-        <div class="s10-cat">
-          <div class="s10-num">٠٤</div>
-          <div class="s10-name">الجودة</div>
-          <div class="s10-desc">تحسين جودة خدمة قائمة بمؤشر قابل للقياس.</div>
-        </div>
-        <div class="s10-cat">
-          <div class="s10-num">٠٥</div>
-          <div class="s10-name">الابتكار</div>
-          <div class="s10-desc">ابتكار مسار جديد أو خدمة لم تكن موجودة من قبل.</div>
-        </div>
-        <div class="s10-cat">
-          <div class="s10-num">٠٦</div>
-          <div class="s10-name">الفكرة</div>
-          <div class="s10-desc">فكرة لم تُطبق بعد لكنها تستحق التبني والتنفيذ.</div>
-        </div>
+  <!-- Slide 12: Expected Impact -->
+  <section data-label="12 الأثر المتوقع">
+    <div class="container">
+      <h2 class="slide-title">نتائج ملموسة <em>تنعكس على بيئة العمل</em></h2>
+      <div class="imp-grid">
+        <div class="imp-box"><h3 class="imp-title">١. تطوير الخدمات الصحية</h3><p class="imp-desc">حلول عملية تُعالج تحديات حقيقية على الأرض.</p></div>
+        <div class="imp-box"><h3 class="imp-title">٢. رفع الكفاءة التشغيلية</h3><p class="imp-desc">تحسين التكلفة بصورة تنعكس على جودة الخدمات.</p></div>
+        <div class="imp-box"><h3 class="imp-title">٣. تعزيز التكامل الإداري</h3><p class="imp-desc">منصة موحدة تحفّز التعاون والتنافس البنّاء.</p></div>
+        <div class="imp-box" style="border-color: var(--accent); background: var(--accent-light);"><h3 class="imp-title">٤. بنك معرفي مؤسسي</h3><p class="imp-desc">كل فكرة تُحفظ، كل حل يُوثّق، ليصبح ثروة للأجيال القادمة من الموظفين.</p></div>
+        <div class="imp-box"><h3 class="imp-title">٥. الارتقاء بتجربة المريض</h3><p class="imp-desc">انعكاس مباشر للتطوير المستمر في الخدمات.</p></div>
+        <div class="imp-box"><h3 class="imp-title">٦. ترسيخ ثقافة التميز</h3><p class="imp-desc">سمة مؤسسية متجذرة في كل مستويات العمل.</p></div>
       </div>
     </div>
   </section>
 
-  <!-- السلايد ١١: معايير التقييم -->
-  <section data-label="١١ معايير التقييم">
-    <div class="s11-main">
-      <div class="s11-left">
-        <div class="slide-title">نظام تقييم شفاف — <em>١٠٠ نقطة</em></div>
-        <div class="score-row">
-          <div class="score-val">١٥٪</div>
-          <div class="score-txt">وضوح المشكلة والحل</div>
-        </div>
-        <div class="score-row">
-          <div class="score-val">٢٠٪</div>
-          <div class="score-txt">القابلية للقياس بالأرقام والمؤشرات</div>
-        </div>
-        <div class="score-row">
-          <div class="score-val">٢٥٪</div>
-          <div class="score-txt">حجم الأثر على المستفيدين أو الخدمة</div>
-        </div>
-        <div class="score-row">
-          <div class="score-val">٢٠٪</div>
-          <div class="score-txt">المواءمة مع الأهداف الاستراتيجية</div>
-        </div>
-        <div class="score-row" style="border: none;">
-          <div class="score-val">٢٠٪</div>
-          <div class="score-txt">الأصالة وقابلية التعميم</div>
-        </div>
-      </div>
-      <div class="s11-right">
-        <div class="s11-total">١٠٠</div>
-        <div class="s11-lbl">إجمالي النقاط</div>
-        <div class="s11-min">
-          <p>الحد الأدنى للتأهل</p>
-          <strong>٧٠</strong>
-        </div>
-      </div>
+  <!-- Slide 13: Closing -->
+  <section data-label="13 الخاتمة">
+    <div class="thx-container">
+      <div class="divider" style="width: 200px; height: 10px; margin-bottom: 50px;"></div>
+      <div class="thx-text">شكراً لكم</div>
+      <div class="s14-sub" style="font-size: 36px; margin-top: 20px; font-weight: 700; color: var(--ink-mid);">تجمع المدينة المنورة الصحي</div>
     </div>
   </section>
 
-  <!-- السلايد ١٢: الأثر المتوقع -->
-  <section data-label="١٢ الأثر المتوقع">
-    <div class="s13">
-      <div class="s13-side">
-        <div class="s13-num">٦</div>
-        <div class="s13-title">نتائج ملموسة تنعكس على بيئة العمل</div>
-        <div class="s13-sub">تتجاوز المبادرة مفهوم الجائزة...</div>
-      </div>
-      <div class="s13-grid">
-        <div class="imp-cell">
-          <div class="imp-icon">↑</div>
-          <div class="imp-title">١. تطوير الخدمات</div>
-          <div class="imp-desc">حلول عملية تُعالج تحديات حقيقية.</div>
-        </div>
-        <div class="imp-cell">
-          <div class="imp-icon">↓</div>
-          <div class="imp-title">٢. رفع الكفاءة</div>
-          <div class="imp-desc">تحسين التكلفة ينعكس على جودة الخدمة.</div>
-        </div>
-        <div class="imp-cell">
-          <div class="imp-icon">⟷</div>
-          <div class="imp-title">٣. تعزيز التكامل</div>
-          <div class="imp-desc">منصة موحدة تحفّز التعاون والتنافس.</div>
-        </div>
-        <div class="imp-cell">
-          <div class="imp-title">٤. بنك معرفي مؤسسي</div>
-          <div class="imp-desc">كل فكرة تُحفظ، كل حل يُوثّق، ليصبح ثروة للأجيال القادمة من الموظفين.</div>
-        </div>
-        <div class="imp-cell">
-          <div class="imp-icon">♡</div>
-          <div class="imp-title">٥. الارتقاء بالتجربة</div>
-          <div class="imp-desc">انعكاس مباشر للتطوير المستمر.</div>
-        </div>
-        <div class="imp-cell">
-          <div class="imp-icon">★</div>
-          <div class="imp-title">٦. ترسيخ التميز</div>
-          <div class="imp-desc">سمة مؤسسية متجذرة في كل المستويات.</div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <!-- Navigation -->
+  <div class="nav-dots" id="dots"></div>
+  <div class="nav-arrows">
+    <button class="nav-btn" id="prevBtn"> <i class="fa-solid fa-arrow-right"></i> </button>
+    <button class="nav-btn" id="nextBtn"> <i class="fa-solid fa-arrow-left"></i> </button>
+  </div>
 
-  <!-- السلايد ١٣: الخاتمة -->
-  <section data-label="١٣ الخاتمة">
-    <div class="s14">
-      <div class="s14-line"></div>
-      <div class="s14-thx">شكراً لكم</div>
-    </div>
-  </section>
+  <button class="ai-trigger" id="aiBtn">✨</button>
 
-  <div class="slide-counter" id="slideCounter">٠١ / ١٣</div>
 </div>
 
-<!-- Gemini AI Assistant -->
-<button class="ai-fab" id="aiFab" title="المساعد الذكي للمقدم">✨</button>
-<div class="ai-panel" id="aiPanel">
-  <div class="ai-header">
-    المساعد الذكي ✨
-    <span class="ai-header-close" id="aiClose">&times;</span>
-  </div>
-  <div class="ai-content" id="aiContent">
-    <div class="ai-loading" id="aiLoading">جاري التفكير... ⏳</div>
-    <div class="ai-result-box" id="aiResult"></div>
-    <p style="margin-bottom: 15px; color: var(--ink-light); font-size: 16px; font-weight: 700;">المساعد يقدر يقرأ محتوى الشريحة المعروضة حالياً، كيف أقدر أساعدك فيها؟</p>
-  </div>
-  <div class="ai-actions">
-    <button class="ai-btn" id="btnScript">ايش أقول هنا؟ (Script للتقديم) <span>💬</span></button>
-    <button class="ai-btn" id="btnIdeas">عطني أمثلة واقعية للحضور <span>💡</span></button>
-  </div>
-</div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const stage = document.getElementById('stage');
     const sections = Array.from(document.querySelectorAll('section'));
-    const counter = document.getElementById('slideCounter');
+    const dotsContainer = document.getElementById('dots');
+    const stage = document.getElementById('stage');
     let currentSlide = 0;
 
-    const toArabicNums = (num) => String(num).replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+    // Create Navigation Dots
+    sections.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'dot' + (i === 0 ? ' active' : '');
+      dot.addEventListener('click', () => goToSlide(i));
+      dotsContainer.appendChild(dot);
+    });
 
-    // وظيفة التصغير التلقائي لتثبيت العرض مقاس 1920x1080
-    const resizeDeck = () => {
-      const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
-      stage.style.transform = `scale(${scale})`;
+    const dots = document.querySelectorAll('.dot');
+
+    const updateUI = () => {
+      sections.forEach((sec, i) => {
+        sec.classList.toggle('active', i === currentSlide);
+        dots[i].classList.toggle('active', i === currentSlide);
+      });
     };
-    window.addEventListener('resize', resizeDeck);
-    resizeDeck();
 
     const goToSlide = (index) => {
-      sections.forEach((sec, i) => {
-        if (i === index) {
-          sec.classList.add('active');
-        } else {
-          sec.classList.remove('active');
-        }
-      });
-      const currentFormatted = toArabicNums(String(index + 1).padStart(2, '0'));
-      const totalFormatted = toArabicNums(String(sections.length).padStart(2, '0'));
-      counter.innerText = `${currentFormatted} / ${totalFormatted}`;
+      currentSlide = index;
+      updateUI();
     };
 
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      currentSlide = (currentSlide + 1) % sections.length;
+      updateUI();
+    });
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      currentSlide = (currentSlide - 1 + sections.length) % sections.length;
+      updateUI();
+    });
+
+    // Keyboard Navigation
     document.addEventListener('keydown', (e) => {
-      if (['ArrowLeft', 'ArrowDown', 'PageDown', ' '].includes(e.key)) {
-        currentSlide = Math.min(sections.length - 1, currentSlide + 1);
-        goToSlide(currentSlide);
-      } else if (['ArrowRight', 'ArrowUp', 'PageUp'].includes(e.key)) {
-        currentSlide = Math.max(0, currentSlide - 1);
-        goToSlide(currentSlide);
+      if (e.key === 'ArrowLeft' || e.key === ' ') {
+        currentSlide = (currentSlide + 1) % sections.length;
+        updateUI();
+      } else if (e.key === 'ArrowRight') {
+        currentSlide = (currentSlide - 1 + sections.length) % sections.length;
+        updateUI();
       }
     });
 
-    stage.addEventListener('click', (e) => {
-      if (e.target.closest('.ai-fab') || e.target.closest('.ai-panel') || e.target.closest('.pdf-btn')) return;
-      if (window.getSelection().toString().length > 0) return;
-      
-      currentSlide = Math.min(sections.length - 1, currentSlide + 1);
-      goToSlide(currentSlide);
-    });
-
-    goToSlide(0);
-
-    // --- Gemini AI Assistant Logic ---
-    const aiFab = document.getElementById('aiFab');
-    const aiPanel = document.getElementById('aiPanel');
-    const aiClose = document.getElementById('aiClose');
-    const btnScript = document.getElementById('btnScript');
-    const btnIdeas = document.getElementById('btnIdeas');
-    const aiLoading = document.getElementById('aiLoading');
-    const aiResult = document.getElementById('aiResult');
-
-    aiFab.addEventListener('click', () => aiPanel.classList.toggle('show'));
-    aiClose.addEventListener('click', () => aiPanel.classList.remove('show'));
-
-    const apiKey = ""; 
-
-    async function callGemini(promptText) {
-      aiLoading.style.display = 'block';
-      aiResult.style.display = 'none';
-      const payload = { contents: [{ parts: [{ text: promptText }] }] };
-      let retries = 5, delay = 1000;
-      
-      while (retries > 0) {
-        try {
-          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
-          });
-          if (!response.ok) throw new Error('API Error');
-          const data = await response.json();
-          let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-          text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>').replace(/\n/g, '<br>');
-          aiLoading.style.display = 'none';
-          aiResult.innerHTML = text;
-          aiResult.style.display = 'block';
-          document.getElementById('aiContent').scrollTop = document.getElementById('aiContent').scrollHeight;
-          return;
-        } catch (err) {
-          retries--;
-          if (retries === 0) {
-            aiLoading.style.display = 'none';
-            aiResult.innerHTML = 'عذراً، ما قدرت اتصل. جرب مرة ثانية.';
-            aiResult.style.display = 'block';
-          }
-          await new Promise(resolve => setTimeout(resolve, delay));
-          delay *= 2;
-        }
-      }
-    }
-
-    btnScript.addEventListener('click', () => {
-      const currentText = sections[currentSlide].innerText;
-      const prompt = `أنت مساعد ذكي للمدير التنفيذي للخدمات المساندة (نادر). نحن الآن نعرض شريحة من مشروع مبادرة "صُنّاع الأثر". بناءً على محتوى الشريحة المعروضة، اكتب لي كلام أقوله للقيادات بطريقة واثقة ومقنعة (نص التقديم). خله بلهجة سعودية بيضاء رسمية نوعاً ما، ومختصر أقدر أقوله بـ 20 ثانية. بدون مقدمات ولا تحيات.\n\nمحتوى الشريحة:\n${currentText}`;
-      callGemini(prompt);
-    });
-
-    btnIdeas.addEventListener('click', () => {
-      const currentText = sections[currentSlide].innerText;
-      const prompt = `أنت مساعد ذكي للمدير التنفيذي للخدمات المساندة. بناءً على محتوى هذه الشريحة المعروضة، عطني 3 أمثلة سريعة وواقعية لأفكار ممكن الموظفين يطبقونها في المستشفيات (في إدارات الأشعة، الصيدلة، المختبر، العلاج الطبيعي، إلخ) عشان أضرب فيها مثال للحضور واقنعهم بجدوى المبادرة. اكتبها بنقاط مختصرة جداً وبلهجة سعودية بيضاء واحترافية بدون مقدمات.\n\nمحتوى الشريحة:\n${currentText}`;
-      callGemini(prompt);
-    });
+    // Responsive Scaling
+    const resize = () => {
+      const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080) * 0.98;
+      stage.style.transform = `scale(${scale})`;
+    };
+    window.addEventListener('resize', resize);
+    resize();
   });
 </script>
 
 </body>
 </html>
+
+```
