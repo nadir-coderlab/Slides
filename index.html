@@ -2,190 +2,211 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>صُنّاع الأثر — عرض القيادة العليا</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<style>
-  /* =========================================
-     التصميم الفخم المحدث (كحلي عميق وزمردي)
-     ========================================= */
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صُنّاع الأثر — عرض القيادة العليا</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* =========================================
+           نظام النقاء والتحديد (Minimalist Outline System)
+           الألوان: نيلي متوسط، ذهبي ترابي، زمردي
+           ========================================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  :root {
-    --ink: #0D1F2D;          /* كحلي عميق جداً */
-    --ink-mid: #334A5E;      /* كحلي رمادي */
-    --ink-light: #627C90;    
-    --ink-faint: #C1D0DD;    
-    
-    --paper: #F6F8F9;        /* أبيض نقي مع مسحة برودة خفيفة */
-    --paper-warm: #EBEFF2;   /* رمادي فاتح جداً للتباين */
-    
-    --accent: #118A7E;       /* أخضر زمردي/سماوي عميق */
-    --accent-light: rgba(17, 138, 126, 0.1); 
-    
-    --font: 'Cairo', sans-serif;
-  }
+        :root {
+            --ink: #2C4A7C;              /* نيلي متوسط للنصوص */
+            --ink-mid: #4A6A9A;          /* أزرق متوسط للنصوص الثانوية */
+            --ink-light: #7A92B5;        /* أزرق فاتح للأوصاف */
+            --ink-faint: #C8D3E0;        /* أزرق باهت جداً للحدود */
 
-  body, html {
-    background-color: #000;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: var(--font);
-  }
+            --paper: #FFFFFF;            /* أبيض نقي */
+            --paper-warm: #F7F9FC;       /* أبيض مائل للأزرق فاتح جداً */
 
-  /* حاوية العرض الأساسية - مقاس 1920x1080 */
-  #stage {
-    width: 1920px;
-    height: 1080px;
-    background-color: var(--paper);
-    position: relative;
-    flex-shrink: 0;
-    overflow: hidden;
-    transform-origin: center center;
-    box-shadow: 0 0 60px rgba(0,0,0,0.8);
-  }
+            --accent: #C9A14A;           /* ذهبي ترابي خفيف */
+            --accent-light: #F3E9D0;     /* ذهبي فاتح للخلفيات */
 
-  section {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0; left: 0;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.5s ease-in-out;
-    background: var(--paper);
-    display: flex;
-    flex-direction: column;
-  }
+            --emerald: #5BA89A;          /* زمردي فاتح ولطيف */
+            
+            --font: 'Cairo', sans-serif;
+        }
 
-  section.active {
-    opacity: 1;
-    pointer-events: auto;
-    z-index: 10;
-  }
+        body, html {
+            background-color: #000; /* خلفية سوداء للمتصفح خلف العرض */
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: var(--font);
+        }
 
-  /* تنسيقات المحتوى المشتركة */
-  .container { padding: 100px 120px; height: 100%; display: flex; flex-direction: column; }
-  .slide-title { font-size: 80px; font-weight: 900; color: var(--ink); line-height: 1.2; margin-bottom: 50px; }
-  .slide-title em { font-style: normal; color: var(--accent); }
-  .eyebrow { font-size: 26px; font-weight: 700; color: var(--ink-light); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px; border-right: 5px solid var(--accent); padding-right: 20px; }
+        /* حاوية العرض الأساسية - مقاس الباوربوينت 1920x1080 */
+        #stage {
+            width: 1920px;
+            height: 1080px;
+            background-color: var(--paper);
+            position: relative;
+            flex-shrink: 0;
+            overflow: hidden;
+            transform-origin: center center;
+        }
 
-  /* S1: Cover */
-  .cover { background: var(--ink); display: flex; height: 100%; width: 100%; }
-  .cover-left { width: 750px; background: var(--accent); display: flex; flex-direction: column; justify-content: flex-end; padding: 100px; position: relative; overflow: hidden; }
-  .cover-num { position: absolute; top: 40px; right: 60px; font-size: 300px; font-weight: 900; color: rgba(255,255,255,0.08); line-height: 1; }
-  .cover-title { font-size: 160px; font-weight: 900; color: #fff; line-height: 1; z-index: 2; }
-  .cover-right { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 120px; background: var(--ink); }
-  .cover-quote { font-size: 58px; font-weight: 400; color: rgba(255,255,255,0.9); line-height: 1.6; max-width: 900px; border-right: 10px solid var(--accent); padding-right: 40px; }
-  .cover-quote strong { font-weight: 700; color: #fff; }
-  .cover-footer { margin-top: auto; font-size: 32px; color: rgba(255,255,255,0.5); font-weight: 600; padding-top: 40px; }
+        section {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0; left: 0;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease-in-out;
+            background: var(--paper);
+            display: flex;
+            flex-direction: column;
+        }
 
-  /* S2: Comparison */
-  .grid-3 { display: flex; gap: 40px; flex: 1; }
-  .card { flex: 1; background: var(--paper-warm); padding: 70px 50px; border-radius: 12px; border: 1px solid var(--ink-faint); display: flex; flex-direction: column; transition: 0.3s; }
-  .card.featured { border: 4px solid var(--accent); background: var(--paper); box-shadow: 0 40px 80px rgba(0, 0, 0, 0.1); transform: translateY(-10px); }
-  .tag { display: inline-block; padding: 12px 28px; background: var(--ink-faint); font-size: 24px; font-weight: 800; color: var(--ink); border-radius: 6px; margin-bottom: 35px; align-self: flex-start; }
-  .card.featured .tag { background: var(--accent); color: #fff; }
-  .card-name { font-size: 48px; font-weight: 900; margin-bottom: 30px; color: var(--ink); }
-  .card-desc { font-size: 34px; line-height: 1.7; color: var(--ink-mid); flex: 1; font-weight: 600; }
-  .card.featured .card-desc { color: var(--ink); font-weight: 700; }
+        section.active {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 10;
+        }
 
-  /* S3 & S4: Split Story */
-  .split { display: flex; height: 100%; }
-  .split-side { width: 38%; background: var(--ink); padding: 100px 80px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
-  .split-side-light { background: var(--accent); border: none; }
-  .split-side h2 { font-size: 80px; font-weight: 900; color: #fff; line-height: 1.2; z-index: 2; }
-  .split-num { font-size: 300px; font-weight: 900; color: rgba(255,255,255,0.05); position: absolute; bottom: 20px; right: 40px; line-height: 0.8; }
-  .split-main { width: 62%; padding: 120px; display: flex; flex-direction: column; justify-content: center; background: var(--paper-warm); }
-  .story-quote { font-size: 52px; font-weight: 700; color: var(--ink); line-height: 1.6; margin-bottom: 50px; border-right: 10px solid var(--accent); padding-right: 40px; }
-  .story-body { font-size: 36px; line-height: 1.7; color: var(--ink-mid); font-weight: 600; }
-  .story-path { font-size: 34px; font-weight: 700; color: var(--ink); line-height: 2.2; margin: 40px 0; padding: 40px; background: rgba(0,0,0,0.03); border: 2px solid rgba(0,0,0,0.1); border-radius: 12px; }
-  .story-footer { font-size: 42px; font-weight: 900; color: var(--ink); border-top: 3px solid var(--ink-faint); padding-top: 40px; margin-top: 20px; }
+        /* تنسيقات الهيكل العام */
+        .container { 
+            padding: 80px 100px; 
+            height: 100%; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        
+        .slide-title { 
+            font-size: 64px; 
+            font-weight: 900; 
+            color: var(--ink); 
+            line-height: 1.2; 
+            margin-bottom: 40px; 
+        }
+        .slide-title em { 
+            font-style: normal; 
+            color: var(--accent); 
+        }
+        .eyebrow { 
+            font-size: 24px; 
+            font-weight: 700; 
+            color: var(--emerald); 
+            letter-spacing: 0.05em; 
+            text-transform: uppercase; 
+            margin-bottom: 15px; 
+            display: inline-block; 
+        }
 
-  /* Grid 6 */
-  .grid-6 { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 30px; flex: 1; border: 2px solid var(--ink); background: var(--ink); }
-  .cell { padding: 50px; background: var(--paper); border: 1px solid var(--ink); display: flex; flex-direction: column; }
-  .cell:nth-child(even) { background: var(--paper-warm); }
-  .cell.special { background: var(--ink); color: #fff; border: none; }
-  .cell-title { font-size: 42px; font-weight: 900; color: var(--accent); margin-bottom: 20px; }
-  .cell.special .cell-title { color: #fff; }
-  .cell-desc { font-size: 30px; line-height: 1.6; color: var(--ink-mid); font-weight: 600; }
-  .cell.special .cell-desc { color: rgba(255,255,255,0.9); font-weight: 700; }
+        /* =========================================
+           تخصيص الشرائح
+           ========================================= */
 
-  /* S6: Questions */
-  .q-cards { display: flex; gap: 50px; flex: 1; }
-  .q-card { flex: 1; background: var(--paper); border: 2px solid var(--ink); border-radius: 12px; padding: 100px 80px; display: flex; flex-direction: column; }
-  .q-card.navy { background: var(--ink); color: #fff; border: none; }
-  .q-badge { display: inline-block; padding: 14px 32px; border: 3px solid var(--ink); color: var(--ink); font-size: 28px; font-weight: 900; border-radius: 8px; margin-bottom: 60px; align-self: flex-start; }
-  .q-card.navy .q-badge { border-color: var(--accent); color: var(--accent); }
-  .q-list { list-style: none; flex: 1; }
-  .q-list li { font-size: 46px; font-weight: 700; line-height: 1.5; margin-bottom: 40px; display: flex; gap: 20px; color: var(--ink); }
-  .q-card.navy .q-list li { color: rgba(255,255,255,0.9); }
-  .q-list li::before { content: '—'; color: var(--accent); font-weight: 900; font-size: 46px; }
-  .q-ask { font-size: 58px; font-weight: 900; border-top: 4px solid var(--ink); padding-top: 50px; line-height: 1.4; color: var(--ink); }
-  .q-card.navy .q-ask { color: #fff; border-color: rgba(255,255,255,0.2); }
+        /* S1: Cover */
+        .cover { padding: 120px; display: flex; flex-direction: column; height: 100%; position: relative; border: 2px solid var(--ink-faint); margin: 40px; border-radius: 20px; }
+        .cover-watermark { position: absolute; top: -50px; left: 60px; font-size: 400px; font-weight: 900; color: rgba(44, 74, 124, 0.04); line-height: 1; pointer-events: none; }
+        .cover-title { font-size: 140px; font-weight: 900; color: var(--ink); line-height: 1.1; margin: auto 0 40px 0; }
+        .cover-quote { font-size: 52px; font-weight: 600; color: var(--ink-mid); line-height: 1.6; max-width: 1200px; border-right: 6px solid var(--accent); padding-right: 30px; }
+        .cover-quote strong { font-weight: 900; color: var(--ink); }
+        .cover-footer { margin-top: auto; font-size: 32px; color: var(--ink-mid); font-weight: 700; border-top: 1px solid var(--ink-faint); padding-top: 30px; display: flex; justify-content: space-between; }
 
-  /* S7: Philosophy */
-  .s7-full { background: var(--accent); display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; position: relative; overflow: hidden; }
-  .s7-quote { font-size: 78px; font-weight: 500; color: #fff; line-height: 1.6; z-index: 2; max-width: 1600px; margin-bottom: 100px; }
-  .s7-quote strong { font-weight: 900; color: var(--ink); }
-  .s7-pillars { display: flex; border: 3px solid rgba(255,255,255,0.3); z-index: 2; border-radius: 12px; }
-  .s7-pill { padding: 40px 80px; font-size: 40px; font-weight: 700; color: #fff; border-left: 3px solid rgba(255,255,255,0.3); }
-  .s7-pill:last-child { border-left: none; }
+        /* S2: Comparison Grid */
+        .grid-3 { display: flex; gap: 30px; flex: 1; }
+        .card { flex: 1; background: var(--paper); padding: 50px 40px; border-radius: 16px; border: 2px solid var(--ink-faint); display: flex; flex-direction: column; }
+        .card.featured { border: 3px solid var(--accent); box-shadow: 0 10px 30px rgba(201, 161, 74, 0.1); background: var(--paper-warm); }
+        .tag { display: inline-block; padding: 10px 24px; border: 2px solid var(--ink-faint); font-size: 22px; font-weight: 800; color: var(--ink-light); border-radius: 8px; margin-bottom: 30px; align-self: flex-start; }
+        .card.featured .tag { border-color: var(--accent); color: var(--accent); background: #fff; }
+        .card-name { font-size: 42px; font-weight: 900; margin-bottom: 20px; color: var(--ink); }
+        .card-desc { font-size: 28px; line-height: 1.6; color: var(--ink-mid); flex: 1; font-weight: 600; }
 
-  /* S8: Scope List */
-  .sc-list { display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
-  .sc-item { display: flex; align-items: center; border-bottom: 2px solid rgba(0,0,0,0.05); padding: 30px 0; }
-  .sc-item:last-child { border-bottom: none; }
-  .sc-num { font-size: 56px; font-weight: 900; color: var(--accent); width: 140px; }
-  .sc-name { font-size: 44px; font-weight: 800; color: var(--ink); width: 550px; }
-  .sc-desc { font-size: 32px; color: var(--ink-mid); flex: 1; font-weight: 600; }
-  .sc-banner { background: var(--ink); color: #fff; padding: 40px 60px; border-radius: 12px; display: flex; gap: 40px; align-items: center; margin-top: 40px; }
-  .sc-banner-lbl { font-size: 26px; font-weight: 900; color: var(--accent); border: 3px solid var(--accent); padding: 12px 30px; border-radius: 8px; white-space: nowrap; }
-  .sc-banner-txt { font-size: 32px; font-weight: 700; color: #fff; opacity: 0.9; }
+        /* S3 & S4: Split Story Layout */
+        .split { display: flex; height: 100%; gap: 40px; }
+        .split-side { flex: 0 0 35%; padding: 60px; display: flex; flex-direction: column; justify-content: center; border: 2px solid var(--ink-faint); border-radius: 20px; position: relative; overflow: hidden; }
+        .split-side-light { border-color: var(--emerald); background: rgba(91, 168, 154, 0.05); }
+        .split-num { font-size: 250px; font-weight: 900; color: rgba(44, 74, 124, 0.05); position: absolute; bottom: -20px; left: 20px; line-height: 0.8; }
+        .split-side h2 { font-size: 64px; font-weight: 900; color: var(--ink); line-height: 1.3; z-index: 1; }
+        .split-side-light h2 { color: var(--emerald); }
+        .split-main { flex: 1; padding: 60px; display: flex; flex-direction: column; justify-content: center; }
+        .story-quote { font-size: 46px; font-weight: 700; color: var(--ink); line-height: 1.6; margin-bottom: 40px; border-right: 6px solid var(--ink-faint); padding-right: 30px; }
+        .split-side-light + .split-main .story-quote { border-color: var(--emerald); }
+        .story-body { font-size: 32px; line-height: 1.6; color: var(--ink-mid); font-weight: 600; }
+        .story-path { font-size: 28px; font-weight: 700; color: var(--ink); line-height: 2; margin: 30px 0; padding: 30px; border: 2px dashed var(--ink-faint); border-radius: 12px; }
+        .story-path.active { border: 2px solid var(--accent); color: var(--ink); background: rgba(201, 161, 74, 0.05); }
+        .story-footer { font-size: 36px; font-weight: 900; color: var(--ink); border-top: 2px solid var(--ink-faint); padding-top: 30px; margin-top: 10px; }
 
-  /* S11: Scoring */
-  .scr-layout { display: flex; height: 100%; border: 4px solid var(--ink); border-radius: 16px; overflow: hidden; background: var(--paper); }
-  .scr-left { flex: 1; padding: 100px; display: flex; flex-direction: column; justify-content: center; }
-  .scr-right { width: 550px; background: var(--ink); padding: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border-left: 10px solid var(--accent); }
-  .scr-row { display: flex; align-items: center; padding: 35px 0; border-bottom: 2px solid rgba(0,0,0,0.05); }
-  .scr-row:last-child { border-bottom: none; }
-  .scr-val { font-size: 72px; font-weight: 900; color: var(--accent); width: 250px; text-align: center; }
-  .scr-txt { font-size: 44px; font-weight: 700; color: var(--ink); }
-  .scr-total { font-size: 200px; font-weight: 900; color: #fff; line-height: 1; }
-  .scr-min { margin-top: 80px; padding: 40px; border-top: 2px solid rgba(255,255,255,0.2); width: 100%; }
-  .scr-min p { font-size: 28px; color: rgba(255,255,255,0.7); margin-bottom: 10px; font-weight: 600; }
-  .scr-min strong { font-size: 100px; font-weight: 900; color: var(--accent); }
+        /* S5 & S10: Grid 6 Layout */
+        .grid-6 { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 24px; flex: 1; }
+        .cell { padding: 40px; border-radius: 16px; border: 2px solid var(--ink-faint); display: flex; flex-direction: column; justify-content: center; }
+        .cell.special { border: 3px solid var(--accent); background: rgba(201, 161, 74, 0.05); }
+        .cell-title { font-size: 36px; font-weight: 900; color: var(--ink); margin-bottom: 15px; }
+        .cell.special .cell-title { color: var(--accent); }
+        .cell-desc { font-size: 26px; line-height: 1.6; color: var(--ink-mid); font-weight: 600; }
+        .cell.special .cell-desc { color: var(--ink); }
 
-  /* S12: Impact */
-  .imp-layout { display: flex; height: 100%; }
-  .imp-side { width: 600px; background: var(--ink); padding: 120px 80px; display: flex; flex-direction: column; justify-content: flex-end; position: relative; }
-  .imp-side h2 { font-size: 72px; font-weight: 900; color: #fff; line-height: 1.2; margin-bottom: 30px; }
-  .imp-side p { font-size: 36px; color: rgba(255,255,255,0.6); font-weight: 600; }
-  .imp-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr); flex: 1; background: var(--paper-warm); }
-  .imp-box { padding: 60px; border-bottom: 2px solid rgba(0,0,0,0.05); border-left: 2px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: center; }
-  .imp-box:nth-child(odd) { border-left: none; }
-  .imp-box:nth-last-child(-n+2) { border-bottom: none; }
-  .imp-title { font-size: 42px; font-weight: 900; color: var(--ink); margin-bottom: 15px; }
-  .imp-desc { font-size: 32px; line-height: 1.6; color: var(--ink-mid); font-weight: 600; }
-  .imp-icon { font-size: 50px; font-weight: 900; color: var(--accent); margin-bottom: 20px; }
+        /* S6: The Two Questions */
+        .q-cards { display: flex; gap: 40px; flex: 1; align-items: stretch; }
+        .q-card { flex: 1; border-radius: 20px; padding: 50px; display: flex; flex-direction: column; border: 2px solid var(--ink-faint); }
+        .q-card.highlight { border: 3px solid var(--ink); background: var(--paper-warm); }
+        .q-badge { display: inline-block; padding: 12px 24px; border: 2px solid var(--ink-faint); color: var(--ink-mid); font-size: 24px; font-weight: 800; border-radius: 8px; margin-bottom: 30px; align-self: flex-start; }
+        .q-card.highlight .q-badge { border-color: var(--ink); color: var(--ink); background: #fff; }
+        .q-list { list-style: none; flex: 1; margin-bottom: 20px; }
+        .q-list li { font-size: 34px; font-weight: 700; line-height: 1.5; margin-bottom: 25px; display: flex; gap: 15px; color: var(--ink-mid); }
+        .q-card.highlight .q-list li { color: var(--ink); }
+        .q-list li::before { content: '■'; color: var(--ink-faint); font-size: 24px; margin-top: 10px; }
+        .q-card.highlight .q-list li::before { color: var(--accent); }
+        .q-ask { font-size: 42px; font-weight: 900; border-top: 2px solid var(--ink-faint); padding-top: 30px; line-height: 1.4; color: var(--ink); margin-top: auto; }
+        .q-card.highlight .q-ask { color: var(--ink); border-color: rgba(44, 74, 124, 0.2); }
 
-  /* S13: Thank You */
-  .s14 { background: var(--paper); display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; }
-  .s14-line { width: 200px; height: 8px; background: var(--accent); margin: 50px 0; border-radius: 4px; }
+        /* S7: Philosophy (Navy Base with Gold Accents) */
+        .s7-full { border: 2px solid var(--ink-faint); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; position: relative; overflow: hidden; padding: 0 100px; background: var(--ink); }
+        .s7-quote { font-size: 64px; font-weight: 500; color: #fff; line-height: 1.6; max-width: 1400px; margin-bottom: 60px; z-index: 2; }
+        .s7-quote strong { font-weight: 900; color: var(--accent); }
+        .s7-pillars { display: flex; gap: 30px; z-index: 2; }
+        .s7-pill { padding: 20px 40px; font-size: 32px; font-weight: 700; color: #fff; border: 2px solid var(--accent); border-radius: 50px; background: rgba(255,255,255,0.05); }
+        .s7-watermark { position: absolute; font-size: 400px; font-weight: 900; color: rgba(201, 161, 74, 0.05); top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 1; }
 
-  /* Navigation UI (No Numbers) */
-  #nav { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 15px; z-index: 1000; background: rgba(13, 31, 45, 0.9); padding: 12px 25px; border-radius: 100px; border: 1px solid var(--ink-light); }
-  .nav-btn { background: none; border: none; color: #fff; font-size: 30px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; }
-  .nav-btn:hover { color: var(--accent); }
-</style>
+        /* S8: Scope List */
+        .sc-list { display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
+        .sc-item { display: flex; align-items: center; border-bottom: 1px dashed var(--ink-faint); padding: 20px 0; }
+        .sc-item:last-child { border-bottom: none; }
+        .sc-num { font-size: 42px; font-weight: 900; color: var(--ink-faint); width: 100px; }
+        .sc-name { font-size: 38px; font-weight: 800; color: var(--ink); width: 450px; }
+        .sc-desc { font-size: 28px; color: var(--ink-mid); flex: 1; font-weight: 600; }
+        .sc-banner { border: 2px solid var(--emerald); padding: 30px 40px; border-radius: 12px; display: flex; gap: 30px; align-items: center; margin-top: 30px; background: rgba(91, 168, 154, 0.05); }
+        .sc-banner-lbl { font-size: 24px; font-weight: 900; color: #fff; background: var(--emerald); padding: 8px 20px; border-radius: 6px; white-space: nowrap; }
+        .sc-banner-txt { font-size: 28px; font-weight: 700; color: var(--ink); }
+
+        /* S11: Scoring */
+        .scr-layout { display: flex; height: 100%; gap: 40px; }
+        .scr-left { flex: 1; padding: 40px 60px; border: 2px solid var(--ink-faint); border-radius: 20px; display: flex; flex-direction: column; justify-content: space-between; }
+        .scr-right { width: 450px; border: 3px solid var(--ink); border-radius: 20px; padding: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: var(--paper-warm); }
+        .scr-row { display: flex; align-items: center; padding: 20px 0; border-bottom: 1px dashed var(--ink-faint); }
+        .scr-row:last-child { border-bottom: none; }
+        .scr-val { font-size: 46px; font-weight: 900; color: var(--accent); width: 160px; }
+        .scr-txt { font-size: 34px; font-weight: 700; color: var(--ink); flex: 1; }
+        .scr-total { font-size: 140px; font-weight: 900; color: var(--ink); line-height: 1; }
+        .scr-min { margin-top: 40px; padding: 30px; border-top: 2px solid var(--ink-faint); width: 100%; }
+        .scr-min p { font-size: 24px; color: var(--ink-mid); margin-bottom: 10px; font-weight: 600; }
+        .scr-min strong { font-size: 64px; font-weight: 900; color: var(--emerald); line-height: 1; }
+
+        /* S12: Impact */
+        .imp-layout { display: flex; height: 100%; gap: 40px; }
+        .imp-side { width: 450px; border: 2px solid var(--ink-faint); border-radius: 20px; padding: 60px; display: flex; flex-direction: column; justify-content: center; }
+        .imp-side h2 { font-size: 56px; font-weight: 900; color: var(--ink); line-height: 1.3; margin-bottom: 20px; }
+        .imp-side p { font-size: 28px; color: var(--ink-mid); font-weight: 600; line-height: 1.5; }
+        .imp-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr); flex: 1; gap: 24px; }
+        .imp-box { padding: 30px 40px; border-radius: 16px; border: 2px solid var(--ink-faint); display: flex; flex-direction: column; justify-content: center; }
+        .imp-title { font-size: 34px; font-weight: 900; color: var(--ink); margin-bottom: 10px; }
+        .imp-desc { font-size: 26px; line-height: 1.6; color: var(--ink-mid); font-weight: 600; }
+        .imp-title span { color: var(--accent); margin-left: 10px; }
+
+        /* S13: Thank You */
+        .s14 { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; border: 2px solid var(--ink-faint); border-radius: 20px; margin: 40px; }
+        .s14-line { width: 160px; height: 6px; background: var(--accent); margin: 40px 0; border-radius: 10px; }
+    </style>
 </head>
 <body>
 
@@ -194,19 +215,17 @@
     <!-- الشريحة 1: الغلاف -->
     <section class="active">
         <div class="cover">
-            <div class="cover-left">
-                <div class="cover-num">أ</div>
-                <div style="font-size: 32px; font-weight: 700; color: rgba(255,255,255,0.8); margin-bottom: 30px; letter-spacing: 2px;">مشروع مبادرة داخلية</div>
-                <div class="cover-title">صُنّاع<br>الأثر</div>
+            <div class="cover-watermark">أ</div>
+            <div class="eyebrow" style="border:none; padding:0; color: var(--emerald);">مشروع مبادرة داخلية</div>
+            <div class="cover-title">صُنّاع الأثر</div>
+            <div class="cover-quote">
+                "خلف كل خدمة متميزة،<br>
+                <strong>عقلٌ فكّر، ويدٌ نفّذت، وإرادةٌ صنعت الفرق.</strong><br>
+                هذه المبادرة تحتفي بهم جميعاً."
             </div>
-            <div class="cover-right">
-                <div class="divider" style="width: 200px; height: 10px;"></div>
-                <div class="cover-quote">
-                    "خلف كل خدمة متميزة،<br>
-                    <strong>عقلٌ فكّر، ويدٌ نفّذت، وإرادةٌ صنعت الفرق.</strong><br>
-                    هذه المبادرة تحتفي بهم جميعاً."
-                </div>
-                <div class="cover-footer">الإدارة التنفيذية للخدمات الصحية المساندة</div>
+            <div class="cover-footer">
+                <div>الإدارة التنفيذية للخدمات الصحية المساندة</div>
+                <div>تجمع المدينة المنورة الصحي</div>
             </div>
         </div>
     </section>
@@ -220,17 +239,17 @@
                 <div class="card">
                     <div class="tag">الالتزام الصحي</div>
                     <h3 class="card-name">مبادرة "رُكن"</h3>
-                    <p class="card-desc">تركز على الممارس الصحي ومدى التزامه بالامتثال الصحي والفحوصات المبكرة والتحصينات.</p>
+                    <p class="card-desc">تركز على الممارس الصحي كقدوة. تقيس الالتزام بالامتثال الصحي والفحوصات المبكرة.</p>
                 </div>
                 <div class="card">
                     <div class="tag">معايير الرعاية</div>
                     <h3 class="card-name">دليل التميز</h3>
-                    <p class="card-desc">تركز على تقييم وتطبيق مسارات الرعاية الصحية السعودية عبر مؤشرات أداء معتمدة.</p>
+                    <p class="card-desc">تركز على تقييم وتطبيق مسارات الرعاية الصحية عبر مؤشرات أداء معتمدة.</p>
                 </div>
                 <div class="card featured">
                     <div class="tag">★ الزاوية الثالثة</div>
                     <h3 class="card-name">صُنّاع الأثر</h3>
-                    <p class="card-desc">تركز على ابتكار الحلول وتطوير الخدمات، واحتضان الأفكار الإبداعية لدى الموظفين لتحويلها إلى أثر ملموس.</p>
+                    <p class="card-desc">"رُكن" تنظر للممارس كقدوة. "دليل التميز" يقيس تطبيق المعايير.<br><br><strong>صُنّاع الأثر</strong> تسأل سؤالاً لم يُسأل بعد: من الذي طوّر الخدمة من تلقاء نفسه؟ ومن لديه فكرة تنتظر الاحتضان؟</p>
                 </div>
             </div>
         </div>
@@ -238,20 +257,22 @@
 
     <!-- الشريحة 3: خالد (المشكلة) -->
     <section>
-        <div class="split">
-            <div class="split-side">
-                <div class="split-num">٠١</div>
-                <h2>خالد...<br>ورحلة<br>لا تنتهي</h2>
-            </div>
-            <div class="split-main">
-                <div class="story-quote" style="color: var(--accent); border-color: var(--accent);">خالد، مريض مزمن، يحتاج كل فترة إلى إعادة صرف أدويته.</div>
-                <div class="story-body">ولاستلام دواء يستخدمه منذ سنوات، يخوض الرحلة التالية:</div>
-                <div class="story-path">
-                    حجز موعد — التنقل للمستشفى — البحث عن موقف — الاستقبال — انتظار العيادة — لقاء الطبيب — التوجه للصيدلية — انتظار الصيدلية — استلام الدواء — العودة.
+        <div class="container">
+            <div class="split">
+                <div class="split-side">
+                    <div class="split-num">٠١</div>
+                    <h2>خالد...<br>ورحلة<br>لا تنتهي</h2>
                 </div>
-                <div class="story-footer">
-                    رحلة طويلة... لخدمة بسيطة جداً.<br>
-                    والخسارة لا تقع على خالد وحده.
+                <div class="split-main">
+                    <div class="story-quote">خالد، مريض مزمن، يحتاج كل فترة إلى إعادة صرف أدويته.</div>
+                    <div class="story-body">ولاستلام دواء يستخدمه منذ سنوات، يخوض الرحلة التالية:</div>
+                    <div class="story-path">
+                        حجز موعد — التنقل للمستشفى — البحث عن موقف — الاستقبال — انتظار العيادة — لقاء الطبيب — التوجه للصيدلية — انتظار الصيدلية — استلام الدواء — العودة.
+                    </div>
+                    <div class="story-footer">
+                        رحلة طويلة... لخدمة بسيطة جداً.<br>
+                        والخسارة لا تقع على خالد وحده.
+                    </div>
                 </div>
             </div>
         </div>
@@ -259,22 +280,24 @@
 
     <!-- الشريحة 4: خالد (الحل) -->
     <section>
-        <div class="split">
-            <div class="split-side split-side-light">
-                <div class="split-num" style="color: rgba(255,255,255,0.15);">٠٢</div>
-                <h2 style="color: #fff;">الفكرة<br>موجودة...<br>والتطبيق<br>ممكن</h2>
-            </div>
-            <div class="split-main">
-                <div class="story-body">تخيلوا معي... موظف في إحدى منشآتنا يتساءل:</div>
-                <div class="story-quote" style="font-size: 58px; border-color: var(--ink); color: var(--ink);">
-                    "لماذا يأتي خالد أصلاً؟ هو لا يحتاج إلا إعادة الدواء. لماذا لا يصل إليه في بيته؟"
+        <div class="container">
+            <div class="split">
+                <div class="split-side split-side-light">
+                    <div class="split-num" style="color: rgba(91, 168, 154, 0.2);">٠٢</div>
+                    <h2>الفكرة<br>موجودة...<br>والتطبيق<br>ممكن</h2>
                 </div>
-                <div class="story-path active" style="background: rgba(0,0,0,0.05); border-color: transparent;">
-                    طلب الدواء إلكترونياً — مراجعة الطبيب للوصفة عبر النظام — توصيل الدواء للمنزل.
-                </div>
-                <div class="story-footer" style="border: none;">
-                    القدرة موجودة. الفكرة موجودة.<br>
-                    الحلقة المفقودة: من يتبناها أو يحتفي بمن يطبقها.
+                <div class="split-main">
+                    <div class="story-body">تخيلوا معي... موظف في إحدى منشآتنا يتساءل:</div>
+                    <div class="story-quote">
+                        "لماذا يأتي خالد أصلاً؟ هو لا يحتاج إلا إعادة الدواء. لماذا لا يصل إليه في بيته؟"
+                    </div>
+                    <div class="story-path active">
+                        طلب الدواء إلكترونياً — مراجعة الطبيب عبر النظام — توصيل الدواء للمنزل.
+                    </div>
+                    <div class="story-footer" style="color: var(--emerald);">
+                        القدرة موجودة. الفكرة موجودة.<br>
+                        الحلقة المفقودة: من يتبناها أو يحتفي بمن يطبقها.
+                    </div>
                 </div>
             </div>
         </div>
@@ -289,7 +312,7 @@
                 <div class="cell"><h3 class="cell-title">المختبر</h3><p class="cell-desc">تنبيه استباقي بالنتائج، وتحسين جذري في زمن الاستجابة (TAT).</p></div>
                 <div class="cell"><h3 class="cell-title">الأشعة</h3><p class="cell-desc">تقصير مسار التحويل، وجدولة ذكية تستثمر أوقات الفراغ.</p></div>
                 <div class="cell"><h3 class="cell-title">الصيدلية</h3><p class="cell-desc">تجهيز مسبق للوصفات المتكررة، وابتكار خدمات توصيل آمنة.</p></div>
-                <div class="cell"><h3 class="cell-title">العلاج الطبيعي</h3><p class="cell-desc">برامج متابعة عن بُعد للحالات المستقرة لتوفير السعة للمحتاجين.</p></div>
+                <div class="cell"><h3 class="cell-title">العلاج الطبيعي</h3><p class="cell-desc">برامج متابعة عن بُعد للحالات المستقرة لتوفير السعة.</p></div>
                 <div class="cell"><h3 class="cell-title">التثقيف الصحي</h3><p class="cell-desc">تطوير وسائل تثقيف رقمية تفاعلية للوصول لشريحة أكبر.</p></div>
                 <div class="cell special"><h3 class="cell-title">وفي كل خدمة أخرى..</h3><p class="cell-desc">كنوز مخفية تنتظر الاكتشاف والاحتضان.</p></div>
             </div>
@@ -310,14 +333,14 @@
                     </ul>
                     <div class="q-ask">هل حصلت هذه الإنجازات على ما تستحقه من التقدير والتوثيق؟</div>
                 </div>
-                <div class="q-card navy">
+                <div class="q-card highlight">
                     <div class="q-badge">للذين يملكون أفكاراً</div>
                     <ul class="q-list">
                         <li>أفكار عاشت في عقول أصحابها لسنوات.</li>
                         <li>حلول رآها صاحبها في الميدان ولم يجد كيف يطبقها.</li>
                         <li>تصورات تحتاج فقط من يتبناها.</li>
                     </ul>
-                    <div class="q-ask" style="color: var(--accent);">هل وجدت من يحتضنها؟</div>
+                    <div class="q-ask">هل وجدت من يحتضنها؟</div>
                 </div>
             </div>
         </div>
@@ -325,15 +348,18 @@
 
     <!-- الشريحة 7: الفلسفة -->
     <section>
-        <div class="s7-full">
-            <div class="s7-quote">
-                "التميز الحقيقي لا يأتي من تكرار المألوف،<br>
-                <strong>بل من البحث الدائم عن طرق أفضل لتقديم الخدمة.</strong>"
-            </div>
-            <div class="s7-pillars">
-                <div class="s7-pill">الاحتفاء بمن صنعوا الفرق</div>
-                <div class="s7-pill">توثيق الأثر بالأرقام</div>
-                <div class="s7-pill">بناء ثقافة مؤسسية للابتكار</div>
+        <div class="container">
+            <div class="s7-full">
+                <div class="s7-watermark">أثر</div>
+                <div class="s7-quote">
+                    "التميز الحقيقي لا يأتي من تكرار المألوف،<br>
+                    <strong>بل من البحث الدائم عن طرق أفضل لتقديم الخدمة.</strong>"
+                </div>
+                <div class="s7-pillars">
+                    <div class="s7-pill">الاحتفاء بمن صنعوا الفرق</div>
+                    <div class="s7-pill">توثيق الأثر بالأرقام</div>
+                    <div class="s7-pill">بناء ثقافة مؤسسية للابتكار</div>
+                </div>
             </div>
         </div>
     </section>
@@ -348,11 +374,11 @@
                 <div class="sc-item"><div class="sc-num">٠٢</div><div class="sc-name">تطوير نماذج العمل</div><div class="sc-desc">ابتكارات تنقل الخدمة القائمة من مستواها الحالي إلى مستوى أداء أفضل.</div></div>
                 <div class="sc-item"><div class="sc-num">٠٣</div><div class="sc-name">تحسين الكفاءة والتكلفة</div><div class="sc-desc">مبادرات ترفع كفاءة العمليات التشغيلية وتُقلل الهدر وتُحسّن التكلفة.</div></div>
                 <div class="sc-item"><div class="sc-num">٠٤</div><div class="sc-name">تقصير مسار المريض</div><div class="sc-desc">إجراءات تُسهّل الوصول للخدمة وتُقلص أوقات الانتظار غير المبررة.</div></div>
-                <div class="sc-item"><div class="sc-num">٠٥</div><div class="sc-name">الارتقاء بالجودة</div><div class="sc-desc">تحسينات تنعكس مباشرة بمؤشرات قابلة للقياس وأرقام دقيقة وموثقة.</div></div>
+                <div class="sc-item"><div class="sc-num">٠٥</div><div class="sc-name">الارتقاء بجودة الخدمات</div><div class="sc-desc">تحسينات تنعكس مباشرة بمؤشرات قابلة للقياس وأرقام دقيقة وموثقة.</div></div>
             </div>
             <div class="sc-banner">
                 <div class="sc-banner-lbl">آلية العمل</div>
-                <div class="sc-banner-txt">استقبال إلكتروني للمشاركات، تقييم بمعايير علمية، وتتويج. <strong>المشاركة متاحة للأفراد، الإدارات، والفرق.</strong></div>
+                <div class="sc-banner-txt">استقبال إلكتروني للمشاركات، تقييم بمعايير علمية، وتتويج رسمي للأفراد والإدارات والفرق.</div>
             </div>
         </div>
     </section>
@@ -361,15 +387,14 @@
     <section>
         <div class="container">
             <h2 class="slide-title" style="text-align: center;">مساران متوازيان — <em>للمنفّذ، ولصاحب الفكرة</em></h2>
-            <div class="q-cards" style="margin-top: 40px; gap: 60px;">
+            <div class="q-cards" style="margin-top: 40px;">
                 <div class="q-card" style="text-align: center; justify-content: center;">
-                    <div class="q-badge" style="align-self: center; border: 3px solid var(--ink); color: var(--ink); background: transparent;">مسار الإنجازات</div>
-                    <p style="font-size: 42px; font-weight: 700;">لمن طبّق ابتكاراً أو حسّن خدمةً وأحدث أثراً موثقاً.<br><br>إنجازات حقيقية تستحق <strong>التقدير والتوثيق المؤسسي.</strong></p>
+                    <div class="q-badge" style="align-self: center; background: #fff; color: var(--ink); border: 2px solid var(--ink);">مسار الإنجازات</div>
+                    <p style="font-size: 40px; font-weight: 700; color: var(--text-dark); line-height: 1.6;">لمن طبّق ابتكاراً أو حسّن خدمةً وأحدث أثراً موثقاً.<br><br>إنجازات حقيقية تستحق <strong>التقدير والتوثيق المؤسسي.</strong></p>
                 </div>
-                <div class="q-card navy" style="text-align: center; justify-content: center; border: 4px solid var(--accent);">
-                    <div class="q-badge" style="align-self: center; background: #fff; color: var(--ink);">مسار الأفكار</div>
-                    <p style="font-size: 42px; font-weight: 700;">لمن يملك فكرة قابلة للتطبيق ولا يملك بعد أدوات تنفيذها.<br><br>عند تأهلها، <strong>يتم تبنّيها وتنفيذها باسم صاحبها.</strong></p>
-                    <div style="margin-top: 50px; color: var(--accent); font-weight: 900; font-size: 32px; border-top: 2px dashed rgba(255,255,255,0.2); padding-top: 30px;">★ الميزة الفريدة للمبادرة</div>
+                <div class="q-card highlight" style="text-align: center; justify-content: center;">
+                    <div class="q-badge" style="align-self: center; background: var(--accent); color: #fff; border:none;">مسار الأفكار</div>
+                    <p style="font-size: 40px; font-weight: 700; color: var(--text-dark); line-height: 1.6;">لمن يملك فكرة قابلة للتطبيق ولا يملك بعد أدوات تنفيذها.<br><br>عند تأهلها، <strong>يتم تبنّيها وتنفيذها باسم صاحبها.</strong></p>
                 </div>
             </div>
         </div>
@@ -384,9 +409,9 @@
                 <div class="cell"><h3 class="cell-title">٠١. الحلول</h3><p class="cell-desc">حل مشكلة مزمنة كانت تؤثر على المريض أو على سير العمل.</p></div>
                 <div class="cell"><h3 class="cell-title">٠٢. الكفاءة</h3><p class="cell-desc">رفع كفاءة العمل أو تحسين التكلفة التشغيلية والموارد.</p></div>
                 <div class="cell"><h3 class="cell-title">٠٣. الوصول</h3><p class="cell-desc">تسهيل وصول المريض للخدمة أو تقليل وقت الانتظار.</p></div>
-                <div class="cell"><h3 class="cell-title">٠٤. الجودة</h3><p class="cell-desc">تحسين جودة خدمة قائمة بمؤشر قابل للقياس.</p></div>
+                <div class="cell" style="border-color: var(--emerald);"><h3 class="cell-title" style="color: var(--emerald);">٠٤. الجودة</h3><p class="cell-desc">تحسين جودة خدمة قائمة بمؤشر قابل للقياس.</p></div>
                 <div class="cell"><h3 class="cell-title">٠٥. الابتكار</h3><p class="cell-desc">ابتكار مسار جديد أو خدمة لم تكن موجودة من قبل.</p></div>
-                <div class="cell special"><h3 class="cell-title" style="color: #fff;">٠٦. الفكرة</h3><p class="cell-desc">فكرة لم تُطبق بعد لكنها تستحق التبني والتنفيذ.</p></div>
+                <div class="cell special"><h3 class="cell-title">٠٦. الفكرة</h3><p class="cell-desc">فكرة لم تُطبق بعد لكنها تستحق التبني والتنفيذ.</p></div>
             </div>
         </div>
     </section>
@@ -405,7 +430,11 @@
                 </div>
                 <div class="scr-right">
                     <div class="scr-total">١٠٠</div>
-                    <div class="scr-min"><p>الحد الأدنى للتأهل</p><strong>٧٠</strong></div>
+                    <div style="font-size: 32px; font-weight: 700; margin-bottom: 20px;">إجمالي النقاط</div>
+                    <div class="scr-min">
+                        <p>الحد الأدنى للتأهل</p>
+                        <strong>٧٠</strong>
+                    </div>
                 </div>
             </div>
         </div>
@@ -413,18 +442,20 @@
 
     <!-- الشريحة 12: الأثر -->
     <section>
-        <div class="imp-layout">
-            <div class="imp-side">
-                <h2>نتائج ملموسة<br>تنعكس على بيئة العمل</h2>
-                <p>تتجاوز المبادرة مفهوم الجائزة...</p>
-            </div>
-            <div class="imp-grid">
-                <div class="imp-box"><div class="imp-icon">↑</div><h3 class="imp-title">١. تطوير الخدمات</h3><p class="imp-desc">حلول عملية تُعالج تحديات حقيقية.</p></div>
-                <div class="imp-box"><div class="imp-icon">↓</div><h3 class="imp-title">٢. رفع الكفاءة</h3><p class="imp-desc">تحسين التكلفة ينعكس على الجودة.</p></div>
-                <div class="imp-box"><div class="imp-icon">⟷</div><h3 class="imp-title">٣. تعزيز التكامل</h3><p class="imp-desc">منصة موحدة تحفّز التنافس البنّاء.</p></div>
-                <div class="imp-box"><div class="imp-icon">★</div><h3 class="imp-title">٤. بنك معرفي</h3><p class="imp-desc">كل حل يُوثّق ليصبح ثروة للأجيال القادمة.</p></div>
-                <div class="imp-box"><div class="imp-icon">♡</div><h3 class="imp-title">٥. تجربة المريض</h3><p class="imp-desc">انعكاس مباشر للتطوير المستمر.</p></div>
-                <div class="imp-box"><div class="imp-icon">◎</div><h3 class="imp-title">٦. ثقافة التميز</h3><p class="imp-desc">سمة متجذرة في كل مستويات العمل.</p></div>
+        <div class="container" style="padding-left: 0; padding-right: 0;">
+            <div class="imp-layout" style="margin: 0 120px;">
+                <div class="imp-side">
+                    <h2>نتائج ملموسة<br>تنعكس على بيئة العمل</h2>
+                    <p>تتجاوز المبادرة مفهوم الجائزة...</p>
+                </div>
+                <div class="imp-grid">
+                    <div class="imp-box"><h3 class="imp-title"><span>١.</span> تطوير الخدمات</h3><p class="imp-desc">حلول عملية تُعالج تحديات حقيقية.</p></div>
+                    <div class="imp-box"><h3 class="imp-title"><span>٢.</span> رفع الكفاءة</h3><p class="imp-desc">تحسين التكلفة ينعكس على الجودة.</p></div>
+                    <div class="imp-box"><h3 class="imp-title"><span>٣.</span> تعزيز التكامل</h3><p class="imp-desc">منصة موحدة تحفّز التنافس البنّاء.</p></div>
+                    <div class="imp-box" style="border-color: var(--accent);"><h3 class="imp-title" style="color: var(--accent);"><span>٤.</span> بنك معرفي مؤسسي</h3><p class="imp-desc">كل فكرة تُحفظ، كل حل يُوثّق، ليصبح ثروة للأجيال القادمة.</p></div>
+                    <div class="imp-box"><h3 class="imp-title"><span>٥.</span> تجربة المريض</h3><p class="imp-desc">انعكاس مباشر للتطوير المستمر.</p></div>
+                    <div class="imp-box"><h3 class="imp-title"><span>٦.</span> ثقافة التميز</h3><p class="imp-desc">سمة متجذرة في كل مستويات العمل.</p></div>
+                </div>
             </div>
         </div>
     </section>
@@ -432,16 +463,11 @@
     <!-- الشريحة 13: الخاتمة -->
     <section>
         <div class="s14">
-            <h1 style="font-size: 250px; color: var(--ink); font-weight: 900; margin-bottom: 40px; letter-spacing: -5px;">شكراً لكم</h1>
+            <h1 style="font-size: 200px; color: var(--text-dark); font-weight: 900; margin-bottom: 20px;">شكراً لكم</h1>
             <div class="s14-line"></div>
+            <p style="font-size: 40px; color: var(--text-muted); font-weight: 700;">تجمع المدينة المنورة الصحي</p>
         </div>
     </section>
-
-    <!-- أزرار التنقل (بدون أرقام) -->
-    <div id="nav">
-        <button class="nav-btn" id="prevBtn"><i class="fa-solid fa-chevron-right"></i></button>
-        <button class="nav-btn" id="nextBtn"><i class="fa-solid fa-chevron-left"></i></button>
-    </div>
 
 </div>
 
@@ -451,7 +477,7 @@
         const sections = Array.from(document.querySelectorAll('section'));
         let current = 0;
 
-        // دالة التحجيم لملء الشاشة بالكامل
+        // دالة التحجيم المذهلة: تضمن أن نسبة 16:9 (1920x1080) تتطابق وتملأ الشاشة تماماً
         const resize = () => {
             const width = window.innerWidth;
             const height = window.innerHeight;
@@ -468,24 +494,21 @@
         const next = () => { current = Math.min(sections.length - 1, current + 1); update(); };
         const prev = () => { current = Math.max(0, current - 1); update(); };
 
-        document.getElementById('nextBtn').onclick = next;
-        document.getElementById('prevBtn').onclick = prev;
-
+        // أزرار الكيبورد للتنقل (أسهم ويمين/يسار ومسافة)
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft' || e.key === ' ' || e.key === 'PageDown') next();
             if (e.key === 'ArrowRight' || e.key === 'PageUp') prev();
         });
 
         // النقر على الشاشة للتقدم
-        stage.onclick = (e) => {
-            if (e.target.closest('#nav')) return;
-            next();
-        };
+        stage.onclick = () => next();
     });
 </script>
 
 </body>
 </html>
 
+```
+```
 
 ```
