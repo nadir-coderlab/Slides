@@ -1,514 +1,2256 @@
-```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صُنّاع الأثر — عرض القيادة العليا</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        /* =========================================
-           نظام النقاء والتحديد (Minimalist Outline System)
-           الألوان: نيلي متوسط، ذهبي ترابي، زمردي
-           ========================================= */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0A0E1A">
+<title>الخدمات الصحية المساندة | مؤشرات أشعة الطوارئ</title>
 
-        :root {
-            --ink: #2C4A7C;              /* نيلي متوسط للنصوص */
-            --ink-mid: #4A6A9A;          /* أزرق متوسط للنصوص الثانوية */
-            --ink-light: #7A92B5;        /* أزرق فاتح للأوصاف */
-            --ink-faint: #C8D3E0;        /* أزرق باهت جداً للحدود */
+<style id="pre-paint">
+  html, body { background: #0A0E1A !important; color: #F4F6FB; }
+</style>
 
-            --paper: #FFFFFF;            /* أبيض نقي */
-            --paper-warm: #F7F9FC;       /* أبيض مائل للأزرق فاتح جداً */
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Cairo:wght@600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-            --accent: #C9A14A;           /* ذهبي ترابي خفيف */
-            --accent-light: #F3E9D0;     /* ذهبي فاتح للخلفيات */
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+if (typeof XLSX === 'undefined') {
+    document.write('<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"><\/script>');
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-            --emerald: #5BA89A;          /* زمردي فاتح ولطيف */
-            
-            --font: 'Cairo', sans-serif;
-        }
+<style>
+:root {
+    --bg-primary: #0A0E1A;
+    --bg-secondary: #0F1524;
+    --bg-card: #141B2D;
+    --bg-card-elevated: #1A2238;
+    --bg-input: #0C111E;
+    --border-subtle: rgba(255,255,255,0.06);
+    --border-medium: rgba(255,255,255,0.12);
+    --border-strong: rgba(255,255,255,0.2);
 
-        body, html {
-            background-color: #000; /* خلفية سوداء للمتصفح خلف العرض */
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: var(--font);
-        }
+    --text-primary: #F4F6FB;
+    --text-secondary: #A4ADC2;
+    --text-tertiary: #6B7388;
+    --text-muted: #4A5066;
 
-        /* حاوية العرض الأساسية - مقاس الباوربوينت 1920x1080 */
-        #stage {
-            width: 1920px;
-            height: 1080px;
-            background-color: var(--paper);
-            position: relative;
-            flex-shrink: 0;
-            overflow: hidden;
-            transform-origin: center center;
-        }
+    --accent-emerald: #10B981;
+    --accent-amber: #F59E0B;
+    --accent-orange: #FB923C;
+    --accent-rose: #EF4444;
+    --accent-blue: #3B82F6;
+    --accent-violet: #8B5CF6;
+    --accent-cyan: #06B6D4;
 
-        section {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0; left: 0;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease-in-out;
-            background: var(--paper);
-            display: flex;
-            flex-direction: column;
-        }
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+}
 
-        section.active {
-            opacity: 1;
-            pointer-events: auto;
-            z-index: 10;
-        }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; background: var(--bg-primary); }
+body {
+    font-family: 'Tajawal', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    direction: rtl;
+    -webkit-font-smoothing: antialiased;
+}
 
-        /* تنسيقات الهيكل العام */
-        .container { 
-            padding: 80px 100px; 
-            height: 100%; 
-            display: flex; 
-            flex-direction: column; 
-        }
-        
-        .slide-title { 
-            font-size: 64px; 
-            font-weight: 900; 
-            color: var(--ink); 
-            line-height: 1.2; 
-            margin-bottom: 40px; 
-        }
-        .slide-title em { 
-            font-style: normal; 
-            color: var(--accent); 
-        }
-        .eyebrow { 
-            font-size: 24px; 
-            font-weight: 700; 
-            color: var(--emerald); 
-            letter-spacing: 0.05em; 
-            text-transform: uppercase; 
-            margin-bottom: 15px; 
-            display: inline-block; 
-        }
+#initShield {
+    position: fixed; inset: 0;
+    background: var(--bg-primary);
+    z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 18px;
+    transition: opacity 0.4s;
+}
+#initShield.hidden { opacity: 0; pointer-events: none; }
+#initShield .ring {
+    width: 42px; height: 42px;
+    border: 3px solid rgba(255,255,255,0.08);
+    border-top-color: var(--accent-emerald);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+#initShield .label {
+    font-family: 'Cairo', sans-serif;
+    font-size: 14px; color: var(--text-secondary);
+    font-weight: 600;
+}
 
-        /* =========================================
-           تخصيص الشرائح
-           ========================================= */
+/* HEADER */
+.cmd-header {
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-medium);
+    padding: 20px 32px;
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(8px);
+}
+.cmd-header-inner {
+    display: flex; justify-content: space-between; align-items: center;
+    max-width: 1900px; margin: 0 auto; gap: 24px;
+}
+.cmd-titles .super {
+    font-family: 'Cairo', sans-serif;
+    font-size: 11px; font-weight: 700;
+    color: var(--accent-violet);
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 4px;
+}
+.cmd-titles h1 {
+    font-family: 'Cairo', sans-serif;
+    font-size: 21px; font-weight: 700;
+    letter-spacing: -0.3px; line-height: 1.2;
+}
+.cmd-titles .subtitle {
+    font-size: 13px; color: var(--text-tertiary);
+    margin-top: 4px;
+}
+.cmd-status { display: flex; gap: 10px; align-items: center; }
+.cmd-pill {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 12px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    font-size: 12px; font-weight: 500;
+    color: var(--text-secondary);
+}
+.cmd-pill .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent-emerald);
+}
 
-        /* S1: Cover */
-        .cover { padding: 120px; display: flex; flex-direction: column; height: 100%; position: relative; border: 2px solid var(--ink-faint); margin: 40px; border-radius: 20px; }
-        .cover-watermark { position: absolute; top: -50px; left: 60px; font-size: 400px; font-weight: 900; color: rgba(44, 74, 124, 0.04); line-height: 1; pointer-events: none; }
-        .cover-title { font-size: 140px; font-weight: 900; color: var(--ink); line-height: 1.1; margin: auto 0 40px 0; }
-        .cover-quote { font-size: 52px; font-weight: 600; color: var(--ink-mid); line-height: 1.6; max-width: 1200px; border-right: 6px solid var(--accent); padding-right: 30px; }
-        .cover-quote strong { font-weight: 900; color: var(--ink); }
-        .cover-footer { margin-top: auto; font-size: 32px; color: var(--ink-mid); font-weight: 700; border-top: 1px solid var(--ink-faint); padding-top: 30px; display: flex; justify-content: space-between; }
+.cmd-main {
+    max-width: 1900px;
+    margin: 0 auto;
+    padding: 28px 32px 80px;
+}
 
-        /* S2: Comparison Grid */
-        .grid-3 { display: flex; gap: 30px; flex: 1; }
-        .card { flex: 1; background: var(--paper); padding: 50px 40px; border-radius: 16px; border: 2px solid var(--ink-faint); display: flex; flex-direction: column; }
-        .card.featured { border: 3px solid var(--accent); box-shadow: 0 10px 30px rgba(201, 161, 74, 0.1); background: var(--paper-warm); }
-        .tag { display: inline-block; padding: 10px 24px; border: 2px solid var(--ink-faint); font-size: 22px; font-weight: 800; color: var(--ink-light); border-radius: 8px; margin-bottom: 30px; align-self: flex-start; }
-        .card.featured .tag { border-color: var(--accent); color: var(--accent); background: #fff; }
-        .card-name { font-size: 42px; font-weight: 900; margin-bottom: 20px; color: var(--ink); }
-        .card-desc { font-size: 28px; line-height: 1.6; color: var(--ink-mid); flex: 1; font-weight: 600; }
+/* SECTIONS */
+.section-title {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 18px;
+}
+.section-title h2 {
+    font-family: 'Cairo', sans-serif;
+    font-size: 17px; font-weight: 700;
+}
+.section-title .badge {
+    padding: 3px 10px;
+    background: var(--bg-card-elevated);
+    color: var(--text-secondary);
+    font-size: 11px; font-weight: 700;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+}
 
-        /* S3 & S4: Split Story Layout */
-        .split { display: flex; height: 100%; gap: 40px; }
-        .split-side { flex: 0 0 35%; padding: 60px; display: flex; flex-direction: column; justify-content: center; border: 2px solid var(--ink-faint); border-radius: 20px; position: relative; overflow: hidden; }
-        .split-side-light { border-color: var(--emerald); background: rgba(91, 168, 154, 0.05); }
-        .split-num { font-size: 250px; font-weight: 900; color: rgba(44, 74, 124, 0.05); position: absolute; bottom: -20px; left: 20px; line-height: 0.8; }
-        .split-side h2 { font-size: 64px; font-weight: 900; color: var(--ink); line-height: 1.3; z-index: 1; }
-        .split-side-light h2 { color: var(--emerald); }
-        .split-main { flex: 1; padding: 60px; display: flex; flex-direction: column; justify-content: center; }
-        .story-quote { font-size: 46px; font-weight: 700; color: var(--ink); line-height: 1.6; margin-bottom: 40px; border-right: 6px solid var(--ink-faint); padding-right: 30px; }
-        .split-side-light + .split-main .story-quote { border-color: var(--emerald); }
-        .story-body { font-size: 32px; line-height: 1.6; color: var(--ink-mid); font-weight: 600; }
-        .story-path { font-size: 28px; font-weight: 700; color: var(--ink); line-height: 2; margin: 30px 0; padding: 30px; border: 2px dashed var(--ink-faint); border-radius: 12px; }
-        .story-path.active { border: 2px solid var(--accent); color: var(--ink); background: rgba(201, 161, 74, 0.05); }
-        .story-footer { font-size: 36px; font-weight: 900; color: var(--ink); border-top: 2px solid var(--ink-faint); padding-top: 30px; margin-top: 10px; }
+/* INDICATOR EXPLAINER */
+.indicator-explainer {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 22px 26px;
+    margin-bottom: 24px;
+}
+.indicator-explainer h2 {
+    font-family: 'Cairo', sans-serif;
+    font-size: 16px; font-weight: 800;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+.indicator-explainer .indicator-text {
+    font-size: 13px; line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+}
+.indicator-stages-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+.indicator-stage-box {
+    background: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 14px;
+}
+.indicator-stage-box .num {
+    font-family: 'Cairo', sans-serif;
+    font-size: 30px; font-weight: 900;
+    color: var(--accent-violet);
+    line-height: 1;
+}
+.indicator-stage-box .nm {
+    font-size: 13px; font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+.indicator-stage-box .tg {
+    font-size: 11px;
+    color: var(--accent-emerald);
+    font-weight: 600;
+    direction: ltr; text-align: right;
+}
 
-        /* S5 & S10: Grid 6 Layout */
-        .grid-6 { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 24px; flex: 1; }
-        .cell { padding: 40px; border-radius: 16px; border: 2px solid var(--ink-faint); display: flex; flex-direction: column; justify-content: center; }
-        .cell.special { border: 3px solid var(--accent); background: rgba(201, 161, 74, 0.05); }
-        .cell-title { font-size: 36px; font-weight: 900; color: var(--ink); margin-bottom: 15px; }
-        .cell.special .cell-title { color: var(--accent); }
-        .cell-desc { font-size: 26px; line-height: 1.6; color: var(--ink-mid); font-weight: 600; }
-        .cell.special .cell-desc { color: var(--ink); }
+/* UPLOAD - per-hospital card has TWO slots */
+.upload-section { margin-bottom: 24px; }
+.upload-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+.upload-card {
+    background: var(--bg-card);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    transition: border-color 0.2s, background 0.2s;
+}
+.upload-card.has-both {
+    border-style: solid;
+    border-color: var(--accent-emerald);
+    background: linear-gradient(180deg, var(--bg-card) 0%, rgba(16,185,129,0.03) 100%);
+}
+.upload-card.partial {
+    border-style: solid;
+    border-color: var(--accent-amber);
+}
+.upload-card-header { margin-bottom: 12px; }
+.hospital-info h3 {
+    font-family: 'Cairo', sans-serif;
+    font-size: 14px; font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+}
+.hospital-info .lab-name {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+    direction: ltr;
+    text-align: right;
+}
 
-        /* S6: The Two Questions */
-        .q-cards { display: flex; gap: 40px; flex: 1; align-items: stretch; }
-        .q-card { flex: 1; border-radius: 20px; padding: 50px; display: flex; flex-direction: column; border: 2px solid var(--ink-faint); }
-        .q-card.highlight { border: 3px solid var(--ink); background: var(--paper-warm); }
-        .q-badge { display: inline-block; padding: 12px 24px; border: 2px solid var(--ink-faint); color: var(--ink-mid); font-size: 24px; font-weight: 800; border-radius: 8px; margin-bottom: 30px; align-self: flex-start; }
-        .q-card.highlight .q-badge { border-color: var(--ink); color: var(--ink); background: #fff; }
-        .q-list { list-style: none; flex: 1; margin-bottom: 20px; }
-        .q-list li { font-size: 34px; font-weight: 700; line-height: 1.5; margin-bottom: 25px; display: flex; gap: 15px; color: var(--ink-mid); }
-        .q-card.highlight .q-list li { color: var(--ink); }
-        .q-list li::before { content: '■'; color: var(--ink-faint); font-size: 24px; margin-top: 10px; }
-        .q-card.highlight .q-list li::before { color: var(--accent); }
-        .q-ask { font-size: 42px; font-weight: 900; border-top: 2px solid var(--ink-faint); padding-top: 30px; line-height: 1.4; color: var(--ink); margin-top: auto; }
-        .q-card.highlight .q-ask { color: var(--ink); border-color: rgba(44, 74, 124, 0.2); }
+.dual-upload {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.upload-slot {
+    display: flex; flex-direction: column; gap: 6px;
+}
+.upload-slot .slot-label {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.upload-slot .slot-label .req { color: var(--accent-rose); }
+.upload-input-wrap { position: relative; }
+.upload-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.upload-label {
+    display: flex; align-items: center; justify-content: center;
+    gap: 4px; padding: 8px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    font-size: 11px; font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 32px;
+}
+.upload-card:hover .upload-label {
+    background: var(--bg-card-elevated);
+    color: var(--text-primary);
+}
+.upload-label.loaded {
+    background: rgba(16,185,129,0.08);
+    border-color: rgba(16,185,129,0.4);
+    color: var(--accent-emerald);
+}
+.upload-status {
+    margin-top: 10px;
+    padding: 7px 9px;
+    background: var(--bg-input);
+    border-radius: var(--radius-sm);
+    font-size: 10.5px;
+    color: var(--text-tertiary);
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 26px;
+    display: flex; align-items: center;
+    direction: ltr; text-align: right;
+}
+.upload-status.success { color: var(--accent-emerald); }
+.upload-status.warning { color: var(--accent-amber); }
+.upload-status.error { color: var(--accent-rose); }
 
-        /* S7: Philosophy (Navy Base with Gold Accents) */
-        .s7-full { border: 2px solid var(--ink-faint); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; position: relative; overflow: hidden; padding: 0 100px; background: var(--ink); }
-        .s7-quote { font-size: 64px; font-weight: 500; color: #fff; line-height: 1.6; max-width: 1400px; margin-bottom: 60px; z-index: 2; }
-        .s7-quote strong { font-weight: 900; color: var(--accent); }
-        .s7-pillars { display: flex; gap: 30px; z-index: 2; }
-        .s7-pill { padding: 20px 40px; font-size: 32px; font-weight: 700; color: #fff; border: 2px solid var(--accent); border-radius: 50px; background: rgba(255,255,255,0.05); }
-        .s7-watermark { position: absolute; font-size: 400px; font-weight: 900; color: rgba(201, 161, 74, 0.05); top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 1; }
+/* ACTIONS */
+.actions-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    margin-bottom: 28px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+.actions-info { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
+.info-stat { display: flex; flex-direction: column; gap: 2px; }
+.info-stat .label {
+    font-size: 11px; color: var(--text-tertiary);
+    font-weight: 500;
+}
+.info-stat .value {
+    font-family: 'Cairo', sans-serif;
+    font-size: 16px; font-weight: 800;
+}
+.actions-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn {
+    padding: 9px 16px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 12.5px; font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+.btn:hover:not(:disabled) {
+    background: var(--bg-card-elevated);
+    border-color: var(--border-strong);
+}
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-primary {
+    background: var(--accent-violet);
+    border-color: var(--accent-violet);
+    color: white;
+}
+.btn-primary:hover:not(:disabled) {
+    background: #7c3aed;
+    border-color: #7c3aed;
+}
+.btn-close {
+    background: var(--accent-rose);
+    border-color: var(--accent-rose);
+    color: white;
+}
 
-        /* S8: Scope List */
-        .sc-list { display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
-        .sc-item { display: flex; align-items: center; border-bottom: 1px dashed var(--ink-faint); padding: 20px 0; }
-        .sc-item:last-child { border-bottom: none; }
-        .sc-num { font-size: 42px; font-weight: 900; color: var(--ink-faint); width: 100px; }
-        .sc-name { font-size: 38px; font-weight: 800; color: var(--ink); width: 450px; }
-        .sc-desc { font-size: 28px; color: var(--ink-mid); flex: 1; font-weight: 600; }
-        .sc-banner { border: 2px solid var(--emerald); padding: 30px 40px; border-radius: 12px; display: flex; gap: 30px; align-items: center; margin-top: 30px; background: rgba(91, 168, 154, 0.05); }
-        .sc-banner-lbl { font-size: 24px; font-weight: 900; color: #fff; background: var(--emerald); padding: 8px 20px; border-radius: 6px; white-space: nowrap; }
-        .sc-banner-txt { font-size: 28px; font-weight: 700; color: var(--ink); }
+/* EMPTY STATE */
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+}
+.empty-state h3 {
+    font-family: 'Cairo', sans-serif;
+    font-size: 18px; font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+.empty-state p {
+    font-size: 13px;
+    color: var(--text-tertiary);
+}
 
-        /* S11: Scoring */
-        .scr-layout { display: flex; height: 100%; gap: 40px; }
-        .scr-left { flex: 1; padding: 40px 60px; border: 2px solid var(--ink-faint); border-radius: 20px; display: flex; flex-direction: column; justify-content: space-between; }
-        .scr-right { width: 450px; border: 3px solid var(--ink); border-radius: 20px; padding: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: var(--paper-warm); }
-        .scr-row { display: flex; align-items: center; padding: 20px 0; border-bottom: 1px dashed var(--ink-faint); }
-        .scr-row:last-child { border-bottom: none; }
-        .scr-val { font-size: 46px; font-weight: 900; color: var(--accent); width: 160px; }
-        .scr-txt { font-size: 34px; font-weight: 700; color: var(--ink); flex: 1; }
-        .scr-total { font-size: 140px; font-weight: 900; color: var(--ink); line-height: 1; }
-        .scr-min { margin-top: 40px; padding: 30px; border-top: 2px solid var(--ink-faint); width: 100%; }
-        .scr-min p { font-size: 24px; color: var(--ink-mid); margin-bottom: 10px; font-weight: 600; }
-        .scr-min strong { font-size: 64px; font-weight: 900; color: var(--emerald); line-height: 1; }
+/* HOSPITAL RESULT CARDS */
+.results-section { display: none; }
+.results-section.visible { display: block; }
+.hospitals-section { margin-top: 20px; display: flex; flex-direction: column; gap: 16px; }
+.hospital-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+.hospital-header {
+    padding: 18px 22px;
+    background: var(--bg-card-elevated);
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.hospital-title h2 {
+    font-family: 'Cairo', sans-serif;
+    font-size: 17px; font-weight: 800;
+}
+.hospital-title .lab-tag {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 2px;
+    direction: ltr;
+    text-align: right;
+}
+.hospital-actions { display: flex; gap: 6px; }
+.hospital-body { padding: 22px; }
 
-        /* S12: Impact */
-        .imp-layout { display: flex; height: 100%; gap: 40px; }
-        .imp-side { width: 450px; border: 2px solid var(--ink-faint); border-radius: 20px; padding: 60px; display: flex; flex-direction: column; justify-content: center; }
-        .imp-side h2 { font-size: 56px; font-weight: 900; color: var(--ink); line-height: 1.3; margin-bottom: 20px; }
-        .imp-side p { font-size: 28px; color: var(--ink-mid); font-weight: 600; line-height: 1.5; }
-        .imp-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr); flex: 1; gap: 24px; }
-        .imp-box { padding: 30px 40px; border-radius: 16px; border: 2px solid var(--ink-faint); display: flex; flex-direction: column; justify-content: center; }
-        .imp-title { font-size: 34px; font-weight: 900; color: var(--ink); margin-bottom: 10px; }
-        .imp-desc { font-size: 26px; line-height: 1.6; color: var(--ink-mid); font-weight: 600; }
-        .imp-title span { color: var(--accent); margin-left: 10px; }
+/* KPI strip inside hospital card */
+.h-kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 18px;
+}
+.h-kpi {
+    background: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    position: relative;
+    overflow: hidden;
+}
+.h-kpi::before {
+    content: ''; position: absolute;
+    top: 0; right: 0; width: 3px; height: 100%;
+    background: var(--accent-blue);
+}
+.h-kpi.emerald::before { background: var(--accent-emerald); }
+.h-kpi.amber::before { background: var(--accent-amber); }
+.h-kpi.rose::before { background: var(--accent-rose); }
+.h-kpi.violet::before { background: var(--accent-violet); }
+.h-kpi .l {
+    font-size: 10px; color: var(--text-tertiary);
+    font-weight: 700; letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+.h-kpi .v {
+    font-family: 'Cairo', sans-serif;
+    font-size: 26px; font-weight: 900;
+    color: var(--text-primary);
+    line-height: 1;
+}
+.h-kpi .u {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin-right: 4px;
+}
+.h-kpi .sub {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 6px;
+}
 
-        /* S13: Thank You */
-        .s14 { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; border: 2px solid var(--ink-faint); border-radius: 20px; margin: 40px; }
-        .s14-line { width: 160px; height: 6px; background: var(--accent); margin: 40px 0; border-radius: 10px; }
-    </style>
+.h-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+.h-panel {
+    background: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+}
+.h-panel .h-panel-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.h-panel .h-panel-head .ttl {
+    font-family: 'Cairo', sans-serif;
+    font-size: 14px; font-weight: 800;
+}
+.h-panel .h-panel-head .tg {
+    font-size: 11px; color: var(--text-tertiary);
+    direction: ltr;
+}
+.h-stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 12px;
+}
+.h-stat {
+    text-align: center;
+    padding: 8px 4px;
+    background: var(--bg-card);
+    border-radius: var(--radius-sm);
+}
+.h-stat .l {
+    font-size: 9px; color: var(--text-tertiary);
+    font-weight: 700; letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+.h-stat .v {
+    font-family: 'Cairo', sans-serif;
+    font-size: 18px; font-weight: 800;
+    margin-top: 3px;
+}
+.h-stat .u {
+    font-size: 10px; color: var(--text-tertiary);
+}
+
+.h-buckets { display: flex; flex-direction: column; gap: 6px; }
+.h-bucket {
+    display: grid;
+    grid-template-columns: 16px 1fr 70px 50px;
+    align-items: center;
+    gap: 8px;
+    font-size: 11.5px;
+}
+.h-bucket .sw {
+    width: 12px; height: 12px; border-radius: 3px;
+}
+.h-bucket .lbl { color: var(--text-secondary); font-weight: 500; }
+.h-bucket .bar {
+    height: 5px; background: var(--bg-card);
+    border-radius: 999px; overflow: hidden;
+}
+.h-bucket .bar > span {
+    display: block; height: 100%; border-radius: 999px;
+}
+.h-bucket .n {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--text-primary);
+    font-weight: 700; text-align: left;
+    direction: ltr;
+}
+.col-emerald, .swatch-emerald, .h-bucket .sw.emerald, .h-bucket .bar > .emerald { background: var(--accent-emerald); }
+.col-amber, .h-bucket .sw.amber, .h-bucket .bar > .amber { background: var(--accent-amber); }
+.col-orange, .h-bucket .sw.orange, .h-bucket .bar > .orange { background: var(--accent-orange); }
+.col-rose, .h-bucket .sw.rose, .h-bucket .bar > .rose { background: var(--accent-rose); }
+.txt-emerald { color: var(--accent-emerald); }
+.txt-amber { color: var(--accent-amber); }
+.txt-rose { color: var(--accent-rose); }
+
+/* ============================
+   SLIDE EXPORT (1920x1080)
+============================ */
+.slide-modal {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 2000;
+    overflow: auto;
+}
+.slide-modal.active { display: block; }
+.slide-toolbar {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-medium);
+    padding: 14px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 14px;
+}
+.slide-toolbar h2 {
+    font-family: 'Cairo', sans-serif;
+    font-size: 15px; font-weight: 800;
+}
+.slide-toolbar .actions { display: flex; gap: 8px; }
+
+.slide-pages-wrap {
+    padding: 30px;
+    display: flex; flex-direction: column;
+    gap: 30px;
+    align-items: center;
+}
+.slide-page {
+    width: 1920px; height: 1080px;
+    flex: 0 0 auto;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.6);
+    transform-origin: top center;
+}
+
+/* PAGE 1 */
+.slide-page.page1 {
+    padding: 56px 72px;
+    background:
+        radial-gradient(ellipse at top right, rgba(59,130,246,0.06), transparent 50%),
+        radial-gradient(ellipse at bottom left, rgba(16,185,129,0.05), transparent 50%),
+        var(--bg-primary);
+    display: flex; flex-direction: column; gap: 28px;
+    direction: rtl;
+}
+.slide-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-medium);
+}
+.slide-brand { display: flex; align-items: center; gap: 16px; }
+.slide-brand-mark {
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan));
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 24px rgba(16,185,129,0.25);
+}
+.slide-brand-mark.violet {
+    background: linear-gradient(135deg, var(--accent-violet), var(--accent-blue));
+    box-shadow: 0 8px 24px rgba(139,92,246,0.25);
+}
+.slide-brand-mark svg { width: 32px; height: 32px; }
+.slide-brand-text .super {
+    font-family: 'Cairo', sans-serif;
+    font-size: 12px; font-weight: 700;
+    color: var(--accent-emerald);
+    letter-spacing: 2px;
+}
+.slide-brand-text .super.violet { color: var(--accent-violet); }
+.slide-brand-text h1 {
+    font-family: 'Cairo', sans-serif;
+    font-size: 28px; font-weight: 900;
+    line-height: 1.2; margin-top: 2px;
+}
+.slide-brand-text .sub {
+    font-size: 14px; color: var(--text-tertiary);
+    margin-top: 4px;
+}
+.slide-meta { text-align: left; direction: ltr; }
+.slide-meta .label {
+    font-size: 11px; color: var(--text-tertiary);
+    letter-spacing: 1.5px; font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+.slide-meta .val {
+    font-family: 'Cairo', sans-serif;
+    font-size: 16px; font-weight: 700;
+}
+.slide-meta .scope {
+    font-size: 12px; color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+.slide-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+.slide-kpi {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 22px 24px;
+    position: relative;
+    overflow: hidden;
+}
+.slide-kpi::before {
+    content: ''; position: absolute;
+    top: 0; right: 0; width: 4px; height: 100%;
+    background: var(--accent-blue);
+}
+.slide-kpi.emerald::before { background: var(--accent-emerald); }
+.slide-kpi.amber::before { background: var(--accent-amber); }
+.slide-kpi.violet::before { background: var(--accent-violet); }
+.slide-kpi .l {
+    font-size: 12px; color: var(--text-tertiary);
+    font-weight: 600; letter-spacing: 0.5px;
+    margin-bottom: 12px; text-transform: uppercase;
+}
+.slide-kpi .v {
+    font-family: 'Cairo', sans-serif;
+    font-size: 42px; font-weight: 900;
+    line-height: 1;
+}
+.slide-kpi .u {
+    font-size: 14px; color: var(--text-secondary);
+    font-weight: 600; margin-right: 6px;
+}
+.slide-kpi .sub {
+    font-size: 12px; color: var(--text-secondary);
+    margin-top: 10px; line-height: 1.4;
+}
+
+.slide-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 26px 28px;
+    flex: 1;
+    display: flex; flex-direction: column;
+}
+.slide-section-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.slide-section-head .title {
+    font-family: 'Cairo', sans-serif;
+    font-size: 18px; font-weight: 700;
+}
+.slide-section-head .badge {
+    font-size: 11px; font-weight: 700;
+    color: var(--accent-emerald);
+    background: rgba(16,185,129,0.15);
+    border: 1px solid rgba(16,185,129,0.3);
+    border-radius: 4px;
+    padding: 4px 10px;
+    letter-spacing: 1px;
+}
+.slide-section-head .badge.violet {
+    color: var(--accent-violet);
+    background: rgba(139,92,246,0.15);
+    border-color: rgba(139,92,246,0.3);
+}
+
+.compliance-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    flex: 1;
+}
+.comp-panel {
+    background: var(--bg-card-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 22px 24px;
+    display: flex; flex-direction: column;
+}
+.comp-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 18px;
+}
+.comp-name {
+    font-family: 'Cairo', sans-serif;
+    font-size: 15px; font-weight: 700;
+}
+.comp-target {
+    font-size: 12px; color: var(--text-tertiary);
+    direction: ltr;
+}
+.comp-big {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-bottom: 8px;
+}
+.comp-big .num {
+    font-family: 'Cairo', sans-serif;
+    font-size: 56px; font-weight: 900;
+    line-height: 1;
+}
+.comp-big .num.emerald { color: var(--accent-emerald); }
+.comp-big .num.amber { color: var(--accent-amber); }
+.comp-big .num.rose { color: var(--accent-rose); }
+.comp-big .of {
+    font-size: 13px; color: var(--text-tertiary);
+    margin-right: auto; direction: ltr;
+}
+.comp-stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 12px 0;
+    border-top: 1px solid var(--border-subtle);
+    margin-top: 12px;
+}
+.comp-stat { text-align: center; }
+.comp-stat .l {
+    font-size: 10px; color: var(--text-tertiary);
+    letter-spacing: 0.5px; font-weight: 600;
+    text-transform: uppercase;
+}
+.comp-stat .v {
+    font-family: 'Cairo', sans-serif;
+    font-size: 22px; font-weight: 800;
+    margin-top: 4px;
+}
+.comp-stat .u {
+    font-size: 11px; color: var(--text-tertiary);
+    margin-right: 3px;
+}
+.buckets {
+    margin-top: 14px;
+    display: flex; flex-direction: column; gap: 8px;
+}
+.bucket {
+    display: grid;
+    grid-template-columns: 22px 1fr 80px 60px;
+    align-items: center;
+    gap: 10px;
+    font-size: 12.5px;
+}
+.bucket .swatch {
+    width: 14px; height: 14px; border-radius: 3px;
+}
+.bucket .swatch.emerald { background: var(--accent-emerald); }
+.bucket .swatch.amber   { background: var(--accent-amber); }
+.bucket .swatch.orange  { background: var(--accent-orange); }
+.bucket .swatch.rose    { background: var(--accent-rose); }
+.bucket .lbl { color: var(--text-secondary); font-weight: 500; }
+.bucket .bar {
+    height: 6px; background: var(--bg-input);
+    border-radius: 999px; overflow: hidden;
+}
+.bucket .bar > span {
+    display: block; height: 100%; border-radius: 999px;
+}
+.bucket .bar > .emerald { background: var(--accent-emerald); }
+.bucket .bar > .amber   { background: var(--accent-amber); }
+.bucket .bar > .orange  { background: var(--accent-orange); }
+.bucket .bar > .rose    { background: var(--accent-rose); }
+.bucket .n {
+    font-family: 'JetBrains Mono', 'Cairo', monospace;
+    font-size: 13px; color: var(--text-primary);
+    font-weight: 700; text-align: left;
+    direction: ltr;
+}
+
+.mod-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px;
+}
+.mod-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 20px 24px;
+    display: flex; flex-direction: column; gap: 12px;
+}
+.mod-card.spotlight {
+    border-color: rgba(16,185,129,0.3);
+    background: linear-gradient(135deg, rgba(16,185,129,0.06), transparent 70%), var(--bg-card);
+}
+.mod-card.highlights {
+    background: linear-gradient(135deg, rgba(139,92,246,0.05), transparent 70%), var(--bg-card);
+    border-color: rgba(139,92,246,0.2);
+}
+.mod-card-head {
+    display: flex; justify-content: space-between; align-items: center;
+}
+.mod-card-head .name {
+    font-family: 'Cairo', sans-serif;
+    font-size: 16px; font-weight: 800;
+    display: flex; align-items: center; gap: 8px;
+}
+.mod-card-head .name .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent-emerald);
+}
+.mod-card-head .count {
+    font-family: 'Cairo', sans-serif;
+    font-size: 13px; font-weight: 700;
+    color: var(--text-tertiary);
+    direction: ltr;
+}
+.mod-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+.mod-stat {
+    background: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+.mod-stat .l {
+    font-size: 11px; color: var(--text-tertiary);
+    font-weight: 600; margin-bottom: 6px;
+}
+.mod-stat .v {
+    font-family: 'Cairo', sans-serif;
+    font-size: 22px; font-weight: 800;
+}
+.mod-stat .v.good { color: var(--accent-emerald); }
+.mod-stat .v.warn { color: var(--accent-amber); }
+.mod-stat .v.bad { color: var(--accent-rose); }
+.mod-stat .u {
+    font-size: 11px; color: var(--text-tertiary);
+    margin-right: 3px;
+}
+
+.slide-foot {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid var(--border-subtle);
+    font-size: 11px;
+    color: var(--text-tertiary);
+}
+.slide-foot .legal { direction: ltr; }
+
+/* PAGE 2 */
+.slide-page.page2 {
+    padding: 56px 72px;
+    background:
+        radial-gradient(ellipse at top right, rgba(139,92,246,0.06), transparent 50%),
+        radial-gradient(ellipse at bottom left, rgba(245,158,11,0.05), transparent 50%),
+        var(--bg-primary);
+    display: flex; flex-direction: column; gap: 24px;
+    direction: rtl;
+}
+.page2-body {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1.45fr 1fr;
+    gap: 22px;
+    min-height: 0;
+}
+.page2-col {
+    display: flex; flex-direction: column;
+    gap: 22px;
+    min-height: 0;
+}
+.slide-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 22px 26px;
+    display: flex; flex-direction: column;
+}
+.slide-panel .panel-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.slide-panel .panel-head .title {
+    font-family: 'Cairo', sans-serif;
+    font-size: 17px; font-weight: 800;
+}
+.slide-panel .panel-head .subtitle {
+    font-size: 12px; color: var(--text-tertiary);
+    margin-top: 2px;
+}
+.slide-panel .panel-head .badge {
+    font-size: 10px; font-weight: 700;
+    color: var(--accent-violet);
+    background: rgba(139,92,246,0.15);
+    border: 1px solid rgba(139,92,246,0.3);
+    border-radius: 4px;
+    padding: 4px 10px;
+    letter-spacing: 1.2px;
+}
+
+.heatmap {
+    display: grid;
+    grid-template-columns: 110px repeat(12, 1fr);
+    gap: 4px;
+    direction: ltr;
+}
+.heatmap .corner, .heatmap .h-label {
+    font-family: 'Cairo', sans-serif;
+    font-size: 10px;
+    color: var(--text-tertiary);
+    font-weight: 700;
+    text-align: center;
+    padding: 6px 0;
+    letter-spacing: 0.5px;
+}
+.heatmap .corner {
+    text-align: right;
+    direction: rtl;
+    font-size: 11px;
+    padding-right: 4px;
+}
+.heatmap .row-label {
+    font-family: 'Cairo', sans-serif;
+    font-size: 13px; font-weight: 700;
+    color: var(--text-primary);
+    background: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    direction: rtl;
+}
+.heatmap .cell {
+    background: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    height: 64px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 2px;
+}
+.heatmap .cell .v {
+    font-family: 'Cairo', sans-serif;
+    font-size: 16px; font-weight: 800;
+}
+.heatmap .cell .n {
+    font-size: 9px; color: rgba(255,255,255,0.6);
+    font-weight: 600;
+}
+.heatmap .cell.empty .v {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.legend {
+    display: flex; align-items: center; gap: 12px;
+    direction: ltr;
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: var(--bg-input);
+    border-radius: 8px;
+    border: 1px solid var(--border-subtle);
+}
+.legend .l-label {
+    font-size: 11px; color: var(--text-tertiary);
+    font-weight: 700; letter-spacing: 0.5px;
+}
+.legend .swatches {
+    display: flex; gap: 0;
+    flex: 1; height: 12px;
+    border-radius: 6px; overflow: hidden;
+}
+.legend .swatches > div { flex: 1; }
+
+.procs { display: flex; flex-direction: column; gap: 8px; }
+.proc-row {
+    display: grid;
+    grid-template-columns: 1fr 60px 110px 110px;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+}
+.proc-row.header {
+    background: transparent;
+    border: none;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border-subtle);
+    border-radius: 0;
+}
+.proc-row.header > div {
+    font-size: 10px; color: var(--text-tertiary);
+    font-weight: 700; letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+.proc-name {
+    font-size: 13px; color: var(--text-primary);
+    font-weight: 600;
+    overflow: hidden; text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.proc-n {
+    font-family: 'Cairo', sans-serif;
+    font-size: 14px; font-weight: 800;
+    color: var(--accent-violet);
+    text-align: center;
+    direction: ltr;
+}
+.proc-cell { display: flex; align-items: center; gap: 8px; }
+.proc-cell .pct {
+    font-family: 'Cairo', sans-serif;
+    font-size: 13px; font-weight: 800;
+    width: 38px; text-align: left;
+    direction: ltr;
+}
+.proc-cell .pct.good { color: var(--accent-emerald); }
+.proc-cell .pct.warn { color: var(--accent-amber); }
+.proc-cell .pct.bad  { color: var(--accent-rose); }
+.proc-cell .bar {
+    flex: 1; height: 6px;
+    background: var(--bg-card);
+    border-radius: 999px;
+    overflow: hidden;
+    direction: ltr;
+}
+.proc-cell .bar > span {
+    display: block; height: 100%; border-radius: 999px;
+}
+.proc-cell .bar > .good { background: var(--accent-emerald); }
+.proc-cell .bar > .warn { background: var(--accent-amber); }
+.proc-cell .bar > .bad  { background: var(--accent-rose); }
+
+.hourly {
+    display: flex; align-items: flex-end;
+    gap: 4px;
+    height: 110px;
+    direction: ltr;
+}
+.hourly .bar {
+    flex: 1;
+    background: rgba(16,185,129,0.18);
+    border-top: 2px solid var(--accent-emerald);
+    border-radius: 3px 3px 0 0;
+    position: relative;
+    min-height: 4px;
+}
+.hourly .bar.peak {
+    background: rgba(245,158,11,0.25);
+    border-top-color: var(--accent-amber);
+}
+.hourly .bar .count {
+    position: absolute;
+    top: -16px; left: 50%; transform: translateX(-50%);
+    font-size: 9px; font-family: 'JetBrains Mono', monospace;
+    color: var(--text-secondary); font-weight: 700;
+}
+.hour-labels {
+    display: flex; gap: 4px;
+    margin-top: 6px;
+    direction: ltr;
+}
+.hour-labels > div {
+    flex: 1;
+    font-size: 9px;
+    color: var(--text-tertiary);
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.method {
+    background: linear-gradient(135deg, rgba(59,130,246,0.05), transparent 70%), var(--bg-card);
+    border: 1px solid rgba(59,130,246,0.18);
+    border-radius: 12px;
+    padding: 20px 24px;
+}
+.method .head {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.method .head .icon {
+    width: 30px; height: 30px;
+    background: rgba(59,130,246,0.2);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+}
+.method .head .icon svg { width: 18px; height: 18px; }
+.method .head .title {
+    font-family: 'Cairo', sans-serif;
+    font-size: 15px; font-weight: 800;
+}
+.method ul { list-style: none; }
+.method li {
+    font-size: 12px; color: var(--text-secondary);
+    line-height: 1.55;
+    padding: 4px 18px 4px 0;
+    position: relative;
+}
+.method li::before {
+    content: ''; position: absolute;
+    right: 4px; top: 11px;
+    width: 5px; height: 5px;
+    background: var(--accent-blue);
+    border-radius: 50%;
+}
+.method strong { color: var(--text-primary); font-weight: 800; }
+
+/* Responsive — make pages scale on smaller screens */
+@media (max-width: 2000px) {
+    .slide-page { transform: scale(calc(min(100vw - 60px, 1920px) / 1920)); }
+}
+</style>
 </head>
+
 <body>
 
-<div id="stage">
-    
-    <!-- الشريحة 1: الغلاف -->
-    <section class="active">
-        <div class="cover">
-            <div class="cover-watermark">أ</div>
-            <div class="eyebrow" style="border:none; padding:0; color: var(--emerald);">مشروع مبادرة داخلية</div>
-            <div class="cover-title">صُنّاع الأثر</div>
-            <div class="cover-quote">
-                "خلف كل خدمة متميزة،<br>
-                <strong>عقلٌ فكّر، ويدٌ نفّذت، وإرادةٌ صنعت الفرق.</strong><br>
-                هذه المبادرة تحتفي بهم جميعاً."
-            </div>
-            <div class="cover-footer">
-                <div>الإدارة التنفيذية للخدمات الصحية المساندة</div>
-                <div>تجمع المدينة المنورة الصحي</div>
-            </div>
-        </div>
-    </section>
+<div id="initShield">
+    <div class="ring"></div>
+    <div class="label">جاري التحميل...</div>
+</div>
 
-    <!-- الشريحة 2: المبادرات -->
-    <section>
-        <div class="container">
-            <span class="eyebrow">السياق المؤسسي</span>
-            <h2 class="slide-title">مبادرات متميزة... <em>وزاوية مكمّلة</em></h2>
-            <div class="grid-3">
-                <div class="card">
-                    <div class="tag">الالتزام الصحي</div>
-                    <h3 class="card-name">مبادرة "رُكن"</h3>
-                    <p class="card-desc">تركز على الممارس الصحي كقدوة. تقيس الالتزام بالامتثال الصحي والفحوصات المبكرة.</p>
-                </div>
-                <div class="card">
-                    <div class="tag">معايير الرعاية</div>
-                    <h3 class="card-name">دليل التميز</h3>
-                    <p class="card-desc">تركز على تقييم وتطبيق مسارات الرعاية الصحية عبر مؤشرات أداء معتمدة.</p>
-                </div>
-                <div class="card featured">
-                    <div class="tag">★ الزاوية الثالثة</div>
-                    <h3 class="card-name">صُنّاع الأثر</h3>
-                    <p class="card-desc">"رُكن" تنظر للممارس كقدوة. "دليل التميز" يقيس تطبيق المعايير.<br><br><strong>صُنّاع الأثر</strong> تسأل سؤالاً لم يُسأل بعد: من الذي طوّر الخدمة من تلقاء نفسه؟ ومن لديه فكرة تنتظر الاحتضان؟</p>
+<header class="cmd-header">
+    <div class="cmd-header-inner">
+        <div class="cmd-titles">
+            <div class="super">RADIOLOGY · EMERGENCY · TURNAROUND TIME</div>
+            <h1>الخدمات الصحية المساندة | مؤشرات أشعة الطوارئ</h1>
+            <div class="subtitle">مستشفيات تجمع المدينة المنورة الصحي · المطابقة عبر رقم الملف</div>
+        </div>
+        <div class="cmd-status">
+            <div class="cmd-pill"><span class="dot"></span><span>النظام جاهز</span></div>
+            <div class="cmd-pill" id="datePill">--</div>
+        </div>
+    </div>
+</header>
+
+<main class="cmd-main">
+
+    <section class="indicator-explainer">
+        <h2>تعريف المؤشر</h2>
+        <p class="indicator-text">
+            مؤشر زمن إنجاز فحوصات أشعة الطوارئ (TAT) يقيس الزمن بين طلب الفحص من قسم الطوارئ حتى صدور التقرير الأولي. يُعتمد على التقرير الأولي (Preliminary) لأن التقرير النهائي يصدر في اليوم التالي. تتم المطابقة بين سجل الطوارئ وسجل الأشعة (PACS) عبر رقم الملف الموحّد للمريض.
+        </p>
+        <div class="indicator-stages-grid">
+            <div class="indicator-stage-box">
+                <span class="num">١</span>
+                <div>
+                    <div class="nm">من إنشاء الطلب إلى إجراء التصوير</div>
+                    <div class="tg">المستهدف ≤ 15 دقيقة</div>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- الشريحة 3: خالد (المشكلة) -->
-    <section>
-        <div class="container">
-            <div class="split">
-                <div class="split-side">
-                    <div class="split-num">٠١</div>
-                    <h2>خالد...<br>ورحلة<br>لا تنتهي</h2>
-                </div>
-                <div class="split-main">
-                    <div class="story-quote">خالد، مريض مزمن، يحتاج كل فترة إلى إعادة صرف أدويته.</div>
-                    <div class="story-body">ولاستلام دواء يستخدمه منذ سنوات، يخوض الرحلة التالية:</div>
-                    <div class="story-path">
-                        حجز موعد — التنقل للمستشفى — البحث عن موقف — الاستقبال — انتظار العيادة — لقاء الطبيب — التوجه للصيدلية — انتظار الصيدلية — استلام الدواء — العودة.
-                    </div>
-                    <div class="story-footer">
-                        رحلة طويلة... لخدمة بسيطة جداً.<br>
-                        والخسارة لا تقع على خالد وحده.
-                    </div>
+            <div class="indicator-stage-box">
+                <span class="num">٢</span>
+                <div>
+                    <div class="nm">من التصوير إلى التقرير الأولي</div>
+                    <div class="tg">المستهدف ≤ 45 دقيقة</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- الشريحة 4: خالد (الحل) -->
-    <section>
-        <div class="container">
-            <div class="split">
-                <div class="split-side split-side-light">
-                    <div class="split-num" style="color: rgba(91, 168, 154, 0.2);">٠٢</div>
-                    <h2>الفكرة<br>موجودة...<br>والتطبيق<br>ممكن</h2>
-                </div>
-                <div class="split-main">
-                    <div class="story-body">تخيلوا معي... موظف في إحدى منشآتنا يتساءل:</div>
-                    <div class="story-quote">
-                        "لماذا يأتي خالد أصلاً؟ هو لا يحتاج إلا إعادة الدواء. لماذا لا يصل إليه في بيته؟"
-                    </div>
-                    <div class="story-path active">
-                        طلب الدواء إلكترونياً — مراجعة الطبيب عبر النظام — توصيل الدواء للمنزل.
-                    </div>
-                    <div class="story-footer" style="color: var(--emerald);">
-                        القدرة موجودة. الفكرة موجودة.<br>
-                        الحلقة المفقودة: من يتبناها أو يحتفي بمن يطبقها.
-                    </div>
-                </div>
-            </div>
+    <section class="upload-section">
+        <div class="section-title">
+            <h2>رفع ملفات المستشفيات</h2>
+            <span class="badge">لكل مستشفى: ملف الطوارئ + ملف PACS</span>
         </div>
+        <div class="upload-grid" id="uploadGrid"></div>
     </section>
 
-    <!-- الشريحة 5: التعميم -->
-    <section>
-        <div class="container">
-            <span class="eyebrow">التحديات الميدانية</span>
-            <h2 class="slide-title">قصة خالد <em>تتكرر في كل خدمة</em></h2>
-            <div class="grid-6">
-                <div class="cell"><h3 class="cell-title">المختبر</h3><p class="cell-desc">تنبيه استباقي بالنتائج، وتحسين جذري في زمن الاستجابة (TAT).</p></div>
-                <div class="cell"><h3 class="cell-title">الأشعة</h3><p class="cell-desc">تقصير مسار التحويل، وجدولة ذكية تستثمر أوقات الفراغ.</p></div>
-                <div class="cell"><h3 class="cell-title">الصيدلية</h3><p class="cell-desc">تجهيز مسبق للوصفات المتكررة، وابتكار خدمات توصيل آمنة.</p></div>
-                <div class="cell"><h3 class="cell-title">العلاج الطبيعي</h3><p class="cell-desc">برامج متابعة عن بُعد للحالات المستقرة لتوفير السعة.</p></div>
-                <div class="cell"><h3 class="cell-title">التثقيف الصحي</h3><p class="cell-desc">تطوير وسائل تثقيف رقمية تفاعلية للوصول لشريحة أكبر.</p></div>
-                <div class="cell special"><h3 class="cell-title">وفي كل خدمة أخرى..</h3><p class="cell-desc">كنوز مخفية تنتظر الاكتشاف والاحتضان.</p></div>
+    <div class="actions-bar">
+        <div class="actions-info">
+            <div class="info-stat">
+                <span class="label">المستشفيات المكتملة</span>
+                <span class="value" id="hospitalsReady">0 / 0</span>
+            </div>
+            <div class="info-stat">
+                <span class="label">إجمالي فحوصات الطوارئ</span>
+                <span class="value" id="totalStudies">--</span>
+            </div>
+            <div class="info-stat">
+                <span class="label">معايير الأداء</span>
+                <span class="value" style="color: var(--accent-emerald);">15د / 45د</span>
             </div>
         </div>
-    </section>
-
-    <!-- الشريحة 6: السؤالين -->
-    <section>
-        <div class="container">
-            <h2 class="slide-title">المبادرة تجيب على <em>سؤالين متوازيين</em></h2>
-            <div class="q-cards">
-                <div class="q-card">
-                    <div class="q-badge">للذين أنجزوا فعلاً</div>
-                    <ul class="q-list">
-                        <li>ابتكارات حقيقية حدثت في إداراتنا.</li>
-                        <li>تحسينات وفّرت وقتاً وتكلفة وموارد.</li>
-                        <li>مبادرات لها أرقام قابلة للقياس.</li>
-                    </ul>
-                    <div class="q-ask">هل حصلت هذه الإنجازات على ما تستحقه من التقدير والتوثيق؟</div>
-                </div>
-                <div class="q-card highlight">
-                    <div class="q-badge">للذين يملكون أفكاراً</div>
-                    <ul class="q-list">
-                        <li>أفكار عاشت في عقول أصحابها لسنوات.</li>
-                        <li>حلول رآها صاحبها في الميدان ولم يجد كيف يطبقها.</li>
-                        <li>تصورات تحتاج فقط من يتبناها.</li>
-                    </ul>
-                    <div class="q-ask">هل وجدت من يحتضنها؟</div>
-                </div>
-            </div>
+        <div class="actions-buttons">
+            <button class="btn" id="btnReset">إعادة تعيين</button>
+            <button class="btn btn-primary" id="btnAnalyze" disabled>تحليل البيانات</button>
         </div>
-    </section>
+    </div>
 
-    <!-- الشريحة 7: الفلسفة -->
-    <section>
-        <div class="container">
-            <div class="s7-full">
-                <div class="s7-watermark">أثر</div>
-                <div class="s7-quote">
-                    "التميز الحقيقي لا يأتي من تكرار المألوف،<br>
-                    <strong>بل من البحث الدائم عن طرق أفضل لتقديم الخدمة.</strong>"
-                </div>
-                <div class="s7-pillars">
-                    <div class="s7-pill">الاحتفاء بمن صنعوا الفرق</div>
-                    <div class="s7-pill">توثيق الأثر بالأرقام</div>
-                    <div class="s7-pill">بناء ثقافة مؤسسية للابتكار</div>
-                </div>
-            </div>
+    <div class="empty-state" id="emptyState">
+        <h3>ارفع ملفي مستشفى واحد على الأقل لبدء التحليل</h3>
+        <p>كل مستشفى يحتاج ملفين: ملف الطوارئ (xlsx) وملف الأشعة من PACS (csv أو xlsx)</p>
+    </div>
+
+    <section class="results-section" id="resultsSection">
+        <div class="section-title">
+            <h2>نتائج التحليل</h2>
+            <span class="badge" id="resultsBadge">--</span>
         </div>
+        <div class="hospitals-section" id="hospitalsSection"></div>
     </section>
 
-    <!-- الشريحة 8: النطاق -->
-    <section>
-        <div class="container">
-            <span class="eyebrow">نطاق المبادرة</span>
-            <h2 class="slide-title">ماذا نبحث عنه تحديداً؟</h2>
-            <div class="sc-list">
-                <div class="sc-item"><div class="sc-num">٠١</div><div class="sc-name">حلول لمشكلات مزمنة</div><div class="sc-desc">تحديات تشغيلية تؤثر على المريض أو على سلاسة سير العمل اليومي.</div></div>
-                <div class="sc-item"><div class="sc-num">٠٢</div><div class="sc-name">تطوير نماذج العمل</div><div class="sc-desc">ابتكارات تنقل الخدمة القائمة من مستواها الحالي إلى مستوى أداء أفضل.</div></div>
-                <div class="sc-item"><div class="sc-num">٠٣</div><div class="sc-name">تحسين الكفاءة والتكلفة</div><div class="sc-desc">مبادرات ترفع كفاءة العمليات التشغيلية وتُقلل الهدر وتُحسّن التكلفة.</div></div>
-                <div class="sc-item"><div class="sc-num">٠٤</div><div class="sc-name">تقصير مسار المريض</div><div class="sc-desc">إجراءات تُسهّل الوصول للخدمة وتُقلص أوقات الانتظار غير المبررة.</div></div>
-                <div class="sc-item"><div class="sc-num">٠٥</div><div class="sc-name">الارتقاء بجودة الخدمات</div><div class="sc-desc">تحسينات تنعكس مباشرة بمؤشرات قابلة للقياس وأرقام دقيقة وموثقة.</div></div>
-            </div>
-            <div class="sc-banner">
-                <div class="sc-banner-lbl">آلية العمل</div>
-                <div class="sc-banner-txt">استقبال إلكتروني للمشاركات، تقييم بمعايير علمية، وتتويج رسمي للأفراد والإدارات والفرق.</div>
-            </div>
+</main>
+
+<!-- SLIDE MODAL -->
+<div class="slide-modal" id="slideModal">
+    <div class="slide-toolbar">
+        <h2 id="slideModalTitle">سلايد المستشفى</h2>
+        <div class="actions">
+            <button class="btn" id="btnSlideExport">حفظ صورتين PNG</button>
+            <button class="btn btn-close" id="btnSlideClose">إغلاق</button>
         </div>
-    </section>
-
-    <!-- الشريحة 9: المسارات -->
-    <section>
-        <div class="container">
-            <h2 class="slide-title" style="text-align: center;">مساران متوازيان — <em>للمنفّذ، ولصاحب الفكرة</em></h2>
-            <div class="q-cards" style="margin-top: 40px;">
-                <div class="q-card" style="text-align: center; justify-content: center;">
-                    <div class="q-badge" style="align-self: center; background: #fff; color: var(--ink); border: 2px solid var(--ink);">مسار الإنجازات</div>
-                    <p style="font-size: 40px; font-weight: 700; color: var(--text-dark); line-height: 1.6;">لمن طبّق ابتكاراً أو حسّن خدمةً وأحدث أثراً موثقاً.<br><br>إنجازات حقيقية تستحق <strong>التقدير والتوثيق المؤسسي.</strong></p>
-                </div>
-                <div class="q-card highlight" style="text-align: center; justify-content: center;">
-                    <div class="q-badge" style="align-self: center; background: var(--accent); color: #fff; border:none;">مسار الأفكار</div>
-                    <p style="font-size: 40px; font-weight: 700; color: var(--text-dark); line-height: 1.6;">لمن يملك فكرة قابلة للتطبيق ولا يملك بعد أدوات تنفيذها.<br><br>عند تأهلها، <strong>يتم تبنّيها وتنفيذها باسم صاحبها.</strong></p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- الشريحة 10: الفئات -->
-    <section>
-        <div class="container">
-            <span class="eyebrow">مجالات التنافس</span>
-            <h2 class="slide-title">ست فئات تنافسية — <em>تغطي كل أوجه التميز</em></h2>
-            <div class="grid-6">
-                <div class="cell"><h3 class="cell-title">٠١. الحلول</h3><p class="cell-desc">حل مشكلة مزمنة كانت تؤثر على المريض أو على سير العمل.</p></div>
-                <div class="cell"><h3 class="cell-title">٠٢. الكفاءة</h3><p class="cell-desc">رفع كفاءة العمل أو تحسين التكلفة التشغيلية والموارد.</p></div>
-                <div class="cell"><h3 class="cell-title">٠٣. الوصول</h3><p class="cell-desc">تسهيل وصول المريض للخدمة أو تقليل وقت الانتظار.</p></div>
-                <div class="cell" style="border-color: var(--emerald);"><h3 class="cell-title" style="color: var(--emerald);">٠٤. الجودة</h3><p class="cell-desc">تحسين جودة خدمة قائمة بمؤشر قابل للقياس.</p></div>
-                <div class="cell"><h3 class="cell-title">٠٥. الابتكار</h3><p class="cell-desc">ابتكار مسار جديد أو خدمة لم تكن موجودة من قبل.</p></div>
-                <div class="cell special"><h3 class="cell-title">٠٦. الفكرة</h3><p class="cell-desc">فكرة لم تُطبق بعد لكنها تستحق التبني والتنفيذ.</p></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- الشريحة 11: المعايير -->
-    <section>
-        <div class="container">
-            <h2 class="slide-title">نظام تقييم شفاف — <em>١٠٠ نقطة</em></h2>
-            <div class="scr-layout">
-                <div class="scr-left">
-                    <div class="scr-row"><div class="scr-val">١٥٪</div><div class="scr-txt">وضوح المشكلة والحل</div></div>
-                    <div class="scr-row"><div class="scr-val">٢٠٪</div><div class="scr-txt">القابلية للقياس بالأرقام والمؤشرات</div></div>
-                    <div class="scr-row"><div class="scr-val">٢٥٪</div><div class="scr-txt">حجم الأثر على المستفيدين أو الخدمة</div></div>
-                    <div class="scr-row"><div class="scr-val">٢٠٪</div><div class="scr-txt">المواءمة مع الأهداف الاستراتيجية</div></div>
-                    <div class="scr-row" style="border: none;"><div class="scr-val">٢٠٪</div><div class="scr-txt">الأصالة وقابلية التعميم</div></div>
-                </div>
-                <div class="scr-right">
-                    <div class="scr-total">١٠٠</div>
-                    <div style="font-size: 32px; font-weight: 700; margin-bottom: 20px;">إجمالي النقاط</div>
-                    <div class="scr-min">
-                        <p>الحد الأدنى للتأهل</p>
-                        <strong>٧٠</strong>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- الشريحة 12: الأثر -->
-    <section>
-        <div class="container" style="padding-left: 0; padding-right: 0;">
-            <div class="imp-layout" style="margin: 0 120px;">
-                <div class="imp-side">
-                    <h2>نتائج ملموسة<br>تنعكس على بيئة العمل</h2>
-                    <p>تتجاوز المبادرة مفهوم الجائزة...</p>
-                </div>
-                <div class="imp-grid">
-                    <div class="imp-box"><h3 class="imp-title"><span>١.</span> تطوير الخدمات</h3><p class="imp-desc">حلول عملية تُعالج تحديات حقيقية.</p></div>
-                    <div class="imp-box"><h3 class="imp-title"><span>٢.</span> رفع الكفاءة</h3><p class="imp-desc">تحسين التكلفة ينعكس على الجودة.</p></div>
-                    <div class="imp-box"><h3 class="imp-title"><span>٣.</span> تعزيز التكامل</h3><p class="imp-desc">منصة موحدة تحفّز التنافس البنّاء.</p></div>
-                    <div class="imp-box" style="border-color: var(--accent);"><h3 class="imp-title" style="color: var(--accent);"><span>٤.</span> بنك معرفي مؤسسي</h3><p class="imp-desc">كل فكرة تُحفظ، كل حل يُوثّق، ليصبح ثروة للأجيال القادمة.</p></div>
-                    <div class="imp-box"><h3 class="imp-title"><span>٥.</span> تجربة المريض</h3><p class="imp-desc">انعكاس مباشر للتطوير المستمر.</p></div>
-                    <div class="imp-box"><h3 class="imp-title"><span>٦.</span> ثقافة التميز</h3><p class="imp-desc">سمة متجذرة في كل مستويات العمل.</p></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- الشريحة 13: الخاتمة -->
-    <section>
-        <div class="s14">
-            <h1 style="font-size: 200px; color: var(--text-dark); font-weight: 900; margin-bottom: 20px;">شكراً لكم</h1>
-            <div class="s14-line"></div>
-            <p style="font-size: 40px; color: var(--text-muted); font-weight: 700;">تجمع المدينة المنورة الصحي</p>
-        </div>
-    </section>
-
+    </div>
+    <div class="slide-pages-wrap" id="slidePagesWrap"></div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const stage = document.getElementById('stage');
-        const sections = Array.from(document.querySelectorAll('section'));
-        let current = 0;
+// ====================== CONFIG ======================
+const HOSPITALS = {
+    kfh:        { ar: 'مستشفى الملك فهد',          en: 'King Fahad Hospital - Madina' },
+    kgh:        { ar: 'مستشفى المدينة العام',        en: 'Madinah General Hospital' },
+    maternity:  { ar: 'مستشفى النساء والولادة',     en: 'Maternity & Children Hospital' },
+    ohud:       { ar: 'مستشفى أحد',                  en: 'Ohud Hospital' },
+    miqat:      { ar: 'مستشفى الميقات',              en: 'Al-Miqat Hospital' },
+    salam:      { ar: 'مستشفى السلام',               en: 'Al-Salam Hospital' },
+    haram:      { ar: 'مستشفى الحرم',                en: 'Al-Haram Hospital' },
+    abdulmohsen:{ ar: 'مستشفى الأمير عبدالمحسن',     en: 'Prince Abdulmohsen Hospital' },
+    mahd:       { ar: 'مستشفى المهد',                en: 'Al-Mahd Hospital' },
+    hamna:      { ar: 'مستشفى الحمنة',               en: 'Al-Hamna Hospital' },
+    wadi_fara:  { ar: 'مستشفى وادي الفرع',           en: 'Wadi Al-Fara Hospital' },
+    yanbu:      { ar: 'مستشفى ينبع العام',           en: 'Yanbu General Hospital' },
+    hanakiyah:  { ar: 'مستشفى الحناكية',             en: 'Al-Hanakiyah Hospital' },
+    khaybar:    { ar: 'مستشفى خيبر',                 en: 'Khaybar Hospital' },
+    mental:     { ar: 'مستشفى الصحة النفسية',        en: 'Mental Health Hospital' }
+};
 
-        // دالة التحجيم المذهلة: تضمن أن نسبة 16:9 (1920x1080) تتطابق وتملأ الشاشة تماماً
-        const resize = () => {
-            const width = window.innerWidth;
-            const height = window.innerHeight;
-            const scale = Math.min(width / 1920, height / 1080);
-            stage.style.transform = `scale(${scale})`;
+const TARGET_O2A = 15; // order to acquisition
+const TARGET_A2R = 45; // acquisition to preliminary report
+
+const STATE = {
+    files: {},     // { hkey: { ed: File|null, rad: File|null } }
+    parsed: {},    // { hkey: { ed: rows[], rad: rows[] } }
+    results: {}    // { hkey: { studies: [...], summary: {...} } }
+};
+Object.keys(HOSPITALS).forEach(k => {
+    STATE.files[k] = { ed: null, rad: null };
+    STATE.parsed[k] = { ed: null, rad: null };
+});
+
+// ====================== INIT ======================
+function init() {
+    document.getElementById('datePill').textContent = new Date().toISOString().slice(0, 10);
+    renderUploadCards();
+    updateInfo();
+
+    document.getElementById('btnAnalyze').addEventListener('click', analyzeAll);
+    document.getElementById('btnReset').addEventListener('click', resetAll);
+    document.getElementById('btnSlideClose').addEventListener('click', () => {
+        document.getElementById('slideModal').classList.remove('active');
+    });
+    document.getElementById('btnSlideExport').addEventListener('click', exportSlidePngs);
+
+    setTimeout(() => {
+        const shield = document.getElementById('initShield');
+        shield.classList.add('hidden');
+        setTimeout(() => shield.remove(), 500);
+    }, 250);
+}
+
+function renderUploadCards() {
+    const grid = document.getElementById('uploadGrid');
+    grid.innerHTML = Object.entries(HOSPITALS).map(([key, info]) => `
+        <div class="upload-card" data-hospital="${key}">
+            <div class="upload-card-header">
+                <div class="hospital-info">
+                    <h3>${info.ar}</h3>
+                    <div class="lab-name">${info.en}</div>
+                </div>
+            </div>
+            <div class="dual-upload">
+                <div class="upload-slot">
+                    <div class="slot-label">الطوارئ <span class="req">*</span></div>
+                    <div class="upload-input-wrap">
+                        <input type="file" class="upload-input" data-hospital="${key}" data-kind="ed" accept=".xlsx,.xls,.csv">
+                        <div class="upload-label" data-label="${key}-ed">رفع ملف</div>
+                    </div>
+                </div>
+                <div class="upload-slot">
+                    <div class="slot-label">الأشعة PACS <span class="req">*</span></div>
+                    <div class="upload-input-wrap">
+                        <input type="file" class="upload-input" data-hospital="${key}" data-kind="rad" accept=".xlsx,.xls,.csv">
+                        <div class="upload-label" data-label="${key}-rad">رفع ملف</div>
+                    </div>
+                </div>
+            </div>
+            <div class="upload-status" data-status="${key}">لم يتم الرفع</div>
+        </div>
+    `).join('');
+
+    document.querySelectorAll('.upload-input').forEach(input => {
+        input.addEventListener('change', handleUpload);
+    });
+}
+
+// ====================== FILE HANDLING ======================
+function handleUpload(e) {
+    const file = e.target.files[0];
+    const hospital = e.target.dataset.hospital;
+    const kind = e.target.dataset.kind; // 'ed' or 'rad'
+    if (!file) return;
+
+    STATE.files[hospital][kind] = file;
+    const lbl = document.querySelector(`[data-label="${hospital}-${kind}"]`);
+    lbl.textContent = '✓ ' + (file.name.length > 16 ? file.name.slice(0,14)+'…' : file.name);
+    lbl.classList.add('loaded');
+
+    parseFile(file).then(rows => {
+        STATE.parsed[hospital][kind] = rows;
+        updateCardStatus(hospital);
+        updateInfo();
+    }).catch(err => {
+        console.error(err);
+        STATE.parsed[hospital][kind] = null;
+        const st = document.querySelector(`[data-status="${hospital}"]`);
+        st.textContent = 'فشل قراءة ' + kind.toUpperCase() + ': ' + err.message;
+        st.className = 'upload-status error';
+    });
+}
+
+function parseFile(file) {
+    return new Promise((resolve, reject) => {
+        const ext = file.name.toLowerCase().split('.').pop();
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error('قراءة الملف فشلت'));
+        if (ext === 'csv') {
+            reader.onload = (ev) => {
+                try {
+                    const txt = ev.target.result;
+                    const parsed = Papa.parse(txt, { header: true, skipEmptyLines: true });
+                    resolve(parsed.data);
+                } catch(e) { reject(e); }
+            };
+            reader.readAsText(file, 'utf-8');
+        } else {
+            reader.onload = (ev) => {
+                try {
+                    const data = new Uint8Array(ev.target.result);
+                    const wb = XLSX.read(data, { type: 'array', cellDates: true });
+                    const ws = wb.Sheets[wb.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+                    resolve(rows);
+                } catch(e) { reject(e); }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    });
+}
+
+function updateCardStatus(hospital) {
+    const card = document.querySelector(`.upload-card[data-hospital="${hospital}"]`);
+    const st = document.querySelector(`[data-status="${hospital}"]`);
+    const hasEd = !!STATE.parsed[hospital].ed;
+    const hasRad = !!STATE.parsed[hospital].rad;
+
+    card.classList.remove('has-both', 'partial');
+    if (hasEd && hasRad) {
+        card.classList.add('has-both');
+        const ed = STATE.parsed[hospital].ed.length;
+        const rad = STATE.parsed[hospital].rad.length;
+        st.textContent = `جاهز · ${rad} فحص أشعة · ${ed} سجل طوارئ`;
+        st.className = 'upload-status success';
+    } else if (hasEd || hasRad) {
+        card.classList.add('partial');
+        st.textContent = (hasEd ? 'الطوارئ: ✓' : 'الطوارئ: --') + ' · ' + (hasRad ? 'الأشعة: ✓' : 'الأشعة: --');
+        st.className = 'upload-status warning';
+    } else {
+        st.textContent = 'لم يتم الرفع';
+        st.className = 'upload-status';
+    }
+}
+
+function updateInfo() {
+    const ready = Object.keys(HOSPITALS).filter(k =>
+        STATE.parsed[k].ed && STATE.parsed[k].rad
+    ).length;
+    const total = Object.keys(HOSPITALS).length;
+    document.getElementById('hospitalsReady').textContent = `${ready} / ${total}`;
+    document.getElementById('btnAnalyze').disabled = ready === 0;
+}
+
+function resetAll() {
+    if (!confirm('هل تريد إعادة تعيين جميع البيانات؟')) return;
+    Object.keys(HOSPITALS).forEach(k => {
+        STATE.files[k] = { ed: null, rad: null };
+        STATE.parsed[k] = { ed: null, rad: null };
+        STATE.results[k] = null;
+    });
+    document.querySelectorAll('.upload-input').forEach(i => i.value = '');
+    renderUploadCards();
+    updateInfo();
+    document.getElementById('resultsSection').classList.remove('visible');
+    document.getElementById('emptyState').style.display = 'block';
+}
+
+// ====================== DATE PARSING ======================
+// Radiology dates: "06-May-2026, 12:58 PM" OR Excel serial OR JS Date
+function parseRadDate(v) {
+    if (v == null || v === '') return null;
+    if (v instanceof Date) return isNaN(v) ? null : v;
+    if (typeof v === 'number') {
+        // Excel serial
+        return new Date(Math.round((v - 25569) * 86400 * 1000));
+    }
+    const s = String(v).trim();
+    // try "DD-Mon-YYYY, HH:MM AM/PM"
+    const m = s.match(/(\d{1,2})-(\w{3})-(\d{4}),?\s*(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+    if (m) {
+        const months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+        let h = parseInt(m[4]);
+        const min = parseInt(m[5]);
+        if (m[6]) {
+            const ap = m[6].toUpperCase();
+            if (ap === 'PM' && h < 12) h += 12;
+            if (ap === 'AM' && h === 12) h = 0;
+        }
+        return new Date(parseInt(m[3]), months[m[2].slice(0,3).replace(/^./, c => c.toUpperCase())] ?? 0, parseInt(m[1]), h, min);
+    }
+    // fallback
+    const d = new Date(s);
+    return isNaN(d) ? null : d;
+}
+
+// ED dates: Excel serial OR JS Date
+function parseEdDate(v) {
+    if (v == null || v === '') return null;
+    if (v instanceof Date) return isNaN(v) ? null : v;
+    if (typeof v === 'number') {
+        return new Date(Math.round((v - 25569) * 86400 * 1000));
+    }
+    const d = new Date(String(v));
+    return isNaN(d) ? null : d;
+}
+
+// strip ="..." wrapping if present
+function cleanId(v) {
+    if (v == null) return '';
+    let s = String(v).trim();
+    if (s.startsWith('=')) s = s.slice(1);
+    s = s.replace(/^"|"$/g, '');
+    return s.trim();
+}
+
+// ====================== ANALYZE ======================
+function analyzeAll() {
+    const ready = Object.keys(HOSPITALS).filter(k =>
+        STATE.parsed[k].ed && STATE.parsed[k].rad
+    );
+
+    ready.forEach(hkey => {
+        STATE.results[hkey] = analyzeHospital(hkey);
+    });
+
+    // Hide unset hospitals
+    Object.keys(HOSPITALS).forEach(k => {
+        if (!ready.includes(k)) STATE.results[k] = null;
+    });
+
+    renderResults();
+    document.getElementById('resultsBadge').textContent = `${ready.length} مستشفى`;
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('resultsSection').classList.add('visible');
+
+    // total studies aggregated
+    const total = ready.reduce((s, k) => s + (STATE.results[k]?.summary.total_studies || 0), 0);
+    document.getElementById('totalStudies').textContent = total;
+}
+
+function analyzeHospital(hkey) {
+    const ed = STATE.parsed[hkey].ed;
+    const rad = STATE.parsed[hkey].rad;
+
+    // Build set of ED patient IDs
+    const edIdSet = new Set();
+    const edIdCol = findColumn(ed[0], ['PATIENT_ID', 'patient_id', 'PatientID', 'Patient ID', 'MRN', 'mrn']);
+    ed.forEach(r => {
+        const id = cleanId(r[edIdCol]);
+        if (id) edIdSet.add(id);
+    });
+
+    // Resolve radiology columns
+    const radSample = rad[0] || {};
+    const cPid = findColumn(radSample, ['Patient ID', 'PATIENT_ID', 'patient_id', 'MRN']);
+    const cOrder = findColumn(radSample, ['Order creation date', 'Order date', 'Order Date']);
+    const cStudy = findColumn(radSample, ['Study date', 'Acquisition date']);
+    const cReport = findColumn(radSample, ['Report creation date', 'Report date']);
+    const cMod = findColumn(radSample, ['Modality type', 'Modality']);
+    const cProc = findColumn(radSample, ['Procedure name', 'Procedure', 'Procedure Name']);
+
+    // Filter to ED studies + compute TAT
+    const studies = [];
+    rad.forEach(r => {
+        const pid = cleanId(r[cPid]);
+        if (!edIdSet.has(pid)) return;
+        const orderDt = parseRadDate(r[cOrder]);
+        const studyDt = parseRadDate(r[cStudy]);
+        const reportDt = parseRadDate(r[cReport]);
+        if (!orderDt || !studyDt || !reportDt) return;
+        const o2a = (studyDt - orderDt) / 60000;
+        const a2r = (reportDt - studyDt) / 60000;
+        if (o2a < 0 || a2r < 0) return;
+        studies.push({
+            pid, orderDt, studyDt, reportDt,
+            modality: r[cMod] || 'Unknown',
+            procedure: r[cProc] || 'Unknown',
+            o2a, a2r
+        });
+    });
+
+    return { studies, summary: summarize(studies) };
+}
+
+function findColumn(sample, candidates) {
+    if (!sample) return null;
+    const keys = Object.keys(sample);
+    // exact match first
+    for (const c of candidates) {
+        if (keys.includes(c)) return c;
+    }
+    // case-insensitive + trimmed
+    const lower = keys.map(k => ({ k, l: String(k).toLowerCase().trim() }));
+    for (const c of candidates) {
+        const f = lower.find(x => x.l === c.toLowerCase());
+        if (f) return f.k;
+    }
+    // partial match
+    for (const c of candidates) {
+        const f = lower.find(x => x.l.includes(c.toLowerCase()));
+        if (f) return f.k;
+    }
+    return null;
+}
+
+function summarize(studies) {
+    const n = studies.length;
+    if (n === 0) return { total_studies: 0 };
+
+    const o2aVals = studies.map(s => s.o2a).sort((a,b) => a-b);
+    const a2rVals = studies.map(s => s.a2r).sort((a,b) => a-b);
+
+    const median = arr => arr.length === 0 ? 0 : arr[Math.floor(arr.length/2)];
+    const mean = arr => arr.length === 0 ? 0 : arr.reduce((s,v) => s+v, 0) / arr.length;
+    const pct = (arr, p) => arr.length === 0 ? 0 : arr[Math.min(arr.length-1, Math.floor(arr.length*p))];
+
+    const o2aOk = studies.filter(s => s.o2a <= TARGET_O2A).length;
+    const a2rOk = studies.filter(s => s.a2r <= TARGET_A2R).length;
+
+    // Modality breakdown
+    const byMod = {};
+    studies.forEach(s => {
+        const m = s.modality || 'Unknown';
+        if (!byMod[m]) byMod[m] = [];
+        byMod[m].push(s);
+    });
+    const byModality = Object.keys(byMod).map(m => {
+        const arr = byMod[m];
+        return {
+            modality: m,
+            n: arr.length,
+            o2a_med: median(arr.map(x=>x.o2a).sort((a,b)=>a-b)),
+            o2a_mean: mean(arr.map(x=>x.o2a)),
+            a2r_med: median(arr.map(x=>x.a2r).sort((a,b)=>a-b)),
+            a2r_mean: mean(arr.map(x=>x.a2r)),
+            o2a_comp: 100*arr.filter(x=>x.o2a<=TARGET_O2A).length/arr.length,
+            a2r_comp: 100*arr.filter(x=>x.a2r<=TARGET_A2R).length/arr.length
         };
-        window.addEventListener('resize', resize);
-        resize();
+    }).sort((a,b)=>b.n-a.n);
 
-        const update = () => {
-            sections.forEach((s, i) => s.classList.toggle('active', i === current));
+    // Procedure breakdown
+    const byProc = {};
+    studies.forEach(s => {
+        const p = s.procedure || 'Unknown';
+        if (!byProc[p]) byProc[p] = [];
+        byProc[p].push(s);
+    });
+    const topProcedures = Object.keys(byProc).map(p => {
+        const arr = byProc[p];
+        return {
+            name: p,
+            n: arr.length,
+            o2a_med: median(arr.map(x=>x.o2a).sort((a,b)=>a-b)),
+            a2r_med: median(arr.map(x=>x.a2r).sort((a,b)=>a-b)),
+            o2a_comp: 100*arr.filter(x=>x.o2a<=TARGET_O2A).length/arr.length,
+            a2r_comp: 100*arr.filter(x=>x.a2r<=TARGET_A2R).length/arr.length
         };
+    }).sort((a,b)=>b.n-a.n).slice(0, 10);
 
-        const next = () => { current = Math.min(sections.length - 1, current + 1); update(); };
-        const prev = () => { current = Math.max(0, current - 1); update(); };
+    // Buckets
+    const bucket_o2a = { '≤15':0,'16-30':0,'31-60':0,'>60':0 };
+    studies.forEach(s => {
+        if (s.o2a <= 15) bucket_o2a['≤15']++;
+        else if (s.o2a <= 30) bucket_o2a['16-30']++;
+        else if (s.o2a <= 60) bucket_o2a['31-60']++;
+        else bucket_o2a['>60']++;
+    });
+    const bucket_a2r = { '≤45':0,'46-90':0,'91-120':0,'>120':0 };
+    studies.forEach(s => {
+        if (s.a2r <= 45) bucket_a2r['≤45']++;
+        else if (s.a2r <= 90) bucket_a2r['46-90']++;
+        else if (s.a2r <= 120) bucket_a2r['91-120']++;
+        else bucket_a2r['>120']++;
+    });
 
-        // أزرار الكيبورد للتنقل (أسهم ويمين/يسار ومسافة)
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft' || e.key === ' ' || e.key === 'PageDown') next();
-            if (e.key === 'ArrowRight' || e.key === 'PageUp') prev();
+    // Hourly volume (24)
+    const hourly = Array(24).fill(0);
+    studies.forEach(s => hourly[s.orderDt.getHours()]++);
+
+    // Heatmap: 2h bin x modality, median o2a and a2r
+    const hourBins = [0,2,4,6,8,10,12,14,16,18,20,22];
+    const modalities = byModality.map(x => x.modality);
+    const hm_o2a = modalities.map(m => hourBins.map(hb => {
+        const cell = studies.filter(s => s.modality === m && s.orderDt.getHours() >= hb && s.orderDt.getHours() < hb+2);
+        if (cell.length === 0) return { v: null, n: 0 };
+        const vals = cell.map(x=>x.o2a).sort((a,b)=>a-b);
+        return { v: median(vals), n: cell.length };
+    }));
+    const hm_a2r = modalities.map(m => hourBins.map(hb => {
+        const cell = studies.filter(s => s.modality === m && s.orderDt.getHours() >= hb && s.orderDt.getHours() < hb+2);
+        if (cell.length === 0) return { v: null, n: 0 };
+        const vals = cell.map(x=>x.a2r).sort((a,b)=>a-b);
+        return { v: median(vals), n: cell.length };
+    }));
+
+    // Date range
+    const allDates = studies.map(s => s.orderDt);
+    const minD = new Date(Math.min(...allDates));
+    const maxD = new Date(Math.max(...allDates));
+
+    return {
+        total_studies: n,
+        unique_patients: new Set(studies.map(s=>s.pid)).size,
+        date_range: fmtDate(minD) + (fmtDate(minD) !== fmtDate(maxD) ? ' – ' + fmtDate(maxD) : ''),
+        o2a_median: median(o2aVals),
+        o2a_mean: mean(o2aVals),
+        o2a_p75: pct(o2aVals, 0.75),
+        o2a_p90: pct(o2aVals, 0.90),
+        o2a_comp_n: o2aOk,
+        o2a_comp_pct: 100*o2aOk/n,
+        a2r_median: median(a2rVals),
+        a2r_mean: mean(a2rVals),
+        a2r_p75: pct(a2rVals, 0.75),
+        a2r_p90: pct(a2rVals, 0.90),
+        a2r_comp_n: a2rOk,
+        a2r_comp_pct: 100*a2rOk/n,
+        byModality, topProcedures,
+        bucket_o2a, bucket_a2r,
+        hourly, hourBins, modalities,
+        hm_o2a, hm_a2r
+    };
+}
+
+function fmtDate(d) {
+    if (!d) return '--';
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+// ====================== RENDER RESULT CARDS ======================
+function renderResults() {
+    const wrap = document.getElementById('hospitalsSection');
+    const html = Object.keys(HOSPITALS)
+        .filter(k => STATE.results[k])
+        .map(k => renderHospitalCard(k))
+        .join('');
+    wrap.innerHTML = html;
+    // wire slide buttons
+    wrap.querySelectorAll('[data-slide-for]').forEach(btn => {
+        btn.addEventListener('click', () => openSlide(btn.dataset.slideFor));
+    });
+}
+
+function clsCompliance(pct, goodT=80, warnT=50) {
+    if (pct >= goodT) return 'emerald';
+    if (pct >= warnT) return 'amber';
+    return 'rose';
+}
+
+function renderHospitalCard(hkey) {
+    const info = HOSPITALS[hkey];
+    const s = STATE.results[hkey].summary;
+
+    if (s.total_studies === 0) {
+        return `
+        <div class="hospital-card">
+            <div class="hospital-header">
+                <div class="hospital-title">
+                    <h2>${info.ar}</h2>
+                    <div class="lab-tag">${info.en}</div>
+                </div>
+            </div>
+            <div class="hospital-body">
+                <div style="text-align:center; padding: 30px; color: var(--text-tertiary);">
+                    لا يوجد تطابق بين ملف الطوارئ وملف الأشعة لهذا المستشفى.<br>
+                    تأكد من أن الملفات تغطي نفس الفترة الزمنية وأن أرقام المرضى متوافقة.
+                </div>
+            </div>
+        </div>`;
+    }
+
+    const o2aCls = clsCompliance(s.o2a_comp_pct);
+    const a2rCls = clsCompliance(s.a2r_comp_pct);
+
+    const renderBucket = (label, n, color) => {
+        const p = 100 * n / s.total_studies;
+        return `
+        <div class="h-bucket">
+            <div class="sw ${color}"></div>
+            <div class="lbl">${label}</div>
+            <div class="bar"><span class="${color}" style="width:${Math.max(p,2)}%"></span></div>
+            <div class="n">${n} · ${Math.round(p)}%</div>
+        </div>`;
+    };
+
+    return `
+    <div class="hospital-card" data-h="${hkey}">
+        <div class="hospital-header">
+            <div class="hospital-title">
+                <h2>${info.ar}</h2>
+                <div class="lab-tag">${info.en} · ${s.date_range}</div>
+            </div>
+            <div class="hospital-actions">
+                <button class="btn btn-primary" data-slide-for="${hkey}">عرض السلايد</button>
+            </div>
+        </div>
+        <div class="hospital-body">
+            <div class="h-kpi-strip">
+                <div class="h-kpi violet">
+                    <div class="l">إجمالي الفحوصات</div>
+                    <div class="v">${s.total_studies}<span class="u">فحص</span></div>
+                    <div class="sub">${s.unique_patients} مريض طوارئ</div>
+                </div>
+                <div class="h-kpi">
+                    <div class="l">طلب → تصوير (وسيط)</div>
+                    <div class="v">${Math.round(s.o2a_median)}<span class="u">دقيقة</span></div>
+                    <div class="sub">المتوسط ${s.o2a_mean.toFixed(1)} د · P90 = ${Math.round(s.o2a_p90)} د</div>
+                </div>
+                <div class="h-kpi amber">
+                    <div class="l">تصوير → تقرير (وسيط)</div>
+                    <div class="v">${Math.round(s.a2r_median)}<span class="u">دقيقة</span></div>
+                    <div class="sub">المتوسط ${s.a2r_mean.toFixed(1)} د · P90 = ${Math.round(s.a2r_p90)} د</div>
+                </div>
+                <div class="h-kpi ${o2aCls === 'emerald' ? 'emerald' : o2aCls === 'amber' ? 'amber' : 'rose'}">
+                    <div class="l">الالتزام بـ 15 د</div>
+                    <div class="v txt-${o2aCls}">${Math.round(s.o2a_comp_pct)}<span class="u">%</span></div>
+                    <div class="sub">${s.o2a_comp_n} / ${s.total_studies} ضمن المعيار</div>
+                </div>
+                <div class="h-kpi ${a2rCls === 'emerald' ? 'emerald' : a2rCls === 'amber' ? 'amber' : 'rose'}">
+                    <div class="l">الالتزام بـ 45 د</div>
+                    <div class="v txt-${a2rCls}">${Math.round(s.a2r_comp_pct)}<span class="u">%</span></div>
+                    <div class="sub">${s.a2r_comp_n} / ${s.total_studies} ضمن المعيار</div>
+                </div>
+            </div>
+
+            <div class="h-section">
+                <div class="h-panel">
+                    <div class="h-panel-head">
+                        <div class="ttl">من الطلب إلى التصوير</div>
+                        <div class="tg">Target ≤ 15 min</div>
+                    </div>
+                    <div class="h-stat-row">
+                        <div class="h-stat"><div class="l">Median</div><div class="v">${Math.round(s.o2a_median)}<span class="u">min</span></div></div>
+                        <div class="h-stat"><div class="l">Mean</div><div class="v">${Math.round(s.o2a_mean)}<span class="u">min</span></div></div>
+                        <div class="h-stat"><div class="l">P90</div><div class="v">${Math.round(s.o2a_p90)}<span class="u">min</span></div></div>
+                    </div>
+                    <div class="h-buckets">
+                        ${renderBucket('ضمن المعيار (≤15 د)', s.bucket_o2a['≤15'], 'emerald')}
+                        ${renderBucket('16 – 30 دقيقة', s.bucket_o2a['16-30'], 'amber')}
+                        ${renderBucket('31 – 60 دقيقة', s.bucket_o2a['31-60'], 'orange')}
+                        ${renderBucket('أكثر من 60 دقيقة', s.bucket_o2a['>60'], 'rose')}
+                    </div>
+                </div>
+
+                <div class="h-panel">
+                    <div class="h-panel-head">
+                        <div class="ttl">من التصوير إلى التقرير الأولي</div>
+                        <div class="tg">Target ≤ 45 min</div>
+                    </div>
+                    <div class="h-stat-row">
+                        <div class="h-stat"><div class="l">Median</div><div class="v">${Math.round(s.a2r_median)}<span class="u">min</span></div></div>
+                        <div class="h-stat"><div class="l">Mean</div><div class="v">${Math.round(s.a2r_mean)}<span class="u">min</span></div></div>
+                        <div class="h-stat"><div class="l">P90</div><div class="v">${Math.round(s.a2r_p90)}<span class="u">min</span></div></div>
+                    </div>
+                    <div class="h-buckets">
+                        ${renderBucket('ضمن المعيار (≤45 د)', s.bucket_a2r['≤45'], 'emerald')}
+                        ${renderBucket('46 – 90 دقيقة', s.bucket_a2r['46-90'], 'amber')}
+                        ${renderBucket('91 – 120 دقيقة', s.bucket_a2r['91-120'], 'orange')}
+                        ${renderBucket('أكثر من 120 دقيقة', s.bucket_a2r['>120'], 'rose')}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`;
+}
+
+// ====================== SLIDE BUILDER ======================
+function openSlide(hkey) {
+    const info = HOSPITALS[hkey];
+    const s = STATE.results[hkey].summary;
+    document.getElementById('slideModalTitle').textContent = `سلايد · ${info.ar}`;
+
+    const wrap = document.getElementById('slidePagesWrap');
+    wrap.innerHTML = buildSlidePage1(info, s) + buildSlidePage2(info, s);
+
+    document.getElementById('slideModal').classList.add('active');
+    document.getElementById('slideModal').scrollTop = 0;
+}
+
+function buildSlidePage1(info, s) {
+    const overall = (s.o2a_comp_pct + s.a2r_comp_pct) / 2;
+
+    const renderBucket = (label, n, color) => {
+        const p = 100 * n / s.total_studies;
+        return `
+        <div class="bucket">
+            <div class="swatch ${color}"></div>
+            <div class="lbl">${label}</div>
+            <div class="bar"><span class="${color}" style="width:${Math.max(p,2)}%"></span></div>
+            <div class="n">${n} · ${Math.round(p)}%</div>
+        </div>`;
+    };
+
+    const ct = s.byModality.find(m => /CT/i.test(m.modality)) || s.byModality[0] || { modality:'CT', n:0, o2a_med:0, a2r_med:0 };
+    const us = s.byModality.find(m => /US/i.test(m.modality)) || s.byModality[1] || { modality:'US', n:0, o2a_med:0, a2r_med:0 };
+
+    const topProc = s.topProcedures[0] || { name: '--', n: 0 };
+
+    const o2aBigCls = s.o2a_comp_pct >= 80 ? 'emerald' : s.o2a_comp_pct >= 50 ? 'amber' : 'rose';
+    const a2rBigCls = s.a2r_comp_pct >= 80 ? 'emerald' : s.a2r_comp_pct >= 50 ? 'amber' : 'rose';
+
+    const modStatCls = (v, t1, t2) => v <= t1 ? 'good' : v <= t2 ? 'warn' : 'bad';
+
+    return `
+    <div class="slide-page page1" id="slidePage1">
+        <header class="slide-header">
+            <div class="slide-brand">
+                <div class="slide-brand-mark">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2">
+                        <path d="M12 2v20M2 12h20" stroke-linecap="round"/>
+                        <circle cx="12" cy="12" r="9"/>
+                    </svg>
+                </div>
+                <div class="slide-brand-text">
+                    <div class="super">EMERGENCY RADIOLOGY · INDICATORS</div>
+                    <h1>${info.ar} — مؤشرات أداء أشعة الطوارئ</h1>
+                    <div class="sub">${info.en} · الخدمات الصحية المساندة</div>
+                </div>
+            </div>
+            <div class="slide-meta">
+                <div class="label">REPORTING PERIOD</div>
+                <div class="val">${s.date_range}</div>
+                <div class="scope">${s.total_studies} فحص · ${s.unique_patients} مريض طوارئ مطابق</div>
+            </div>
+        </header>
+
+        <div class="slide-kpi-row">
+            <div class="slide-kpi emerald">
+                <div class="l">إجمالي فحوصات أشعة الطوارئ</div>
+                <div class="v">${s.total_studies}<span class="u">فحص</span></div>
+                <div class="sub">${ct.n||0} CT · ${us.n||0} US · ${s.unique_patients} مريض</div>
+            </div>
+            <div class="slide-kpi">
+                <div class="l">من الطلب إلى التصوير</div>
+                <div class="v">${Math.round(s.o2a_median)}<span class="u">د · وسيط</span></div>
+                <div class="sub">المتوسط ${s.o2a_mean.toFixed(1)} د · P75 = ${Math.round(s.o2a_p75)} د · المعيار ≤ 15 د</div>
+            </div>
+            <div class="slide-kpi amber">
+                <div class="l">من التصوير إلى التقرير الأولي</div>
+                <div class="v">${Math.round(s.a2r_median)}<span class="u">د · وسيط</span></div>
+                <div class="sub">المتوسط ${s.a2r_mean.toFixed(1)} د · P75 = ${Math.round(s.a2r_p75)} د · المعيار ≤ 45 د</div>
+            </div>
+            <div class="slide-kpi violet">
+                <div class="l">مؤشر الالتزام الكلي</div>
+                <div class="v">${Math.round(overall)}<span class="u">%</span></div>
+                <div class="sub">الطلب→التصوير ${Math.round(s.o2a_comp_pct)}% · التصوير→التقرير ${Math.round(s.a2r_comp_pct)}%</div>
+            </div>
+        </div>
+
+        <div class="slide-section">
+            <div class="slide-section-head">
+                <div class="title">الالتزام بالمعايير الزمنية</div>
+                <div class="badge">TURNAROUND TIME · KPI</div>
+            </div>
+            <div class="compliance-grid">
+                <div class="comp-panel">
+                    <div class="comp-head">
+                        <div class="comp-name">من إنشاء الطلب إلى إجراء التصوير</div>
+                        <div class="comp-target">Target ≤ 15 min</div>
+                    </div>
+                    <div class="comp-big">
+                        <div class="num ${o2aBigCls}">${Math.round(s.o2a_comp_pct)}%</div>
+                        <div class="of">${s.o2a_comp_n} / ${s.total_studies} فحص ضمن المعيار</div>
+                    </div>
+                    <div class="comp-stat-row">
+                        <div class="comp-stat"><div class="l">MEDIAN</div><div class="v">${Math.round(s.o2a_median)}<span class="u">min</span></div></div>
+                        <div class="comp-stat"><div class="l">MEAN</div><div class="v">${Math.round(s.o2a_mean)}<span class="u">min</span></div></div>
+                        <div class="comp-stat"><div class="l">P90</div><div class="v">${Math.round(s.o2a_p90)}<span class="u">min</span></div></div>
+                    </div>
+                    <div class="buckets">
+                        ${renderBucket('ضمن المعيار (≤15 دقيقة)', s.bucket_o2a['≤15'], 'emerald')}
+                        ${renderBucket('16 – 30 دقيقة', s.bucket_o2a['16-30'], 'amber')}
+                        ${renderBucket('31 – 60 دقيقة', s.bucket_o2a['31-60'], 'orange')}
+                        ${renderBucket('أكثر من 60 دقيقة', s.bucket_o2a['>60'], 'rose')}
+                    </div>
+                </div>
+
+                <div class="comp-panel">
+                    <div class="comp-head">
+                        <div class="comp-name">من التصوير إلى التقرير الأولي</div>
+                        <div class="comp-target">Target ≤ 45 min · Preliminary</div>
+                    </div>
+                    <div class="comp-big">
+                        <div class="num ${a2rBigCls}">${Math.round(s.a2r_comp_pct)}%</div>
+                        <div class="of">${s.a2r_comp_n} / ${s.total_studies} فحص ضمن المعيار</div>
+                    </div>
+                    <div class="comp-stat-row">
+                        <div class="comp-stat"><div class="l">MEDIAN</div><div class="v">${Math.round(s.a2r_median)}<span class="u">min</span></div></div>
+                        <div class="comp-stat"><div class="l">MEAN</div><div class="v">${Math.round(s.a2r_mean)}<span class="u">min</span></div></div>
+                        <div class="comp-stat"><div class="l">P90</div><div class="v">${Math.round(s.a2r_p90)}<span class="u">min</span></div></div>
+                    </div>
+                    <div class="buckets">
+                        ${renderBucket('ضمن المعيار (≤45 دقيقة)', s.bucket_a2r['≤45'], 'emerald')}
+                        ${renderBucket('46 – 90 دقيقة', s.bucket_a2r['46-90'], 'amber')}
+                        ${renderBucket('91 – 120 دقيقة', s.bucket_a2r['91-120'], 'orange')}
+                        ${renderBucket('أكثر من 120 دقيقة', s.bucket_a2r['>120'], 'rose')}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mod-strip">
+            <div class="mod-card spotlight">
+                <div class="mod-card-head">
+                    <div class="name"><span class="dot"></span>الأشعة المقطعية CT</div>
+                    <div class="count">${ct.n||0} studies · ${s.total_studies?Math.round(100*(ct.n||0)/s.total_studies):0}%</div>
+                </div>
+                <div class="mod-stats">
+                    <div class="mod-stat">
+                        <div class="l">طلب → تصوير (وسيط)</div>
+                        <div class="v ${modStatCls(ct.o2a_med||0, 15, 30)}">${Math.round(ct.o2a_med||0)}<span class="u">min</span></div>
+                    </div>
+                    <div class="mod-stat">
+                        <div class="l">تصوير → تقرير (وسيط)</div>
+                        <div class="v ${modStatCls(ct.a2r_med||0, 45, 90)}">${Math.round(ct.a2r_med||0)}<span class="u">min</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mod-card">
+                <div class="mod-card-head">
+                    <div class="name"><span class="dot" style="background: var(--accent-cyan)"></span>الموجات الصوتية US</div>
+                    <div class="count">${us.n||0} studies · ${s.total_studies?Math.round(100*(us.n||0)/s.total_studies):0}%</div>
+                </div>
+                <div class="mod-stats">
+                    <div class="mod-stat">
+                        <div class="l">طلب → تصوير (وسيط)</div>
+                        <div class="v ${modStatCls(us.o2a_med||0, 15, 30)}">${Math.round(us.o2a_med||0)}<span class="u">min</span></div>
+                    </div>
+                    <div class="mod-stat">
+                        <div class="l">تصوير → تقرير (وسيط)</div>
+                        <div class="v ${modStatCls(us.a2r_med||0, 45, 90)}">${Math.round(us.a2r_med||0)}<span class="u">min</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mod-card highlights">
+                <div class="mod-card-head">
+                    <div class="name"><span class="dot" style="background: var(--accent-violet)"></span>أبرز النتائج</div>
+                    <div class="count">HIGHLIGHTS</div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap: 8px; font-size: 12.5px; color: var(--text-secondary); line-height: 1.55;">
+                    <div>· <strong style="color: var(--text-primary)">${topProc.name}</strong> هو الفحص الأكثر طلباً (${topProc.n} فحص)</div>
+                    <div>· الالتزام بـ <strong class="txt-${a2rBigCls}">معيار التقرير ${Math.round(s.a2r_comp_pct)}%</strong> · والالتزام بـ <strong class="txt-${o2aBigCls}">معيار التصوير ${Math.round(s.o2a_comp_pct)}%</strong></div>
+                    <div>· ${s.bucket_o2a['>60']} فحص تجاوز ساعة قبل التصوير${s.bucket_o2a['>60']>0 ? ' — يحتاج مراجعة' : ''}</div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="slide-foot">
+            <div>المصدر: PACS · سجل الطوارئ ED · المطابقة بناءً على رقم الملف</div>
+            <div class="legal">${info.en} · Ancillary Health Services · Slide 1 / 2</div>
+        </footer>
+    </div>`;
+}
+
+function buildSlidePage2(info, s) {
+    const hourBins = s.hourBins;
+
+    const colorO2A = v => v == null ? null : v <= 15 ? '#10B981' : v <= 30 ? '#F59E0B' : v <= 60 ? '#FB923C' : '#EF4444';
+    const colorA2R = v => v == null ? null : v <= 45 ? '#10B981' : v <= 90 ? '#F59E0B' : v <= 120 ? '#FB923C' : '#EF4444';
+    const alphaBg = (hex, a=0.28) => {
+        const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+        return `rgba(${r},${g},${b},${a})`;
+    };
+
+    const buildHeatmap = (title, subtitle, badge, matrix, colorFn) => {
+        let cells = '<div class="corner">المنطقة الزمنية ←</div>';
+        hourBins.forEach(h => {
+            const end = (h + 2) % 24;
+            cells += `<div class="h-label">${String(h).padStart(2,'0')}-${String(end).padStart(2,'0')}</div>`;
+        });
+        s.modalities.forEach((m, i) => {
+            cells += `<div class="row-label">${m}</div>`;
+            hourBins.forEach((h, j) => {
+                const cell = matrix[i][j];
+                if (cell.v == null || cell.n === 0) {
+                    cells += '<div class="cell empty"><span class="v">—</span></div>';
+                } else {
+                    const c = colorFn(cell.v);
+                    cells += `<div class="cell" style="background:${alphaBg(c, 0.28)};border-color:${alphaBg(c, 0.55)};">`
+                        + `<span class="v" style="color:${c}">${Math.round(cell.v)}</span>`
+                        + `<span class="n">n=${cell.n}</span></div>`;
+                }
+            });
         });
 
-        // النقر على الشاشة للتقدم
-        stage.onclick = () => next();
+        return `
+        <div class="slide-panel" style="flex:1; min-height:0;">
+            <div class="panel-head">
+                <div>
+                    <div class="title">${title}</div>
+                    <div class="subtitle">${subtitle}</div>
+                </div>
+                <div class="badge">${badge}</div>
+            </div>
+            <div class="heatmap">${cells}</div>
+            <div class="legend">
+                <div class="l-label">FAST</div>
+                <div class="swatches">
+                    <div style="background:#10B981"></div>
+                    <div style="background:#F59E0B"></div>
+                    <div style="background:#FB923C"></div>
+                    <div style="background:#EF4444"></div>
+                </div>
+                <div class="l-label">SLOW</div>
+            </div>
+        </div>`;
+    };
+
+    const procCls = (p, good, warn) => p >= good ? 'good' : p >= warn ? 'warn' : 'bad';
+    let procRows = '';
+    s.topProcedures.slice(0, 7).forEach(p => {
+        const c1 = procCls(p.o2a_comp, 70, 40);
+        const c2 = procCls(p.a2r_comp, 80, 50);
+        procRows += `
+        <div class="proc-row">
+            <div class="proc-name">${p.name}</div>
+            <div class="proc-n">${p.n}</div>
+            <div class="proc-cell">
+                <div class="bar"><span class="${c1}" style="width:${Math.max(p.o2a_comp,2)}%"></span></div>
+                <div class="pct ${c1}">${Math.round(p.o2a_comp)}%</div>
+            </div>
+            <div class="proc-cell">
+                <div class="bar"><span class="${c2}" style="width:${Math.max(p.a2r_comp,2)}%"></span></div>
+                <div class="pct ${c2}">${Math.round(p.a2r_comp)}%</div>
+            </div>
+        </div>`;
     });
+
+    const maxHour = Math.max(...s.hourly);
+    const peakHour = s.hourly.indexOf(maxHour);
+    let hourlyBars = '';
+    s.hourly.forEach((v) => {
+        const h = maxHour ? (v / maxHour * 100) : 0;
+        const peak = v === maxHour && v > 0 ? ' peak' : '';
+        const label = v > 0 ? `<span class="count">${v}</span>` : '';
+        hourlyBars += `<div class="bar${peak}" style="height:${Math.max(h, 3)}%">${label}</div>`;
+    });
+    let hourLabels = '';
+    for (let i = 0; i < 24; i++) {
+        hourLabels += `<div>${i%3===0 ? String(i).padStart(2,'0') : ''}</div>`;
+    }
+
+    return `
+    <div class="slide-page page2" id="slidePage2">
+        <header class="slide-header">
+            <div class="slide-brand">
+                <div class="slide-brand-mark violet">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2">
+                        <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+                        <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+                        <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+                        <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+                    </svg>
+                </div>
+                <div class="slide-brand-text">
+                    <div class="super violet">HEATMAP · PROCEDURE BREAKDOWN</div>
+                    <h1>${info.ar} — الخريطة الحرارية وتفصيل الفحوصات</h1>
+                    <div class="sub">توزيع الأداء عبر ساعات اليوم · وأبرز أنواع الفحوصات</div>
+                </div>
+            </div>
+            <div class="slide-meta">
+                <div class="label">REPORTING PERIOD</div>
+                <div class="val">${s.date_range}</div>
+                <div class="scope">${s.total_studies} فحص أشعة · ${s.unique_patients} مريض طوارئ</div>
+            </div>
+        </header>
+
+        <div class="page2-body">
+            <div class="page2-col">
+                ${buildHeatmap(
+                    'خريطة حرارية · من الطلب إلى التصوير',
+                    'وسيط الدقائق · حسب الفترة الزمنية ونوع الفحص · المعيار ≤ 15 دقيقة',
+                    'ORDER → ACQUISITION',
+                    s.hm_o2a, colorO2A
+                )}
+                ${buildHeatmap(
+                    'خريطة حرارية · من التصوير إلى التقرير الأولي',
+                    'وسيط الدقائق · حسب الفترة الزمنية ونوع الفحص · المعيار ≤ 45 دقيقة',
+                    'ACQUISITION → REPORT',
+                    s.hm_a2r, colorA2R
+                )}
+            </div>
+
+            <div class="page2-col">
+                <div class="slide-panel" style="flex: 0 0 auto;">
+                    <div class="panel-head">
+                        <div>
+                            <div class="title">أبرز فحوصات الطوارئ</div>
+                            <div class="subtitle">حسب العدد والالتزام بالمعايير</div>
+                        </div>
+                        <div class="badge">TOP PROCEDURES</div>
+                    </div>
+                    <div class="procs">
+                        <div class="proc-row header">
+                            <div>اسم الفحص</div>
+                            <div style="text-align:center">العدد</div>
+                            <div>الطلب→التصوير</div>
+                            <div>التصوير→التقرير</div>
+                        </div>
+                        ${procRows}
+                    </div>
+                </div>
+
+                <div class="slide-panel" style="flex: 0 0 auto;">
+                    <div class="panel-head">
+                        <div>
+                            <div class="title">توزيع طلبات الأشعة عبر ساعات اليوم</div>
+                            <div class="subtitle">ذروة عند ${String(peakHour).padStart(2,'0')}:00 (${maxHour} طلب)</div>
+                        </div>
+                        <div class="badge">HOURLY VOLUME</div>
+                    </div>
+                    <div class="hourly">${hourlyBars}</div>
+                    <div class="hour-labels">${hourLabels}</div>
+                </div>
+
+                <div class="method">
+                    <div class="head">
+                        <div class="icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.2">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 8v4M12 16h.01"/>
+                            </svg>
+                        </div>
+                        <div class="title">المنهجية ومصادر البيانات</div>
+                    </div>
+                    <ul>
+                        <li>المطابقة عبر <strong>رقم الملف</strong> بين سجل الطوارئ ED Episodes وسجل الأشعة PACS.</li>
+                        <li>الاعتماد على <strong>التقرير الأولي (Preliminary)</strong>، لأن التقرير النهائي يصدر في اليوم التالي.</li>
+                        <li>تم استبعاد السجلات ذات الفروق الزمنية السالبة أو الناقصة.</li>
+                        <li>المعايير: <strong>طلب→تصوير ≤ 15 دقيقة</strong> · <strong>تصوير→تقرير ≤ 45 دقيقة</strong>.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <footer class="slide-foot">
+            <div>الخدمات الصحية المساندة · إدارة الجودة وسلامة المرضى</div>
+            <div class="legal">${info.en} · Slide 2 / 2</div>
+        </footer>
+    </div>`;
+}
+
+// ====================== PNG EXPORT ======================
+async function exportSlidePngs() {
+    const pages = document.querySelectorAll('.slide-page');
+    if (!pages.length) return;
+    const btn = document.getElementById('btnSlideExport');
+    btn.disabled = true;
+    btn.textContent = 'جاري التصدير...';
+
+    try {
+        for (let i = 0; i < pages.length; i++) {
+            const page = pages[i];
+            // un-scale temporarily
+            const oldTransform = page.style.transform;
+            page.style.transform = 'none';
+            const canvas = await html2canvas(page, {
+                width: 1920, height: 1080,
+                scale: 2,
+                backgroundColor: '#0A0E1A',
+                useCORS: true,
+                logging: false
+            });
+            page.style.transform = oldTransform;
+            const link = document.createElement('a');
+            link.download = `slide-${i+1}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            await new Promise(r => setTimeout(r, 400));
+        }
+    } catch (e) {
+        console.error(e);
+        alert('فشل التصدير: ' + e.message);
+    }
+    btn.disabled = false;
+    btn.textContent = 'حفظ صورتين PNG';
+}
+
+document.addEventListener('DOMContentLoaded', init);
 </script>
 
 </body>
 </html>
-
-```
-```
-
-```
