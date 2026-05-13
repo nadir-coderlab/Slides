@@ -1361,6 +1361,39 @@ function handleUpload(e) {
     });
 }
 
+// Recompute worksheet '!ref' from actual cell keys.
+// Some files (notably the ED export here) declare a too-small dimension that
+// hides most of the data from sheet_to_json. We compute the true range from
+// the keys (A1, B2, AA10, ...) so every populated cell is reachable.
+function recomputeSheetRef(ws) {
+    if (!ws) return ws;
+    let minR = Infinity, maxR = -Infinity, minC = Infinity, maxC = -Infinity;
+    for (const k of Object.keys(ws)) {
+        if (k[0] === '!') continue;
+        const m = k.match(/^([A-Z]+)(\d+)$/);
+        if (!m) continue;
+        const r = parseInt(m[2], 10) - 1;
+        let c = 0;
+        for (let i = 0; i < m[1].length; i++) c = c * 26 + (m[1].charCodeAt(i) - 64);
+        c -= 1;
+        if (r < minR) minR = r;
+        if (r > maxR) maxR = r;
+        if (c < minC) minC = c;
+        if (c > maxC) maxC = c;
+    }
+    if (!isFinite(minR)) return ws;
+    function colName(c) {
+        let s = '';
+        c += 1;
+        while (c > 0) { const m = (c - 1) % 26; s = String.fromCharCode(65 + m) + s; c = Math.floor((c - 1) / 26); }
+        return s;
+    }
+    ws['!ref'] = colName(minC) + (minR + 1) + ':' + colName(maxC) + (maxR + 1);
+    return ws;
+}
+
+// Returns { rows: array-of-arrays (cells indexed by column position), headers: first row, totalRows }
+// Skips the header row from rows[].
 function parseFile(file) {
     return new Promise((resolve, reject) => {
         const ext = file.name.toLowerCase().split('.').pop();
@@ -1369,9 +1402,12 @@ function parseFile(file) {
         if (ext === 'csv') {
             reader.onload = (ev) => {
                 try {
-                    const txt = ev.target.result;
-                    const parsed = Papa.parse(txt, { header: true, skipEmptyLines: true });
-                    resolve(parsed.data);
+                    const txt = String(ev.target.result).replace(/^\uFEFF/, '');
+                    const parsed = Papa.parse(txt, { header: false, skipEmptyLines: true });
+                    const all = parsed.data;
+                    if (!all.length) return resolve({ rows: [], headers: [] });
+                    const headers = (all[0] || []).map(h => String(h).replace(/^\uFEFF/, '').trim());
+                    resolve({ rows: all.slice(1), headers });
                 } catch(e) { reject(e); }
             };
             reader.readAsText(file, 'utf-8');
@@ -1380,9 +1416,14 @@ function parseFile(file) {
                 try {
                     const data = new Uint8Array(ev.target.result);
                     const wb = XLSX.read(data, { type: 'array', cellDates: true });
-                    const ws = wb.Sheets[wb.SheetNames[0]];
-                    const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
-                    resolve(rows);
+                    let ws = wb.Sheets[wb.SheetNames[0]];
+                    // FIX: many exports declare a truncated !ref. Recompute from actual cells.
+                    ws = recomputeSheetRef(ws);
+                    // header: 1 returns rows as arrays
+                    const all = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '', raw: true, blankrows: false });
+                    if (!all.length) return resolve({ rows: [], headers: [] });
+                    const headers = (all[0] || []).map(h => String(h).replace(/^\uFEFF/, '').trim());
+                    resolve({ rows: all.slice(1), headers });
                 } catch(e) { reject(e); }
             };
             reader.readAsArrayBuffer(file);
@@ -1399,8 +1440,8 @@ function updateCardStatus(hospital) {
     card.classList.remove('has-both', 'partial');
     if (hasEd && hasRad) {
         card.classList.add('has-both');
-        const ed = STATE.parsed[hospital].ed.length;
-        const rad = STATE.parsed[hospital].rad.length;
+        const ed = STATE.parsed[hospital].ed.rows.length;
+        const rad = STATE.parsed[hospital].rad.rows.length;
         st.textContent = `جاهز · ${rad} فحص أشعة · ${ed} سجل طوارئ`;
         st.className = 'upload-status success';
     } else if (hasEd || hasRad) {
@@ -1510,47 +1551,103 @@ function analyzeAll() {
 }
 
 function analyzeHospital(hkey) {
-    const ed = STATE.parsed[hkey].ed;
-    const rad = STATE.parsed[hkey].rad;
+    const edPayload = STATE.parsed[hkey].ed;
+    const radPayload = STATE.parsed[hkey].rad;
+    const ed = edPayload.rows;
+    const rad = radPayload.rows;
 
-    // Build set of ED patient IDs
+    // Column positions (fixed, as confirmed by user):
+    //   ED file:    A=0 -> Patient ID
+    //   PACS file:  A=0 -> Patient ID, C=2 -> Order date, D=3 -> Study date, E=4 -> Report date
+    const ED_PID = 0;
+    const RAD_PID = 0;
+    const RAD_ORDER = 2;
+    const RAD_STUDY = 3;
+    const RAD_REPORT = 4;
+    // Optional columns (best-effort; only used for slide breakdowns)
+    const RAD_MOD_HINT = ['Modality type', 'Modality'];
+    const RAD_PROC_HINT = ['Procedure name', 'Procedure'];
+
+    function findColIdx(headers, candidates) {
+        if (!headers) return -1;
+        const norm = headers.map(h => String(h).toLowerCase().trim());
+        for (const c of candidates) {
+            const i = norm.indexOf(c.toLowerCase());
+            if (i >= 0) return i;
+        }
+        // partial
+        for (const c of candidates) {
+            const i = norm.findIndex(h => h.includes(c.toLowerCase()));
+            if (i >= 0) return i;
+        }
+        return -1;
+    }
+    const RAD_MOD = findColIdx(radPayload.headers, RAD_MOD_HINT);
+    const RAD_PROC = findColIdx(radPayload.headers, RAD_PROC_HINT);
+
+    const diag = {
+        ed_rows: ed.length,
+        rad_rows: rad.length,
+        ed_headers: edPayload.headers || [],
+        rad_headers: radPayload.headers || [],
+        rad_mod_idx: RAD_MOD,
+        rad_proc_idx: RAD_PROC,
+        warnings: []
+    };
+
+    // Build set of ED patient IDs from column A
     const edIdSet = new Set();
-    const edIdCol = findColumn(ed[0], ['PATIENT_ID', 'patient_id', 'PatientID', 'Patient ID', 'MRN', 'mrn']);
     ed.forEach(r => {
-        const id = cleanId(r[edIdCol]);
+        const id = cleanId(r[ED_PID]);
         if (id) edIdSet.add(id);
     });
+    diag.ed_unique_ids = edIdSet.size;
 
-    // Resolve radiology columns
-    const radSample = rad[0] || {};
-    const cPid = findColumn(radSample, ['Patient ID', 'PATIENT_ID', 'patient_id', 'MRN']);
-    const cOrder = findColumn(radSample, ['Order creation date', 'Order date', 'Order Date']);
-    const cStudy = findColumn(radSample, ['Study date', 'Acquisition date']);
-    const cReport = findColumn(radSample, ['Report creation date', 'Report date']);
-    const cMod = findColumn(radSample, ['Modality type', 'Modality']);
-    const cProc = findColumn(radSample, ['Procedure name', 'Procedure', 'Procedure Name']);
+    // Counters for filter pipeline
+    let rad_in_ed = 0, rad_dates_ok = 0, rad_kept = 0;
+    let rad_sample_ids = [];
+    let ed_sample_ids = [...edIdSet].slice(0, 5);
 
-    // Filter to ED studies + compute TAT
+    // Iterate radiology rows by position
     const studies = [];
-    rad.forEach(r => {
-        const pid = cleanId(r[cPid]);
-        if (!edIdSet.has(pid)) return;
-        const orderDt = parseRadDate(r[cOrder]);
-        const studyDt = parseRadDate(r[cStudy]);
-        const reportDt = parseRadDate(r[cReport]);
+    rad.forEach((r, i) => {
+        const pid = cleanId(r[RAD_PID]);
+        if (i < 5) rad_sample_ids.push(pid);
+        if (!pid || !edIdSet.has(pid)) return;
+        rad_in_ed++;
+        const orderDt = parseRadDate(r[RAD_ORDER]);
+        const studyDt = parseRadDate(r[RAD_STUDY]);
+        const reportDt = parseRadDate(r[RAD_REPORT]);
         if (!orderDt || !studyDt || !reportDt) return;
+        rad_dates_ok++;
         const o2a = (studyDt - orderDt) / 60000;
         const a2r = (reportDt - studyDt) / 60000;
         if (o2a < 0 || a2r < 0) return;
+        rad_kept++;
         studies.push({
             pid, orderDt, studyDt, reportDt,
-            modality: r[cMod] || 'Unknown',
-            procedure: r[cProc] || 'Unknown',
+            modality: RAD_MOD >= 0 ? (r[RAD_MOD] || 'Unknown') : 'All',
+            procedure: RAD_PROC >= 0 ? (r[RAD_PROC] || 'Unknown') : 'Unknown',
             o2a, a2r
         });
     });
+    diag.rad_in_ed = rad_in_ed;
+    diag.rad_dates_ok = rad_dates_ok;
+    diag.rad_kept = rad_kept;
+    diag.rad_sample_ids = rad_sample_ids;
+    diag.ed_sample_ids = ed_sample_ids;
 
-    return { studies, summary: summarize(studies) };
+    // Backwards-compat flags for the empty-state UI
+    diag.ed_id_col = 'العمود A';
+    diag.rad_pid_col = 'العمود A';
+    diag.rad_order_col = 'العمود C';
+    diag.rad_study_col = 'العمود D';
+    diag.rad_report_col = 'العمود E';
+    diag.ed_cols = diag.ed_headers;
+    diag.rad_cols = diag.rad_headers;
+
+    console.log('[analyzeHospital]', hkey, diag);
+    return { studies, summary: summarize(studies), diag };
 }
 
 function findColumn(sample, candidates) {
@@ -1720,9 +1817,20 @@ function clsCompliance(pct, goodT=80, warnT=50) {
 
 function renderHospitalCard(hkey) {
     const info = HOSPITALS[hkey];
-    const s = STATE.results[hkey].summary;
+    const result = STATE.results[hkey];
+    const s = result.summary;
+    const d = result.diag || {};
 
     if (s.total_studies === 0) {
+        const reasons = [];
+        if (!d.ed_id_col) reasons.push('عمود رقم المريض غير موجود في ملف الطوارئ');
+        if (!d.rad_pid_col) reasons.push('عمود رقم المريض غير موجود في ملف الأشعة');
+        if (!d.rad_order_col || !d.rad_study_col || !d.rad_report_col) reasons.push('أعمدة التواريخ ناقصة في ملف الأشعة');
+        if (d.ed_id_col && d.rad_pid_col && d.rad_in_ed === 0) {
+            reasons.push(`لا يوجد تطابق بين أرقام المرضى في الملفين (تم فحص ${d.rad_rows} سجل أشعة مقابل ${d.ed_unique_ids} رقم طوارئ)`);
+        }
+        if (d.rad_in_ed > 0 && d.rad_dates_ok === 0) reasons.push('لم يتم قراءة أي تواريخ من ملف الأشعة بنجاح');
+
         return `
         <div class="hospital-card">
             <div class="hospital-header">
@@ -1732,9 +1840,28 @@ function renderHospitalCard(hkey) {
                 </div>
             </div>
             <div class="hospital-body">
-                <div style="text-align:center; padding: 30px; color: var(--text-tertiary);">
-                    لا يوجد تطابق بين ملف الطوارئ وملف الأشعة لهذا المستشفى.<br>
-                    تأكد من أن الملفات تغطي نفس الفترة الزمنية وأن أرقام المرضى متوافقة.
+                <div style="padding: 20px; color: var(--text-secondary); line-height: 1.7;">
+                    <h3 style="color: var(--accent-amber); margin-bottom: 12px; font-family: 'Cairo'; font-size: 15px;">⚠ لا توجد نتائج لهذا المستشفى</h3>
+                    <div style="margin-bottom: 14px;">
+                        <strong>السبب:</strong>
+                        <ul style="list-style: disc; padding-right: 22px; margin-top: 6px; font-size: 13px;">
+                            ${reasons.map(r => `<li style="padding: 2px 0;">${r}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <details style="margin-top: 12px;">
+                        <summary style="cursor: pointer; font-size: 12px; color: var(--text-tertiary);">عرض التشخيص التقني</summary>
+                        <div style="background: var(--bg-input); border-radius: 6px; padding: 12px; margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; direction: ltr; text-align: left; line-height: 1.6;">
+                            <div>ED file: ${d.ed_rows} rows, id column = <code>${d.ed_id_col || '—'}</code>, ${d.ed_unique_ids} unique IDs</div>
+                            <div>RAD file: ${d.rad_rows} rows, id column = <code>${d.rad_pid_col || '—'}</code></div>
+                            <div>RAD matched to ED: ${d.rad_in_ed} rows</div>
+                            <div>With valid dates: ${d.rad_dates_ok} rows</div>
+                            <div>Kept after cleanup: ${d.rad_kept} rows</div>
+                            <div style="margin-top: 8px;">Sample ED IDs: ${(d.ed_sample_ids || []).join(', ')}</div>
+                            <div>Sample RAD IDs: ${(d.rad_sample_ids || []).join(', ')}</div>
+                            <div style="margin-top: 8px;">ED columns: ${(d.ed_cols || []).slice(0,8).join(', ')}${d.ed_cols && d.ed_cols.length > 8 ? '…' : ''}</div>
+                            <div>RAD columns: ${(d.rad_cols || []).slice(0,8).join(', ')}${d.rad_cols && d.rad_cols.length > 8 ? '…' : ''}</div>
+                        </div>
+                    </details>
                 </div>
             </div>
         </div>`;
