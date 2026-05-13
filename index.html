@@ -1985,12 +1985,11 @@ function openHajjSlide() {
 
     wrap.innerHTML = '<div class="hajj-slide">'
         + buildSlidePage1_table(rows)
-        + buildSlidePage2_heatmap(rows, 'o2a')
-        + buildSlidePage3_heatmap(rows, 'a2r')
+        + buildSlidePage2_heatmapCombined(rows)
         + '</div>';
 
     document.getElementById('slideModalTitle').textContent = 'سلايد الاجتماع — مؤشرات أشعة الطوارئ';
-    document.getElementById('btnSlideExport').textContent = 'حفظ ٣ صور PNG';
+    document.getElementById('btnSlideExport').textContent = 'حفظ صورتين PNG';
     document.getElementById('slideModal').classList.add('active');
     document.getElementById('slideModal').scrollTop = 0;
 }
@@ -2180,22 +2179,27 @@ function buildHeatmap(rows, key, title, subtitle, target) {
     `;
 }
 
-function buildSlidePage2_heatmap(rows, key) {
-    return `<div class="hajj-slide-page" data-page="2">${buildHeatmap(
+function buildSlidePage2_heatmapCombined(rows) {
+    const top = buildHeatmap(
         rows, 'o2a',
         'الخريطة الحرارية — من الطلب إلى التصوير',
         'الالتزام بمستهدف الـ ١٥ دقيقة لكل ساعة من اليوم',
         '١٥ دقيقة'
-    )}</div>`;
-}
-
-function buildSlidePage3_heatmap(rows, key) {
-    return `<div class="hajj-slide-page" data-page="3">${buildHeatmap(
+    );
+    const bottom = buildHeatmap(
         rows, 'a2r',
         'الخريطة الحرارية — من التصوير إلى التقرير',
         'الالتزام بمستهدف الـ ٤٥ دقيقة لكل ساعة من اليوم',
         '٤٥ دقيقة'
-    )}</div>`;
+    );
+    // Use the .tall variant so both heatmaps fit vertically; gap between them.
+    return `
+    <div class="hajj-slide-page tall" data-page="2">
+        <div style="display:flex; flex-direction:column; gap:24px; width:100%;">
+            ${top}
+            ${bottom}
+        </div>
+    </div>`;
 }
 
 // ====================== DELAYS SLIDE ======================
