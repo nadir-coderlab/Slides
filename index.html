@@ -595,19 +595,24 @@ body {
 .hajj-slide-page {
     width: 1920px;
     height: 1080px;
-    background: transparent;
-    padding: 60px;
+    background: #FFFFFF;
+    padding: 0;
     box-sizing: border-box;
-    display: flex; align-items: center; justify-content: center;
+    display: flex; align-items: stretch; justify-content: stretch;
     direction: rtl;
+}
+/* Tall variant: lets the slide grow vertically to fit all content (delays slide). */
+.hajj-slide-page.tall {
+    height: auto;
+    min-height: 1080px;
 }
 
 .hajj-card {
     width: 100%;
-    background: rgba(255, 255, 255, 0.97);
-    border-radius: 16px;
-    padding: 44px 52px;
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
+    background: #FFFFFF;
+    border-radius: 0;
+    padding: 60px 72px;
+    box-shadow: none;
     box-sizing: border-box;
 }
 .hajj-card-header {
@@ -898,6 +903,206 @@ body {
     text-align: center;
     margin: 8px 0 14px;
 }
+
+/* ============ DELAYS SLIDE (per-hospital, per-stage) ============ */
+.delay-stage-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #B45309, #92400E);
+    color: #FFFFFF;
+    border-radius: 12px;
+    padding: 16px 22px;
+    margin-bottom: 18px;
+}
+.delay-stage-banner.stage-a2r {
+    background: linear-gradient(135deg, #92400E, #7C2D12);
+}
+.delay-stage-banner .lbl {
+    font-family: 'Cairo','Tajawal',sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+}
+.delay-stage-banner .meta {
+    display: flex; gap: 18px;
+    font-family: 'Cairo','Tajawal',sans-serif;
+    font-size: 14px;
+}
+.delay-stage-banner .meta b {
+    font-size: 18px;
+    font-weight: 800;
+    margin-right: 4px;
+}
+
+.delay-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 18px;
+}
+.delay-card {
+    background: #FFFFFF;
+    border: 1px solid #E5EAF0;
+    border-right: 5px solid #F59E0B;
+    border-radius: 10px;
+    padding: 14px 18px;
+    display: flex; flex-direction: column;
+    gap: 6px;
+    min-height: 110px;
+}
+.delay-card.sev-1 { border-right-color: #F59E0B; }  /* lightly over */
+.delay-card.sev-2 { border-right-color: #FB923C; }
+.delay-card.sev-3 { border-right-color: #EF4444; }  /* heavy over */
+.delay-card .top {
+    display: flex; justify-content: space-between; align-items: baseline;
+}
+.delay-card .pid {
+    font-family: 'JetBrains Mono', 'Cairo', monospace;
+    font-size: 22px;
+    font-weight: 800;
+    color: #063A58;
+    direction: ltr;
+    letter-spacing: 0.5px;
+}
+.delay-card .delay {
+    font-family: 'Cairo','Tajawal',sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 14px;
+    background: #FEF3C7;
+    color: #B45309;
+    white-space: nowrap;
+}
+.delay-card.sev-2 .delay { background: #FFEDD5; color: #C2410C; }
+.delay-card.sev-3 .delay { background: #FEE2E2; color: #B91C1C; }
+.delay-card .proc {
+    font-family: 'Cairo','Tajawal',sans-serif;
+    font-size: 13px;
+    color: #1A2433;
+    font-weight: 600;
+    line-height: 1.45;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.delay-card .when {
+    font-size: 11.5px;
+    color: #6B7280;
+    margin-top: auto;
+    direction: ltr; text-align: right;
+}
+
+/* Compact mode for slides with many entries (>20) — 5 cols */
+.delay-grid.compact {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+.delay-grid.compact .delay-card {
+    padding: 10px 12px;
+    min-height: 90px;
+}
+.delay-grid.compact .delay-card .pid { font-size: 18px; }
+.delay-grid.compact .delay-card .proc { font-size: 12px; -webkit-line-clamp: 2; }
+.delay-grid.compact .delay-card .delay { font-size: 12px; padding: 3px 8px; }
+
+/* Very compact: 6 cols for huge lists */
+.delay-grid.ultra {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+}
+.delay-grid.ultra .delay-card {
+    padding: 8px 10px;
+    min-height: 80px;
+}
+.delay-grid.ultra .delay-card .pid { font-size: 16px; }
+.delay-grid.ultra .delay-card .proc { font-size: 11px; }
+
+.delay-summary-bar {
+    background: #FAFBFC;
+    border: 1px solid #E5EAF0;
+    border-radius: 10px;
+    padding: 14px 22px;
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+.delay-summary-bar .item {
+    display: flex; flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+.delay-summary-bar .lbl {
+    font-size: 12px;
+    color: #4A5A6B;
+    font-weight: 600;
+}
+.delay-summary-bar .val {
+    font-family: 'Cairo','Tajawal',sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    color: #063A58;
+}
+.delay-summary-bar .val.amber { color: #B45309; }
+.delay-summary-bar .val.rose  { color: #B91C1C; }
+
+.delay-empty {
+    text-align: center;
+    padding: 60px 30px;
+    color: #10B981;
+    background: #ECFDF5;
+    border: 2px dashed #10B981;
+    border-radius: 12px;
+    font-family: 'Cairo','Tajawal',sans-serif;
+}
+.delay-empty .icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+.delay-empty .msg {
+    font-size: 22px;
+    font-weight: 800;
+    color: #047857;
+}
+.delay-empty .sub {
+    font-size: 14px;
+    color: #059669;
+    margin-top: 8px;
+}
+
+/* Hospital sub-section header within a combined delays slide */
+.hosp-section { margin-bottom: 22px; }
+.hosp-section:last-child { margin-bottom: 0; }
+.hosp-section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #063A58;
+    color: #FFFFFF;
+    border-radius: 8px;
+    padding: 10px 18px;
+    margin-bottom: 10px;
+}
+.hosp-section-head .name {
+    font-family: 'Cairo','Tajawal',sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+}
+.hosp-section-head .count {
+    font-family: 'Cairo','Tajawal',sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    background: rgba(255,255,255,0.15);
+    padding: 4px 12px;
+    border-radius: 4px;
+}
+.hosp-section-head .count.clean {
+    background: rgba(16,185,129,0.25);
+    color: #A7F3D0;
+}
 </style>
 </head>
 
@@ -973,6 +1178,7 @@ body {
         <div class="actions-buttons">
             <button class="btn" id="btnReset">إعادة تعيين</button>
             <button class="btn" id="btnHajjSlide" disabled style="background: linear-gradient(135deg, #126280, #063A58); color: white; border-color: #1E88B5;">سلايد الاجتماع</button>
+            <button class="btn" id="btnDelaysSlide" disabled style="background: linear-gradient(135deg, #B45309, #92400E); color: white; border-color: #D97706;">سلايد التأخرات</button>
             <button class="btn btn-primary" id="btnAnalyze" disabled>تحليل البيانات</button>
         </div>
     </div>
@@ -1046,6 +1252,7 @@ function init() {
     document.getElementById('btnAnalyze').addEventListener('click', analyzeAll);
     document.getElementById('btnReset').addEventListener('click', resetAll);
     document.getElementById('btnHajjSlide').addEventListener('click', openHajjSlide);
+    document.getElementById('btnDelaysSlide').addEventListener('click', openDelaysSlide);
     document.getElementById('btnSlideClose').addEventListener('click', () => {
         document.getElementById('slideModal').classList.remove('active');
     });
@@ -1233,6 +1440,7 @@ function resetAll() {
     document.getElementById('resultsSection').classList.remove('visible');
     document.getElementById('emptyState').style.display = 'block';
     document.getElementById('btnHajjSlide').disabled = true;
+    document.getElementById('btnDelaysSlide').disabled = true;
 }
 
 // ====================== DATE PARSING ======================
@@ -1310,6 +1518,7 @@ function analyzeAll() {
     // Enable Hajj slide if any hospital has at least one matched study
     const hasAny = ready.some(k => (STATE.results[k]?.summary.total_studies || 0) > 0);
     document.getElementById('btnHajjSlide').disabled = !hasAny;
+    document.getElementById('btnDelaysSlide').disabled = !hasAny;
 }
 
 function analyzeHospital(hkey) {
@@ -1520,6 +1729,28 @@ function summarize(studies) {
         };
     });
 
+    // Delayed studies — beyond target for each stage (for the delays slide)
+    const delayed_o2a = studies
+        .filter(s => s.o2a > TARGET_O2A)
+        .map(s => ({
+            pid: s.pid,
+            procedure: s.procedure,
+            modality: s.modality,
+            mins: s.o2a,
+            orderDt: s.orderDt
+        }))
+        .sort((a, b) => b.mins - a.mins);
+    const delayed_a2r = studies
+        .filter(s => s.a2r > TARGET_A2R)
+        .map(s => ({
+            pid: s.pid,
+            procedure: s.procedure,
+            modality: s.modality,
+            mins: s.a2r,
+            orderDt: s.orderDt
+        }))
+        .sort((a, b) => b.mins - a.mins);
+
     // Heatmap: 2h bin x modality, median o2a and a2r
     const hourBins = [0,2,4,6,8,10,12,14,16,18,20,22];
     const modalities = byModality.map(x => x.modality);
@@ -1560,7 +1791,8 @@ function summarize(studies) {
         byModality, topProcedures,
         bucket_o2a, bucket_a2r,
         hourly, hourBins, modalities,
-        hm_o2a, hm_a2r, byHour
+        hm_o2a, hm_a2r, byHour,
+        delayed_o2a, delayed_a2r
     };
 }
 
@@ -1757,6 +1989,8 @@ function openHajjSlide() {
         + buildSlidePage3_heatmap(rows, 'a2r')
         + '</div>';
 
+    document.getElementById('slideModalTitle').textContent = 'سلايد الاجتماع — مؤشرات أشعة الطوارئ';
+    document.getElementById('btnSlideExport').textContent = 'حفظ ٣ صور PNG';
     document.getElementById('slideModal').classList.add('active');
     document.getElementById('slideModal').scrollTop = 0;
 }
@@ -1964,6 +2198,155 @@ function buildSlidePage3_heatmap(rows, key) {
     )}</div>`;
 }
 
+// ====================== DELAYS SLIDE ======================
+// One slide per (hospital, stage) — only hospitals that actually have delays.
+// Each slide lists patient IDs that breached the target for that stage.
+function openDelaysSlide() {
+    const wrap = document.getElementById('slidePagesWrap');
+
+    const rows = Object.keys(HOSPITALS)
+        .filter(k => STATE.results[k] && STATE.results[k].summary.total_studies > 0)
+        .map(k => ({ key: k, info: HOSPITALS[k], s: STATE.results[k].summary }))
+        .sort((a, b) => a.info.ar.localeCompare(b.info.ar, 'ar'));
+
+    if (rows.length === 0) {
+        alert('لا يوجد مستشفيات بنتائج بعد. ارفع الملفات واضغط "تحليل البيانات".');
+        return;
+    }
+
+    // Two slides total: one for each stage, with all hospitals grouped inside.
+    const pages =
+        buildDelaysCombinedSlide(rows, 'o2a', 1) +
+        buildDelaysCombinedSlide(rows, 'a2r', 2);
+
+    wrap.innerHTML = '<div class="hajj-slide">' + pages + '</div>';
+    document.getElementById('slideModalTitle').textContent = 'سلايد التأخرات — أرقام الملفات المتأخرة';
+    document.getElementById('btnSlideExport').textContent = 'حفظ صورتين PNG';
+    document.getElementById('slideModal').classList.add('active');
+    document.getElementById('slideModal').scrollTop = 0;
+}
+
+// Severity bucket given the delay magnitude vs target
+function severityClass(mins, target) {
+    const over = mins - target;
+    if (over <= target * 0.5) return 'sev-1';
+    if (over <= target * 1.5) return 'sev-2';
+    return 'sev-3';
+}
+
+function formatDelay(mins) {
+    if (mins < 60) return Math.round(mins) + ' د';
+    const h = Math.floor(mins / 60);
+    const m = Math.round(mins % 60);
+    return h + 'س ' + (m > 0 ? m + 'د' : '');
+}
+
+function fmtDateTime(d) {
+    if (!d) return '';
+    const pad = n => String(n).padStart(2, '0');
+    return `${pad(d.getDate())}/${pad(d.getMonth()+1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+// Build one combined slide for a stage, showing all hospitals' delayed PIDs.
+function buildDelaysCombinedSlide(rows, key, pageNum) {
+    const isO2a = key === 'o2a';
+    const target = isO2a ? TARGET_O2A : TARGET_A2R;
+    const stageName = isO2a ? 'من الطلب إلى التصوير' : 'من التصوير إلى التقرير';
+    const stageTargetLabel = isO2a ? '١٥ دقيقة' : '٤٥ دقيقة';
+
+    // Aggregate: total delayed across all hospitals + per-hospital counts
+    const totalDelayed = rows.reduce((s, r) => s + (isO2a ? r.s.delayed_o2a.length : r.s.delayed_a2r.length), 0);
+    const totalStudies = rows.reduce((s, r) => s + r.s.total_studies, 0);
+    const onTime = totalStudies - totalDelayed;
+
+    // Pick a grid density that scales with total card count
+    let gridCls = 'delay-grid';
+    if (totalDelayed > 30) gridCls += ' ultra';
+    else if (totalDelayed > 16) gridCls += ' compact';
+
+    // Build hospital sections
+    const sections = rows.map(r => {
+        const delays = isO2a ? r.s.delayed_o2a : r.s.delayed_a2r;
+        if (delays.length === 0) {
+            return `
+                <div class="hosp-section">
+                    <div class="hosp-section-head">
+                        <div class="name">${r.info.ar}</div>
+                        <div class="count clean">✓ بدون تأخرات (${r.s.total_studies} فحص)</div>
+                    </div>
+                </div>`;
+        }
+        const cards = delays.map(d => {
+            const sev = severityClass(d.mins, target);
+            const proc = d.procedure || d.modality || 'فحص';
+            return `
+                <div class="delay-card ${sev}">
+                    <div class="top">
+                        <div class="pid">${d.pid}</div>
+                        <div class="delay">+${formatDelay(d.mins - target)}</div>
+                    </div>
+                    <div class="proc">${proc}</div>
+                    <div class="when">${fmtDateTime(d.orderDt)} · ${formatDelay(d.mins)}</div>
+                </div>`;
+        }).join('');
+        return `
+            <div class="hosp-section">
+                <div class="hosp-section-head">
+                    <div class="name">${r.info.ar}</div>
+                    <div class="count">${delays.length} تأخير من أصل ${r.s.total_studies} فحص</div>
+                </div>
+                <div class="${gridCls}">${cards}</div>
+            </div>`;
+    }).join('');
+
+    const body = totalDelayed === 0
+        ? `<div class="delay-empty">
+                <div class="icon">✓</div>
+                <div class="msg">جميع الفحوصات ضمن المستهدف</div>
+                <div class="sub">لا توجد ملفات تجاوزت ${stageTargetLabel} في هذه المرحلة</div>
+            </div>`
+        : `
+            <div class="delay-summary-bar">
+                <div class="item">
+                    <div class="lbl">عدد التأخرات</div>
+                    <div class="val rose">${totalDelayed}</div>
+                </div>
+                <div class="item">
+                    <div class="lbl">ضمن المعيار</div>
+                    <div class="val" style="color:#059669;">${onTime}</div>
+                </div>
+                <div class="item">
+                    <div class="lbl">إجمالي الفحوصات</div>
+                    <div class="val">${totalStudies}</div>
+                </div>
+                <div class="item">
+                    <div class="lbl">عدد المستشفيات</div>
+                    <div class="val">${rows.length}</div>
+                </div>
+            </div>
+            ${sections}`;
+
+    return `
+    <div class="hajj-slide-page tall" data-page="${pageNum}">
+        <div class="hajj-card">
+            <div class="hajj-card-header">
+                <div class="hajj-card-title">التأخرات · ${stageName}</div>
+                <div class="hajj-card-sub">أرقام الملفات التي تجاوزت المستهدف ${stageTargetLabel} · جميع المستشفيات</div>
+            </div>
+
+            <div class="delay-stage-banner ${isO2a ? 'stage-o2a' : 'stage-a2r'}">
+                <div class="lbl">${stageName}</div>
+                <div class="meta">
+                    <span>المستهدف: <b>${stageTargetLabel}</b></span>
+                    <span>إجمالي التأخرات: <b>${totalDelayed}</b></span>
+                </div>
+            </div>
+
+            ${body}
+        </div>
+    </div>`;
+}
+
 // ====================== PNG EXPORT ======================
 async function exportSlidePngs() {
     const pages = document.querySelectorAll('.hajj-slide-page');
@@ -1983,10 +2366,13 @@ async function exportSlidePngs() {
         for (let i = 0; i < pages.length; i++) {
             btn.textContent = `جاري حفظ الصورة ${i+1}/${pages.length}...`;
             const page = pages[i];
+            // Capture actual rendered size — tall delays pages grow beyond 1080.
+            const w = page.offsetWidth || 1920;
+            const h = page.offsetHeight || 1080;
             const canvas = await html2canvas(page, {
-                width: 1920, height: 1080,
+                width: w, height: h,
                 scale: 2,
-                backgroundColor: '#0F141F',
+                backgroundColor: '#FFFFFF',
                 useCORS: true,
                 logging: false
             });
