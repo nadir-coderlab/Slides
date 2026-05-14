@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0A0E1A">
-<title>الخدمات الصحية المساندة | مؤشرات أشعة الطوارئ</title>
+<title>إدارة التثقيف الصحي | داشبورد تحليل زيارات Health Coach</title>
 
 <style id="pre-paint">
   html, body { background: #0A0E1A !important; color: #F4F6FB; }
@@ -20,8 +20,7 @@ if (typeof XLSX === 'undefined') {
     document.write('<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"><\/script>');
 }
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 
 <style>
 :root {
@@ -46,6 +45,7 @@ if (typeof XLSX === 'undefined') {
     --accent-blue: #3B82F6;
     --accent-violet: #8B5CF6;
     --accent-cyan: #06B6D4;
+    --accent-pink: #EC4899;
 
     --radius-sm: 4px;
     --radius-md: 6px;
@@ -139,7 +139,9 @@ body {
 .section-title {
     display: flex; align-items: center; gap: 12px;
     margin-bottom: 18px;
+    margin-top: 28px;
 }
+.section-title:first-child { margin-top: 0; }
 .section-title h2 {
     font-family: 'Cairo', sans-serif;
     font-size: 17px; font-weight: 700;
@@ -174,7 +176,7 @@ body {
 }
 .indicator-stages-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 14px;
 }
 .indicator-stage-box {
@@ -186,7 +188,7 @@ body {
 }
 .indicator-stage-box .num {
     font-family: 'Cairo', sans-serif;
-    font-size: 30px; font-weight: 900;
+    font-size: 28px; font-weight: 900;
     color: var(--accent-violet);
     line-height: 1;
 }
@@ -199,155 +201,238 @@ body {
     font-size: 11px;
     color: var(--accent-emerald);
     font-weight: 600;
-    direction: ltr; text-align: right;
 }
 
-/* UPLOAD - per-hospital card has TWO slots */
+/* UPLOAD */
 .upload-section { margin-bottom: 24px; }
-.upload-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-}
-.upload-card {
+.upload-mega-card {
     background: var(--bg-card);
     border: 1px dashed var(--border-strong);
-    border-radius: var(--radius-md);
-    padding: 16px;
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    text-align: center;
     transition: border-color 0.2s, background 0.2s;
 }
-.upload-card.has-both {
+.upload-mega-card.loaded {
     border-style: solid;
     border-color: var(--accent-emerald);
     background: linear-gradient(180deg, var(--bg-card) 0%, rgba(16,185,129,0.03) 100%);
 }
-.upload-card.partial {
-    border-style: solid;
-    border-color: var(--accent-amber);
-}
-.upload-card-header { margin-bottom: 12px; }
-.hospital-info h3 {
+.upload-mega-card h3 {
     font-family: 'Cairo', sans-serif;
-    font-size: 14px; font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 3px;
+    font-size: 16px; font-weight: 700;
+    margin-bottom: 8px;
 }
-.hospital-info .lab-name {
-    font-size: 10px;
+.upload-mega-card p {
+    font-size: 13px;
     color: var(--text-tertiary);
-    font-weight: 500;
-    direction: ltr;
-    text-align: right;
+    margin-bottom: 18px;
 }
-
-.dual-upload {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-}
-.upload-slot {
-    display: flex; flex-direction: column; gap: 6px;
-}
-.upload-slot .slot-label {
-    font-size: 10px;
-    color: var(--text-tertiary);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.upload-slot .slot-label .req { color: var(--accent-rose); }
-.upload-input-wrap { position: relative; }
+.upload-input-wrap { position: relative; display: inline-block; }
 .upload-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-.upload-label {
-    display: flex; align-items: center; justify-content: center;
-    gap: 4px; padding: 8px;
-    background: var(--bg-input);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-sm);
-    font-size: 11px; font-weight: 600;
-    color: var(--text-secondary);
+.upload-mega-label {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 12px 28px;
+    background: var(--accent-violet);
+    border: 1px solid var(--accent-violet);
+    border-radius: var(--radius-md);
+    font-size: 13px; font-weight: 700;
+    color: white;
     cursor: pointer;
     transition: all 0.2s;
-    min-height: 32px;
 }
-.upload-card:hover .upload-label {
-    background: var(--bg-card-elevated);
-    color: var(--text-primary);
-}
-.upload-label.loaded {
-    background: rgba(16,185,129,0.08);
-    border-color: rgba(16,185,129,0.4);
-    color: var(--accent-emerald);
-}
-.upload-status {
-    margin-top: 10px;
-    padding: 7px 9px;
-    background: var(--bg-input);
-    border-radius: var(--radius-sm);
-    font-size: 10.5px;
-    color: var(--text-tertiary);
-    font-family: 'JetBrains Mono', monospace;
-    min-height: 26px;
-    display: flex; align-items: center;
-    direction: ltr; text-align: right;
-}
-.upload-status.success { color: var(--accent-emerald); }
-.upload-status.warning { color: var(--accent-amber); }
-.upload-status.error { color: var(--accent-rose); }
-
-/* ACTIONS */
-.actions-bar {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 14px 18px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    margin-bottom: 28px;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-.actions-info { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
-.info-stat { display: flex; flex-direction: column; gap: 2px; }
-.info-stat .label {
-    font-size: 11px; color: var(--text-tertiary);
-    font-weight: 500;
-}
-.info-stat .value {
-    font-family: 'Cairo', sans-serif;
-    font-size: 16px; font-weight: 800;
-}
-.actions-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
-.btn {
-    padding: 9px 16px;
-    background: var(--bg-input);
-    border: 1px solid var(--border-medium);
-    border-radius: var(--radius-sm);
-    color: var(--text-primary);
-    font-family: 'Tajawal', sans-serif;
-    font-size: 12.5px; font-weight: 700;
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
-}
-.btn:hover:not(:disabled) {
-    background: var(--bg-card-elevated);
-    border-color: var(--border-strong);
-}
-.btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.btn-primary {
-    background: var(--accent-violet);
-    border-color: var(--accent-violet);
-    color: white;
-}
-.btn-primary:hover:not(:disabled) {
+.upload-mega-label:hover {
     background: #7c3aed;
     border-color: #7c3aed;
 }
-.btn-close {
-    background: var(--accent-rose);
-    border-color: var(--accent-rose);
-    color: white;
+.upload-mega-card.loaded .upload-mega-label {
+    background: var(--accent-emerald);
+    border-color: var(--accent-emerald);
 }
 
-/* EMPTY STATE */
+/* KPI STRIP */
+.kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+.kpi {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    position: relative;
+    overflow: hidden;
+}
+.kpi::before {
+    content: ''; position: absolute;
+    top: 0; right: 0; width: 3px; height: 100%;
+    background: var(--accent-blue);
+}
+.kpi.emerald::before { background: var(--accent-emerald); }
+.kpi.amber::before { background: var(--accent-amber); }
+.kpi.rose::before { background: var(--accent-rose); }
+.kpi.violet::before { background: var(--accent-violet); }
+.kpi.cyan::before { background: var(--accent-cyan); }
+.kpi.pink::before { background: var(--accent-pink); }
+.kpi .l {
+    font-size: 10px; color: var(--text-tertiary);
+    font-weight: 700; letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+.kpi .v {
+    font-family: 'Cairo', sans-serif;
+    font-size: 28px; font-weight: 900;
+    color: var(--text-primary);
+    line-height: 1;
+}
+.kpi .u {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin-right: 4px;
+}
+.kpi .sub {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 6px;
+}
+
+/* GRID LAYOUT */
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 16px;
+}
+.grid-2-1 {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 20px 22px;
+}
+.panel-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.panel-head .ttl {
+    font-family: 'Cairo', sans-serif;
+    font-size: 14px; font-weight: 800;
+}
+.panel-head .tg {
+    font-size: 11px; color: var(--text-tertiary);
+}
+
+.chart-wrap {
+    position: relative;
+    height: 280px;
+}
+.chart-wrap.tall { height: 360px; }
+.chart-wrap.short { height: 220px; }
+
+/* BUCKETS / BARS */
+.buckets { display: flex; flex-direction: column; gap: 8px; }
+.bucket {
+    display: grid;
+    grid-template-columns: 16px 1fr 120px 60px;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+}
+.bucket .sw {
+    width: 12px; height: 12px; border-radius: 3px;
+}
+.bucket .lbl { color: var(--text-secondary); font-weight: 500; }
+.bucket .bar {
+    height: 6px; background: var(--bg-input);
+    border-radius: 999px; overflow: hidden;
+}
+.bucket .bar > span {
+    display: block; height: 100%; border-radius: 999px;
+}
+.bucket .n {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--text-primary);
+    font-weight: 700; text-align: left;
+    direction: ltr;
+}
+.sw.emerald, .bar > .emerald { background: var(--accent-emerald); }
+.sw.amber, .bar > .amber { background: var(--accent-amber); }
+.sw.orange, .bar > .orange { background: var(--accent-orange); }
+.sw.rose, .bar > .rose { background: var(--accent-rose); }
+.sw.blue, .bar > .blue { background: var(--accent-blue); }
+.sw.violet, .bar > .violet { background: var(--accent-violet); }
+.sw.cyan, .bar > .cyan { background: var(--accent-cyan); }
+.sw.pink, .bar > .pink { background: var(--accent-pink); }
+.sw.muted, .bar > .muted { background: var(--text-muted); }
+.txt-emerald { color: var(--accent-emerald); }
+.txt-amber { color: var(--accent-amber); }
+.txt-rose { color: var(--accent-rose); }
+.txt-violet { color: var(--accent-violet); }
+
+/* TABLE */
+.tbl-wrap { overflow-x: auto; }
+table.data-tbl {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 12.5px;
+}
+.data-tbl thead th {
+    background: var(--bg-card-elevated);
+    color: var(--text-secondary);
+    font-family: 'Cairo', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: right;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-medium);
+    white-space: nowrap;
+}
+.data-tbl tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+}
+.data-tbl tbody tr:hover { background: rgba(255,255,255,0.02); }
+.data-tbl tbody tr:last-child td { border-bottom: none; }
+.data-tbl .num {
+    font-family: 'JetBrains Mono', monospace;
+    direction: ltr; text-align: left;
+    font-weight: 600;
+}
+.data-tbl .bold { font-weight: 700; }
+.tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 700;
+}
+.tag.emerald { background: rgba(16,185,129,0.15); color: #34d399; }
+.tag.amber { background: rgba(245,158,11,0.15); color: #fbbf24; }
+.tag.rose { background: rgba(239,68,68,0.15); color: #f87171; }
+.tag.blue { background: rgba(59,130,246,0.15); color: #60a5fa; }
+.tag.muted { background: rgba(255,255,255,0.06); color: var(--text-tertiary); }
+
+/* EMPTY */
 .empty-state {
     text-align: center;
     padding: 80px 20px;
@@ -366,742 +451,87 @@ body {
     color: var(--text-tertiary);
 }
 
-/* HOSPITAL RESULT CARDS */
 .results-section { display: none; }
 .results-section.visible { display: block; }
-.hospitals-section { margin-top: 20px; display: flex; flex-direction: column; gap: 16px; }
-.hospital-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-}
-.hospital-header {
-    padding: 18px 22px;
-    background: var(--bg-card-elevated);
-    border-bottom: 1px solid var(--border-subtle);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.hospital-title h2 {
-    font-family: 'Cairo', sans-serif;
-    font-size: 17px; font-weight: 800;
-}
-.hospital-title .lab-tag {
-    font-size: 11px;
-    color: var(--text-tertiary);
-    margin-top: 2px;
-    direction: ltr;
-    text-align: right;
-}
-.hospital-actions { display: flex; gap: 6px; }
-.hospital-body { padding: 22px; }
 
-/* KPI strip inside hospital card */
-.h-kpi-strip {
+/* INSIGHT BOXES */
+.insights-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
-    margin-bottom: 18px;
 }
-.h-kpi {
+.insight {
     background: var(--bg-input);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
     padding: 14px 16px;
-    position: relative;
-    overflow: hidden;
+    display: flex; gap: 12px;
+    align-items: flex-start;
 }
-.h-kpi::before {
-    content: ''; position: absolute;
-    top: 0; right: 0; width: 3px; height: 100%;
-    background: var(--accent-blue);
-}
-.h-kpi.emerald::before { background: var(--accent-emerald); }
-.h-kpi.amber::before { background: var(--accent-amber); }
-.h-kpi.rose::before { background: var(--accent-rose); }
-.h-kpi.violet::before { background: var(--accent-violet); }
-.h-kpi .l {
-    font-size: 10px; color: var(--text-tertiary);
-    font-weight: 700; letter-spacing: 0.5px;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-}
-.h-kpi .v {
+.insight.warn { border-right: 3px solid var(--accent-amber); }
+.insight.good { border-right: 3px solid var(--accent-emerald); }
+.insight.bad { border-right: 3px solid var(--accent-rose); }
+.insight.info { border-right: 3px solid var(--accent-blue); }
+.insight .icon {
     font-family: 'Cairo', sans-serif;
-    font-size: 26px; font-weight: 900;
-    color: var(--text-primary);
-    line-height: 1;
-}
-.h-kpi .u {
-    font-size: 11px;
-    color: var(--text-secondary);
-    font-weight: 600;
-    margin-right: 4px;
-}
-.h-kpi .sub {
-    font-size: 11px;
-    color: var(--text-tertiary);
-    margin-top: 6px;
-}
-
-.h-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-}
-.h-panel {
-    background: var(--bg-input);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    padding: 16px 18px;
-}
-.h-panel .h-panel-head {
-    display: flex; justify-content: space-between; align-items: baseline;
-    margin-bottom: 12px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border-subtle);
-}
-.h-panel .h-panel-head .ttl {
-    font-family: 'Cairo', sans-serif;
-    font-size: 14px; font-weight: 800;
-}
-.h-panel .h-panel-head .tg {
-    font-size: 11px; color: var(--text-tertiary);
-    direction: ltr;
-}
-.h-stat-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-    margin-bottom: 12px;
-}
-.h-stat {
-    text-align: center;
-    padding: 8px 4px;
-    background: var(--bg-card);
-    border-radius: var(--radius-sm);
-}
-.h-stat .l {
-    font-size: 9px; color: var(--text-tertiary);
-    font-weight: 700; letter-spacing: 0.4px;
-    text-transform: uppercase;
-}
-.h-stat .v {
-    font-family: 'Cairo', sans-serif;
-    font-size: 18px; font-weight: 800;
-    margin-top: 3px;
-}
-.h-stat .u {
-    font-size: 10px; color: var(--text-tertiary);
-}
-
-.h-buckets { display: flex; flex-direction: column; gap: 6px; }
-.h-bucket {
-    display: grid;
-    grid-template-columns: 16px 1fr 70px 50px;
-    align-items: center;
-    gap: 8px;
-    font-size: 11.5px;
-}
-.h-bucket .sw {
-    width: 12px; height: 12px; border-radius: 3px;
-}
-.h-bucket .lbl { color: var(--text-secondary); font-weight: 500; }
-.h-bucket .bar {
-    height: 5px; background: var(--bg-card);
-    border-radius: 999px; overflow: hidden;
-}
-.h-bucket .bar > span {
-    display: block; height: 100%; border-radius: 999px;
-}
-.h-bucket .n {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; color: var(--text-primary);
-    font-weight: 700; text-align: left;
-    direction: ltr;
-}
-.col-emerald, .swatch-emerald, .h-bucket .sw.emerald, .h-bucket .bar > .emerald { background: var(--accent-emerald); }
-.col-amber, .h-bucket .sw.amber, .h-bucket .bar > .amber { background: var(--accent-amber); }
-.col-orange, .h-bucket .sw.orange, .h-bucket .bar > .orange { background: var(--accent-orange); }
-.col-rose, .h-bucket .sw.rose, .h-bucket .bar > .rose { background: var(--accent-rose); }
-.txt-emerald { color: var(--accent-emerald); }
-.txt-amber { color: var(--accent-amber); }
-.txt-rose { color: var(--accent-rose); }
-
-/* ============================
-   SLIDE EXPORT (Hajj-style, 1920x1080)
-============================ */
-.slide-modal {
-    display: none;
-    position: fixed; inset: 0;
-    background: #0F141F;
-    z-index: 2000;
-    overflow: auto;
-}
-.slide-modal.active { display: block; }
-.slide-toolbar {
-    position: sticky; top: 0; z-index: 10;
-    background: var(--bg-card);
-    border-bottom: 1px solid var(--border-medium);
-    padding: 14px 20px;
-    display: flex; justify-content: space-between; align-items: center;
-    gap: 14px;
-}
-.slide-toolbar h2 {
-    font-family: 'Cairo', sans-serif;
-    font-size: 15px; font-weight: 800;
-    color: #F4F6FB;
-}
-.slide-toolbar .actions { display: flex; gap: 8px; }
-
-/* Checkerboard preview backdrop, identical to the lab dashboard */
-.slide-pages-wrap {
-    background:
-        linear-gradient(45deg, #1a1f2e 25%, transparent 25%),
-        linear-gradient(-45deg, #1a1f2e 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, #1a1f2e 75%),
-        linear-gradient(-45deg, transparent 75%, #1a1f2e 75%);
-    background-size: 24px 24px;
-    background-position: 0 0, 0 12px, 12px -12px, -12px 0px;
-    background-color: #0F141F;
-    padding: 40px;
-    overflow: auto;
-    display: flex; flex-direction: column;
-    align-items: center;
-    gap: 40px;
-}
-
-/* The slide acts as the scaling wrapper for all pages, like the lab dashboard */
-.hajj-slide {
-    width: 1920px;
-    position: relative;
-    background: transparent;
-    font-family: 'Cairo', 'Tajawal', 'Janna LT', sans-serif;
-    direction: rtl;
-    display: flex; flex-direction: column;
-    gap: 40px;
-    transform-origin: top center;
-    transform: scale(var(--slide-scale, 0.45));
-    margin-bottom: calc((1080px * 3 + 40px * 2) * (1 - var(--slide-scale, 0.45)) * -1);
-    text-rendering: optimizeLegibility;
-    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
-    color: #1A2433;
-}
-@media (max-width: 1100px) { .hajj-slide { --slide-scale: 0.32; } }
-@media (max-width: 700px)  { .hajj-slide { --slide-scale: 0.20; } }
-
-.hajj-slide-page {
-    width: 1920px;
-    height: 1080px;
-    background: #FFFFFF;
-    padding: 0;
-    box-sizing: border-box;
-    display: flex; align-items: stretch; justify-content: stretch;
-    direction: rtl;
-}
-/* Tall variant: lets the slide grow vertically to fit all content (delays slide). */
-.hajj-slide-page.tall {
-    height: auto;
-    min-height: 1080px;
-}
-
-.hajj-card {
-    width: 100%;
-    background: #FFFFFF;
-    border-radius: 0;
-    padding: 60px 72px;
-    box-shadow: none;
-    box-sizing: border-box;
-}
-.hajj-card-header {
-    border-bottom: 3px solid #063A58;
-    padding-bottom: 22px;
-    margin-bottom: 28px;
-    text-align: center;
-}
-.hajj-card-title {
-    font-family: 'Cairo', 'Tajawal', 'Geeza Pro', 'Tahoma', sans-serif;
-    font-size: 44px;
-    font-weight: 700;
-    color: #063A58;
-    margin-bottom: 6px;
-}
-.hajj-card-sub {
-    font-size: 18px;
-    color: #4A5A6B;
-    font-weight: 500;
-}
-
-/* Indicator explainer panel */
-.hajj-info {
-    background: #F0F4F8;
-    border: 1px solid #D5DEE7;
-    border-right: 5px solid #063A58;
-    border-radius: 10px;
-    padding: 18px 24px;
-    margin-bottom: 22px;
-}
-.hajj-info-title {
-    font-family: 'Cairo', 'Tajawal', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: #063A58;
-    margin-bottom: 12px;
-}
-.hajj-info-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-}
-.hajj-info-row {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 8px;
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    border-radius: 6px;
-    padding: 14px 12px;
-}
-.hajj-info-row.strong {
-    background: #063A58;
-    border-color: #08506E;
-}
-.hajj-info-row.strong .hajj-info-num,
-.hajj-info-row.strong .hajj-info-text { color: #FFFFFF; }
-.hajj-info-row.strong .hajj-info-target {
-    background: rgba(255,255,255,0.18);
-    color: #FFFFFF;
-}
-.hajj-info-num {
-    background: #063A58;
-    color: #FFFFFF;
-    font-family: 'Cairo', 'Tajawal', sans-serif;
-    font-weight: 700;
-    font-size: 14px;
-    min-width: 32px;
-    height: 32px;
-    border-radius: 50%;
+    font-size: 18px; font-weight: 900;
+    width: 28px; height: 28px;
     display: flex; align-items: center; justify-content: center;
-    padding: 0 8px;
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
 }
-.hajj-info-row.strong .hajj-info-num {
-    background: #FFFFFF;
-    color: #063A58;
-    width: auto; min-width: auto; height: auto;
-    padding: 4px 14px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: 700;
-}
-.hajj-info-text {
-    font-size: 14.5px;
-    color: #1A2433;
-    font-weight: 600;
-    line-height: 1.5;
-    flex: 1;
-}
-.hajj-info-target {
-    background: #E2E8F0;
-    color: #4A5568;
-    font-family: 'Cairo', 'Tajawal', sans-serif;
-    font-weight: 700;
-    font-size: 13px;
-    padding: 5px 14px;
-    border-radius: 4px;
-    white-space: nowrap;
-}
-
-/* Comparison table */
-.hajj-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-}
-.hajj-table thead th {
-    background: #063A58;
-    color: #FFFFFF;
-    font-size: 15px;
-    font-weight: 700;
-    padding: 16px 10px;
-    text-align: center;
-    vertical-align: middle;
-    line-height: 1.5;
-    border-left: 1px solid rgba(255, 255, 255, 0.15);
-}
-.hajj-table thead th:last-child { border-left: none; }
-.hajj-table thead th:first-child { border-top-right-radius: 8px; }
-.hajj-table thead th:last-child { border-top-left-radius: 8px; }
-.hajj-table thead th.hosp-col {
-    text-align: right;
-    padding-right: 22px;
-    width: 280px;
-    font-size: 17px;
-}
-.hajj-table thead th.th-strong { background: #08506E; }
-.hajj-table .th-main {
-    font-size: 14.5px;
-    font-weight: 700;
+.insight.warn .icon { background: rgba(245,158,11,0.15); color: var(--accent-amber); }
+.insight.good .icon { background: rgba(16,185,129,0.15); color: var(--accent-emerald); }
+.insight.bad .icon { background: rgba(239,68,68,0.15); color: var(--accent-rose); }
+.insight.info .icon { background: rgba(59,130,246,0.15); color: var(--accent-blue); }
+.insight .body { flex: 1; }
+.insight .ttl {
+    font-family: 'Cairo', sans-serif;
+    font-size: 13px; font-weight: 700;
     margin-bottom: 4px;
-    line-height: 1.4;
 }
-.hajj-table .th-target {
-    font-size: 11.5px;
-    color: rgba(255, 255, 255, 0.7);
-    font-weight: 500;
-    background: rgba(255, 255, 255, 0.08);
-    padding: 2px 8px;
-    border-radius: 3px;
-    display: inline-block;
-}
-.hajj-table tbody tr { transition: background 0.15s; }
-.hajj-table tbody tr:nth-child(even) { background: #F7FAFC; }
-.hajj-table tbody tr:nth-child(odd)  { background: #FFFFFF; }
-.hajj-table tbody tr:last-child td:first-child { border-bottom-right-radius: 8px; }
-.hajj-table tbody tr:last-child td:last-child  { border-bottom-left-radius: 8px; }
-.hajj-table td {
-    padding: 14px 10px;
-    text-align: center;
-    font-size: 16px;
-    border-bottom: 1px solid #E5EAF0;
-}
-.hajj-table tbody tr:last-child td { border-bottom: none; }
-.hajj-table td.hosp-name {
-    text-align: right;
-    padding-right: 22px;
-    font-weight: 700;
-    color: #1A2433;
-    font-size: 17px;
-}
-
-/* Number-with-progress-bar cell */
-.m-cell {
-    display: flex; flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    padding: 0 6px;
-}
-.m-val {
-    font-family: 'Cairo', 'Tajawal', sans-serif;
-    font-weight: 700;
-    font-size: 24px;
-    line-height: 1.1;
-    direction: ltr;
-}
-.m-bar {
-    width: 100%;
-    height: 8px;
-    background: #E5EAF0;
-    border-radius: 4px;
-    overflow: hidden;
-}
-.m-bar-fill {
-    height: 100%;
-    border-radius: 4px;
-}
-
-.hajj-legend {
-    margin-top: 24px;
-    padding-top: 18px;
-    border-top: 1px solid #E5EAF0;
-    display: flex; justify-content: center;
-    gap: 32px;
-    flex-wrap: wrap;
-    font-size: 14px;
-    color: #4A5A6B;
-    font-weight: 600;
-}
-.hajj-legend span {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-.hajj-legend .leg-dot {
-    width: 12px; height: 12px;
-    border-radius: 50%;
-    display: inline-block;
+.insight .txt {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
 }
 
 /* Heatmap */
-.hajj-heat {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 2px;
-    table-layout: fixed;
-    margin-bottom: 22px;
-}
-.hajj-heat thead th {
-    background: transparent;
-    color: #4A5A6B;
-    font-size: 13px;
-    font-weight: 700;
-    padding: 8px 0;
-    text-align: center;
-    font-family: 'Cairo', 'Tajawal', sans-serif;
-    border: none;
-}
-.hajj-heat .hh-corner {
-    background: #063A58;
-    color: #FFFFFF;
-    border-radius: 6px;
-    width: 200px;
-    text-align: right;
-    padding-right: 16px;
-    font-size: 14px;
-}
-.hajj-heat .hh-hour {
-    font-family: 'Cairo', 'Tajawal', sans-serif;
-    color: #4A5A6B;
-    font-size: 12px;
-}
-.hajj-heat tbody tr { background: transparent; }
-.hajj-heat .hh-name {
-    background: #F0F4F8;
-    color: #1A2433;
-    font-weight: 700;
-    text-align: right;
-    padding: 10px 14px;
-    font-size: 13.5px;
-    border-radius: 6px;
-    border: 1px solid #D5DEE7;
-}
-.hajj-heat .hh-cell {
-    padding: 4px 2px;
-    text-align: center;
-    border-radius: 4px;
-    vertical-align: middle;
-    line-height: 1.1;
-    height: 50px;
-}
-.hajj-heat .hh-cell.empty {
-    border: 1px dashed #CBD5E0;
-}
-.hajj-heat .hh-pct {
-    font-family: 'Cairo', 'Tajawal', sans-serif;
-    font-weight: 700;
-    font-size: 13px;
-    line-height: 1;
-}
-.hajj-heat .hh-cnt {
-    font-family: 'Cairo', 'Tajawal', sans-serif;
-    font-weight: 400;
-    font-size: 10.5px;
-    opacity: 0.85;
-    margin-top: 3px;
-    line-height: 1;
-}
-
-/* Heatmap section header (between two heatmaps on page 2/3) */
-.hajj-heat-section-title {
-    font-family: 'Cairo','Tajawal',sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    color: #063A58;
-    text-align: center;
-    margin: 8px 0 14px;
-}
-
-/* ============ DELAYS SLIDE (per-hospital, per-stage) ============ */
-.delay-stage-banner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: linear-gradient(135deg, #B45309, #92400E);
-    color: #FFFFFF;
-    border-radius: 12px;
-    padding: 16px 22px;
-    margin-bottom: 18px;
-}
-.delay-stage-banner.stage-a2r {
-    background: linear-gradient(135deg, #92400E, #7C2D12);
-}
-.delay-stage-banner .lbl {
-    font-family: 'Cairo','Tajawal',sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-}
-.delay-stage-banner .meta {
-    display: flex; gap: 18px;
-    font-family: 'Cairo','Tajawal',sans-serif;
-    font-size: 14px;
-}
-.delay-stage-banner .meta b {
-    font-size: 18px;
-    font-weight: 800;
-    margin-right: 4px;
-}
-
-.delay-grid {
+.heatmap-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-    margin-bottom: 18px;
-}
-.delay-card {
-    background: #FFFFFF;
-    border: 1px solid #E5EAF0;
-    border-right: 5px solid #F59E0B;
-    border-radius: 10px;
-    padding: 14px 18px;
-    display: flex; flex-direction: column;
-    gap: 6px;
-    min-height: 110px;
-}
-.delay-card.sev-1 { border-right-color: #F59E0B; }  /* lightly over */
-.delay-card.sev-2 { border-right-color: #FB923C; }
-.delay-card.sev-3 { border-right-color: #EF4444; }  /* heavy over */
-.delay-card .top {
-    display: flex; justify-content: space-between; align-items: baseline;
-}
-.delay-card .pid {
-    font-family: 'JetBrains Mono', 'Cairo', monospace;
-    font-size: 22px;
-    font-weight: 800;
-    color: #063A58;
-    direction: ltr;
-    letter-spacing: 0.5px;
-}
-.delay-card .delay {
-    font-family: 'Cairo','Tajawal',sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 14px;
-    background: #FEF3C7;
-    color: #B45309;
-    white-space: nowrap;
-}
-.delay-card.sev-2 .delay { background: #FFEDD5; color: #C2410C; }
-.delay-card.sev-3 .delay { background: #FEE2E2; color: #B91C1C; }
-.delay-card .proc {
-    font-family: 'Cairo','Tajawal',sans-serif;
-    font-size: 13px;
-    color: #1A2433;
-    font-weight: 600;
-    line-height: 1.45;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-}
-.delay-card .when {
-    font-size: 11.5px;
-    color: #6B7280;
-    margin-top: auto;
-    direction: ltr; text-align: right;
-}
-
-/* Compact mode for slides with many entries (>20) — 5 cols */
-.delay-grid.compact {
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-}
-.delay-grid.compact .delay-card {
-    padding: 10px 12px;
-    min-height: 90px;
-}
-.delay-grid.compact .delay-card .pid { font-size: 18px; }
-.delay-grid.compact .delay-card .proc { font-size: 12px; -webkit-line-clamp: 2; }
-.delay-grid.compact .delay-card .delay { font-size: 12px; padding: 3px 8px; }
-
-/* Very compact: 6 cols for huge lists */
-.delay-grid.ultra {
-    grid-template-columns: repeat(6, 1fr);
-    gap: 8px;
-}
-.delay-grid.ultra .delay-card {
-    padding: 8px 10px;
-    min-height: 80px;
-}
-.delay-grid.ultra .delay-card .pid { font-size: 16px; }
-.delay-grid.ultra .delay-card .proc { font-size: 11px; }
-
-.delay-summary-bar {
-    background: #FAFBFC;
-    border: 1px solid #E5EAF0;
-    border-radius: 10px;
-    padding: 14px 22px;
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 18px;
-    flex-wrap: wrap;
-    gap: 16px;
-}
-.delay-summary-bar .item {
-    display: flex; flex-direction: column;
-    align-items: center;
+    grid-template-columns: 100px repeat(7, 1fr);
     gap: 4px;
+    direction: rtl;
 }
-.delay-summary-bar .lbl {
-    font-size: 12px;
-    color: #4A5A6B;
-    font-weight: 600;
-}
-.delay-summary-bar .val {
-    font-family: 'Cairo','Tajawal',sans-serif;
-    font-size: 24px;
-    font-weight: 800;
-    color: #063A58;
-}
-.delay-summary-bar .val.amber { color: #B45309; }
-.delay-summary-bar .val.rose  { color: #B91C1C; }
-
-.delay-empty {
-    text-align: center;
-    padding: 60px 30px;
-    color: #10B981;
-    background: #ECFDF5;
-    border: 2px dashed #10B981;
-    border-radius: 12px;
-    font-family: 'Cairo','Tajawal',sans-serif;
-}
-.delay-empty .icon {
-    font-size: 48px;
-    margin-bottom: 12px;
-}
-.delay-empty .msg {
-    font-size: 22px;
-    font-weight: 800;
-    color: #047857;
-}
-.delay-empty .sub {
-    font-size: 14px;
-    color: #059669;
-    margin-top: 8px;
-}
-
-/* Hospital sub-section header within a combined delays slide */
-.hosp-section { margin-bottom: 22px; }
-.hosp-section:last-child { margin-bottom: 0; }
-.hosp-section-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #063A58;
-    color: #FFFFFF;
-    border-radius: 8px;
-    padding: 10px 18px;
-    margin-bottom: 10px;
-}
-.hosp-section-head .name {
-    font-family: 'Cairo','Tajawal',sans-serif;
-    font-size: 17px;
-    font-weight: 800;
-}
-.hosp-section-head .count {
-    font-family: 'Cairo','Tajawal',sans-serif;
-    font-size: 13px;
+.hm-h {
+    font-size: 10px;
+    color: var(--text-tertiary);
     font-weight: 700;
-    background: rgba(255,255,255,0.15);
-    padding: 4px 12px;
-    border-radius: 4px;
+    text-align: center;
+    padding: 6px 0;
 }
-.hosp-section-head .count.clean {
-    background: rgba(16,185,129,0.25);
-    color: #A7F3D0;
+.hm-row-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    padding: 8px 6px;
+    text-align: right;
+}
+.hm-cell {
+    height: 40px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+}
+.hm-cell.empty {
+    background: var(--bg-input);
+    border: 1px dashed var(--border-subtle);
+    color: var(--text-muted);
 }
 </style>
 </head>
@@ -1116,9 +546,9 @@ body {
 <header class="cmd-header">
     <div class="cmd-header-inner">
         <div class="cmd-titles">
-            <div class="super">RADIOLOGY · EMERGENCY · TURNAROUND TIME</div>
-            <h1>الخدمات الصحية المساندة | مؤشرات أشعة الطوارئ</h1>
-            <div class="subtitle">مستشفيات تجمع المدينة المنورة الصحي · المطابقة عبر رقم الملف</div>
+            <div class="super">HEALTH EDUCATION · HEALTH COACH · PHC NETWORK</div>
+            <h1>إدارة التثقيف الصحي | داشبورد تحليل زيارات Health Coach</h1>
+            <div class="subtitle">تحليل تفصيلي لزيارات المدربين الصحيين في مراكز الرعاية الأولية</div>
         </div>
         <div class="cmd-status">
             <div class="cmd-pill"><span class="dot"></span><span>النظام جاهز</span></div>
@@ -1130,133 +560,242 @@ body {
 <main class="cmd-main">
 
     <section class="indicator-explainer">
-        <h2>تعريف المؤشر</h2>
+        <h2>عن هذا الداشبورد</h2>
         <p class="indicator-text">
-            مؤشر زمن إنجاز فحوصات أشعة الطوارئ (TAT) يقيس الزمن بين طلب الفحص من قسم الطوارئ حتى صدور التقرير الأولي. يُعتمد على التقرير الأولي (Preliminary) لأن التقرير النهائي يصدر في اليوم التالي. تتم المطابقة بين سجل الطوارئ وسجل الأشعة (PACS) عبر رقم الملف الموحّد للمريض.
+            تحليل شامل لزيارات Health Coach في مراكز الرعاية الصحية الأولية. الداشبورد يقيس أداء المدربين الصحيين، توزيع المرضى، الحالة الصحية (BMI وضغط الدم)، اكتمال البيانات، ومعدلات تحقيق الأهداف. الهدف رصد فجوات التوثيق وفرص التحسين في برامج التثقيف الصحي.
         </p>
         <div class="indicator-stages-grid">
             <div class="indicator-stage-box">
                 <span class="num">١</span>
                 <div>
-                    <div class="nm">من إنشاء الطلب إلى إجراء التصوير</div>
-                    <div class="tg">المستهدف ≤ 15 دقيقة</div>
+                    <div class="nm">اكتمال العلامات الحيوية</div>
+                    <div class="tg">المستهدف ≥ 90%</div>
                 </div>
             </div>
             <div class="indicator-stage-box">
                 <span class="num">٢</span>
                 <div>
-                    <div class="nm">من التصوير إلى التقرير الأولي</div>
-                    <div class="tg">المستهدف ≤ 45 دقيقة</div>
+                    <div class="nm">توثيق خطة التدريب</div>
+                    <div class="tg">المستهدف ≥ 95%</div>
+                </div>
+            </div>
+            <div class="indicator-stage-box">
+                <span class="num">٣</span>
+                <div>
+                    <div class="nm">تسجيل النتيجة</div>
+                    <div class="tg">المستهدف ≥ 90%</div>
+                </div>
+            </div>
+            <div class="indicator-stage-box">
+                <span class="num">٤</span>
+                <div>
+                    <div class="nm">نسبة تحقيق الهدف</div>
+                    <div class="tg">المستهدف ≥ 50%</div>
                 </div>
             </div>
         </div>
     </section>
 
     <section class="upload-section">
-        <div class="section-title">
-            <h2>رفع ملفات المستشفيات</h2>
-            <span class="badge">لكل مستشفى: ملف الطوارئ + ملف PACS</span>
+        <div class="upload-mega-card" id="uploadCard">
+            <h3>ارفع ملف بيانات الزيارات</h3>
+            <p>الملف الأصلي بصيغة Excel من نظام الزيارات (xlsx, xls, csv)</p>
+            <div class="upload-input-wrap">
+                <input type="file" class="upload-input" id="fileInput" accept=".xlsx,.xls,.csv">
+                <div class="upload-mega-label" id="uploadLabel">اختر الملف</div>
+            </div>
         </div>
-        <div class="upload-grid" id="uploadGrid"></div>
     </section>
 
-    <div class="actions-bar">
-        <div class="actions-info">
-            <div class="info-stat">
-                <span class="label">المستشفيات المكتملة</span>
-                <span class="value" id="hospitalsReady">0 / 0</span>
-            </div>
-            <div class="info-stat">
-                <span class="label">إجمالي فحوصات الطوارئ</span>
-                <span class="value" id="totalStudies">--</span>
-            </div>
-            <div class="info-stat">
-                <span class="label">معايير الأداء</span>
-                <span class="value" style="color: var(--accent-emerald);">15د / 45د</span>
-            </div>
-        </div>
-        <div class="actions-buttons">
-            <button class="btn" id="btnReset">إعادة تعيين</button>
-            <button class="btn" id="btnHajjSlide" disabled style="background: linear-gradient(135deg, #126280, #063A58); color: white; border-color: #1E88B5;">سلايد الاجتماع</button>
-            <button class="btn" id="btnDelaysSlide" disabled style="background: linear-gradient(135deg, #B45309, #92400E); color: white; border-color: #D97706;">سلايد التأخرات</button>
-            <button class="btn btn-primary" id="btnAnalyze" disabled>تحليل البيانات</button>
-        </div>
-    </div>
-
     <div class="empty-state" id="emptyState">
-        <h3>ارفع ملفي مستشفى واحد على الأقل لبدء التحليل</h3>
-        <p>كل مستشفى يحتاج ملفين: ملف الطوارئ (xlsx) وملف الأشعة من PACS (csv أو xlsx)</p>
+        <h3>ارفع ملف البيانات لبدء التحليل</h3>
+        <p>الملف يجب أن يحتوي على الأعمدة: PHCs · Date Of Visit · Patient ID · Gender · age · Systolic_BP · Diastolic_BP · Height · Weight · BMI · Health_Coach_Plan · Health_Coach_Achievment · Name of Health Coach</p>
     </div>
 
     <section class="results-section" id="resultsSection">
+
+        <!-- KPI STRIP -->
+        <div class="kpi-strip" id="kpiStrip"></div>
+
+        <!-- INSIGHTS -->
         <div class="section-title">
-            <h2>نتائج التحليل</h2>
-            <span class="badge" id="resultsBadge">--</span>
+            <h2>أهم المؤشرات والملاحظات</h2>
+            <span class="badge" id="insightsBadge">--</span>
         </div>
-        <div class="hospitals-section" id="hospitalsSection"></div>
+        <div class="panel" style="margin-bottom: 16px;">
+            <div class="insights-grid" id="insightsGrid"></div>
+        </div>
+
+        <!-- OVERVIEW CHARTS -->
+        <div class="section-title">
+            <h2>التوزيعات الديموغرافية</h2>
+            <span class="badge">جنس · فئات عمر</span>
+        </div>
+        <div class="grid-3">
+            <div class="panel">
+                <div class="panel-head">
+                    <div class="ttl">توزيع الجنس</div>
+                    <div class="tg">Gender</div>
+                </div>
+                <div class="chart-wrap short"><canvas id="chGender"></canvas></div>
+            </div>
+            <div class="panel">
+                <div class="panel-head">
+                    <div class="ttl">الفئات العمرية</div>
+                    <div class="tg">Age groups</div>
+                </div>
+                <div class="chart-wrap short"><canvas id="chAge"></canvas></div>
+            </div>
+            <div class="panel">
+                <div class="panel-head">
+                    <div class="ttl">الزيارات اليومية</div>
+                    <div class="tg">Daily visits</div>
+                </div>
+                <div class="chart-wrap short"><canvas id="chDaily"></canvas></div>
+            </div>
+        </div>
+
+        <!-- CLINICAL CHARTS -->
+        <div class="section-title">
+            <h2>المؤشرات السريرية</h2>
+            <span class="badge">BMI · ضغط الدم</span>
+        </div>
+        <div class="grid-2">
+            <div class="panel">
+                <div class="panel-head">
+                    <div class="ttl">تصنيفات مؤشر كتلة الجسم (BMI)</div>
+                    <div class="tg">WHO classification</div>
+                </div>
+                <div class="chart-wrap"><canvas id="chBMI"></canvas></div>
+                <div class="buckets" id="bmiBuckets" style="margin-top: 14px;"></div>
+            </div>
+            <div class="panel">
+                <div class="panel-head">
+                    <div class="ttl">تصنيفات ضغط الدم</div>
+                    <div class="tg">AHA categories</div>
+                </div>
+                <div class="chart-wrap"><canvas id="chBP"></canvas></div>
+                <div class="buckets" id="bpBuckets" style="margin-top: 14px;"></div>
+            </div>
+        </div>
+
+        <!-- PHC PERFORMANCE -->
+        <div class="section-title">
+            <h2>أداء مراكز الرعاية الأولية (PHCs)</h2>
+            <span class="badge" id="phcBadge">--</span>
+        </div>
+        <div class="grid-2-1">
+            <div class="panel">
+                <div class="panel-head">
+                    <div class="ttl">عدد الزيارات لكل مركز</div>
+                    <div class="tg">Visits per PHC</div>
+                </div>
+                <div class="chart-wrap tall"><canvas id="chPHC"></canvas></div>
+            </div>
+            <div class="panel">
+                <div class="panel-head">
+                    <div class="ttl">جودة التوثيق</div>
+                    <div class="tg">Documentation completeness</div>
+                </div>
+                <div class="chart-wrap tall"><canvas id="chDoc"></canvas></div>
+            </div>
+        </div>
+
+        <div class="panel" style="margin-bottom: 16px;">
+            <div class="panel-head">
+                <div class="ttl">تفصيل أداء كل مركز</div>
+                <div class="tg">PHC detailed performance</div>
+            </div>
+            <div class="tbl-wrap">
+                <table class="data-tbl" id="phcTable"></table>
+            </div>
+        </div>
+
+        <!-- COACHES -->
+        <div class="section-title">
+            <h2>أداء المدربين الصحيين</h2>
+            <span class="badge" id="coachBadge">--</span>
+        </div>
+        <div class="grid-2">
+            <div class="panel">
+                <div class="panel-head">
+                    <div class="ttl">عبء العمل لكل مدرب</div>
+                    <div class="tg">Workload distribution</div>
+                </div>
+                <div class="chart-wrap tall"><canvas id="chCoach"></canvas></div>
+            </div>
+            <div class="panel">
+                <div class="panel-head">
+                    <div class="ttl">نسب تحقيق الأهداف</div>
+                    <div class="tg">Goal achievement rate</div>
+                </div>
+                <div class="chart-wrap tall"><canvas id="chAchieve"></canvas></div>
+            </div>
+        </div>
+
+        <div class="panel" style="margin-bottom: 16px;">
+            <div class="panel-head">
+                <div class="ttl">تفصيل أداء كل مدرب صحي</div>
+                <div class="tg">Coach-level metrics</div>
+            </div>
+            <div class="tbl-wrap">
+                <table class="data-tbl" id="coachTable"></table>
+            </div>
+        </div>
+
+        <!-- TEMPORAL -->
+        <div class="section-title">
+            <h2>التحليل الزمني</h2>
+            <span class="badge">يوم الأسبوع · توزيع الأسبوع</span>
+        </div>
+        <div class="grid-2">
+            <div class="panel">
+                <div class="panel-head">
+                    <div class="ttl">توزيع الزيارات حسب يوم الأسبوع</div>
+                    <div class="tg">Day of week pattern</div>
+                </div>
+                <div class="chart-wrap"><canvas id="chDOW"></canvas></div>
+            </div>
+            <div class="panel">
+                <div class="panel-head">
+                    <div class="ttl">العلاقة بين العمر والـ BMI</div>
+                    <div class="tg">Age vs BMI scatter</div>
+                </div>
+                <div class="chart-wrap"><canvas id="chScatter"></canvas></div>
+            </div>
+        </div>
+
+        <!-- DATA QUALITY -->
+        <div class="section-title">
+            <h2>جودة البيانات والملاحظات</h2>
+            <span class="badge" id="dqBadge">--</span>
+        </div>
+        <div class="panel" style="margin-bottom: 16px;">
+            <div class="panel-head">
+                <div class="ttl">سجلات تحتاج مراجعة</div>
+                <div class="tg">Records requiring review</div>
+            </div>
+            <div class="tbl-wrap">
+                <table class="data-tbl" id="issuesTable"></table>
+            </div>
+        </div>
+
     </section>
 
 </main>
 
-<!-- SLIDE MODAL -->
-<div class="slide-modal" id="slideModal">
-    <div class="slide-toolbar">
-        <h2 id="slideModalTitle">سلايد الاجتماع — مؤشرات أشعة الطوارئ</h2>
-        <div class="actions">
-            <button class="btn" id="btnSlideExport">حفظ ٣ صور PNG</button>
-            <button class="btn btn-close" id="btnSlideClose">إغلاق</button>
-        </div>
-    </div>
-    <div class="slide-pages-wrap" id="slidePagesWrap"></div>
-</div>
-
 <script>
-// ====================== CONFIG ======================
-const HOSPITALS = {
-    kfh:        { ar: 'مستشفى الملك فهد',          en: 'King Fahad Hospital - Madina' },
-    kgh:        { ar: 'مستشفى المدينة العام',        en: 'Madinah General Hospital' },
-    maternity:  { ar: 'مستشفى النساء والولادة',     en: 'Maternity & Children Hospital' },
-    ohud:       { ar: 'مستشفى أحد',                  en: 'Ohud Hospital' },
-    miqat:      { ar: 'مستشفى الميقات',              en: 'Al-Miqat Hospital' },
-    salam:      { ar: 'مستشفى السلام',               en: 'Al-Salam Hospital' },
-    haram:      { ar: 'مستشفى الحرم',                en: 'Al-Haram Hospital' },
-    abdulmohsen:{ ar: 'مستشفى الأمير عبدالمحسن',     en: 'Prince Abdulmohsen Hospital' },
-    mahd:       { ar: 'مستشفى المهد',                en: 'Al-Mahd Hospital' },
-    hamna:      { ar: 'مستشفى الحمنة',               en: 'Al-Hamna Hospital' },
-    wadi_fara:  { ar: 'مستشفى وادي الفرع',           en: 'Wadi Al-Fara Hospital' },
-    yanbu:      { ar: 'مستشفى ينبع العام',           en: 'Yanbu General Hospital' },
-    hanakiyah:  { ar: 'مستشفى الحناكية',             en: 'Al-Hanakiyah Hospital' },
-    khaybar:    { ar: 'مستشفى خيبر',                 en: 'Khaybar Hospital' },
-    mental:     { ar: 'مستشفى الصحة النفسية',        en: 'Mental Health Hospital' }
-};
-
-const TARGET_O2A = 15; // order to acquisition
-const TARGET_A2R = 45; // acquisition to preliminary report
-
+// ====================== STATE ======================
 const STATE = {
-    files: {},     // { hkey: { ed: File|null, rad: File|null } }
-    parsed: {},    // { hkey: { ed: rows[], rad: rows[] } }
-    results: {}    // { hkey: { studies: [...], summary: {...} } }
+    raw: [],
+    headers: [],
+    charts: {}
 };
-Object.keys(HOSPITALS).forEach(k => {
-    STATE.files[k] = { ed: null, rad: null };
-    STATE.parsed[k] = { ed: null, rad: null };
-});
 
 // ====================== INIT ======================
 function init() {
     document.getElementById('datePill').textContent = new Date().toISOString().slice(0, 10);
-    renderUploadCards();
-    updateInfo();
-
-    document.getElementById('btnAnalyze').addEventListener('click', analyzeAll);
-    document.getElementById('btnReset').addEventListener('click', resetAll);
-    document.getElementById('btnHajjSlide').addEventListener('click', openHajjSlide);
-    document.getElementById('btnDelaysSlide').addEventListener('click', openDelaysSlide);
-    document.getElementById('btnSlideClose').addEventListener('click', () => {
-        document.getElementById('slideModal').classList.remove('active');
-    });
-    document.getElementById('btnSlideExport').addEventListener('click', exportSlidePngs);
+    document.getElementById('fileInput').addEventListener('change', handleUpload);
 
     setTimeout(() => {
         const shield = document.getElementById('initShield');
@@ -1265,214 +804,58 @@ function init() {
     }, 250);
 }
 
-function renderUploadCards() {
-    const grid = document.getElementById('uploadGrid');
-    grid.innerHTML = Object.entries(HOSPITALS).map(([key, info]) => `
-        <div class="upload-card" data-hospital="${key}">
-            <div class="upload-card-header">
-                <div class="hospital-info">
-                    <h3>${info.ar}</h3>
-                    <div class="lab-name">${info.en}</div>
-                </div>
-            </div>
-            <div class="dual-upload">
-                <div class="upload-slot">
-                    <div class="slot-label">الطوارئ <span class="req">*</span></div>
-                    <div class="upload-input-wrap">
-                        <input type="file" class="upload-input" data-hospital="${key}" data-kind="ed" accept=".xlsx,.xls,.csv">
-                        <div class="upload-label" data-label="${key}-ed">رفع ملف</div>
-                    </div>
-                </div>
-                <div class="upload-slot">
-                    <div class="slot-label">الأشعة PACS <span class="req">*</span></div>
-                    <div class="upload-input-wrap">
-                        <input type="file" class="upload-input" data-hospital="${key}" data-kind="rad" accept=".xlsx,.xls,.csv">
-                        <div class="upload-label" data-label="${key}-rad">رفع ملف</div>
-                    </div>
-                </div>
-            </div>
-            <div class="upload-status" data-status="${key}">لم يتم الرفع</div>
-        </div>
-    `).join('');
-
-    document.querySelectorAll('.upload-input').forEach(input => {
-        input.addEventListener('change', handleUpload);
-    });
-}
-
-// ====================== FILE HANDLING ======================
+// ====================== FILE PARSING ======================
 function handleUpload(e) {
     const file = e.target.files[0];
-    const hospital = e.target.dataset.hospital;
-    const kind = e.target.dataset.kind; // 'ed' or 'rad'
     if (!file) return;
 
-    STATE.files[hospital][kind] = file;
-    const lbl = document.querySelector(`[data-label="${hospital}-${kind}"]`);
-    lbl.textContent = '✓ ' + (file.name.length > 16 ? file.name.slice(0,14)+'…' : file.name);
-    lbl.classList.add('loaded');
+    const ext = file.name.toLowerCase().split('.').pop();
+    const reader = new FileReader();
 
-    parseFile(file).then(rows => {
-        STATE.parsed[hospital][kind] = rows;
-        updateCardStatus(hospital);
-        updateInfo();
-    }).catch(err => {
-        console.error(err);
-        STATE.parsed[hospital][kind] = null;
-        const st = document.querySelector(`[data-status="${hospital}"]`);
-        st.textContent = 'فشل قراءة ' + kind.toUpperCase() + ': ' + err.message;
-        st.className = 'upload-status error';
-    });
-}
+    reader.onload = (ev) => {
+        try {
+            const data = new Uint8Array(ev.target.result);
+            const wb = XLSX.read(data, { type: 'array', cellDates: true });
+            const ws = wb.Sheets[wb.SheetNames[0]];
+            const allRows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: null, raw: true, blankrows: false });
 
-// Recompute worksheet '!ref' from actual cell keys.
-// Some files (notably the ED export here) declare a too-small dimension that
-// hides most of the data from sheet_to_json. We compute the true range from
-// the keys (A1, B2, AA10, ...) so every populated cell is reachable.
-function recomputeSheetRef(ws) {
-    if (!ws) return ws;
-    let minR = Infinity, maxR = -Infinity, minC = Infinity, maxC = -Infinity;
-    for (const k of Object.keys(ws)) {
-        if (k[0] === '!') continue;
-        const m = k.match(/^([A-Z]+)(\d+)$/);
-        if (!m) continue;
-        const r = parseInt(m[2], 10) - 1;
-        let c = 0;
-        for (let i = 0; i < m[1].length; i++) c = c * 26 + (m[1].charCodeAt(i) - 64);
-        c -= 1;
-        if (r < minR) minR = r;
-        if (r > maxR) maxR = r;
-        if (c < minC) minC = c;
-        if (c > maxC) maxC = c;
-    }
-    if (!isFinite(minR)) return ws;
-    function colName(c) {
-        let s = '';
-        c += 1;
-        while (c > 0) { const m = (c - 1) % 26; s = String.fromCharCode(65 + m) + s; c = Math.floor((c - 1) / 26); }
-        return s;
-    }
-    ws['!ref'] = colName(minC) + (minR + 1) + ':' + colName(maxC) + (maxR + 1);
-    return ws;
-}
+            // Find the header row (the one that contains "PHCs" or "Patient ID")
+            let headerIdx = 0;
+            for (let i = 0; i < Math.min(10, allRows.length); i++) {
+                const row = allRows[i] || [];
+                const s = row.map(c => String(c||'').toLowerCase()).join('|');
+                if (s.includes('patient id') || s.includes('phcs')) {
+                    headerIdx = i;
+                    break;
+                }
+            }
 
-// Returns { rows: array-of-arrays (cells indexed by column position), headers: first row, totalRows }
-// Skips the header row from rows[].
-function parseFile(file) {
-    return new Promise((resolve, reject) => {
-        const ext = file.name.toLowerCase().split('.').pop();
-        const reader = new FileReader();
-        reader.onerror = () => reject(new Error('قراءة الملف فشلت'));
-        if (ext === 'csv') {
-            reader.onload = (ev) => {
-                try {
-                    const txt = String(ev.target.result).replace(/^\uFEFF/, '');
-                    const parsed = Papa.parse(txt, { header: false, skipEmptyLines: true });
-                    const all = parsed.data;
-                    if (!all.length) return resolve({ rows: [], headers: [] });
-                    const headers = (all[0] || []).map(h => String(h).replace(/^\uFEFF/, '').trim());
-                    resolve({ rows: all.slice(1), headers });
-                } catch(e) { reject(e); }
-            };
-            reader.readAsText(file, 'utf-8');
-        } else {
-            reader.onload = (ev) => {
-                try {
-                    const data = new Uint8Array(ev.target.result);
-                    const wb = XLSX.read(data, { type: 'array', cellDates: true });
-                    let ws = wb.Sheets[wb.SheetNames[0]];
-                    // FIX: many exports declare a truncated !ref. Recompute from actual cells.
-                    ws = recomputeSheetRef(ws);
-                    // header: 1 returns rows as arrays
-                    const all = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '', raw: true, blankrows: false });
-                    if (!all.length) return resolve({ rows: [], headers: [] });
-                    const headers = (all[0] || []).map(h => String(h).replace(/^\uFEFF/, '').trim());
-                    resolve({ rows: all.slice(1), headers });
-                } catch(e) { reject(e); }
-            };
-            reader.readAsArrayBuffer(file);
+            const headers = allRows[headerIdx].map(h => String(h||'').trim());
+            const dataRows = allRows.slice(headerIdx + 1).filter(r => r.some(c => c !== null && c !== ''));
+
+            const records = dataRows.map(row => {
+                const obj = {};
+                headers.forEach((h, i) => { obj[h] = row[i]; });
+                return obj;
+            });
+
+            STATE.raw = records;
+            STATE.headers = headers;
+
+            document.getElementById('uploadCard').classList.add('loaded');
+            document.getElementById('uploadLabel').textContent = '✓ تم تحميل ' + file.name;
+
+            renderAll();
+        } catch(err) {
+            console.error(err);
+            alert('فشل قراءة الملف: ' + err.message);
         }
-    });
+    };
+    reader.readAsArrayBuffer(file);
 }
 
-function updateCardStatus(hospital) {
-    const card = document.querySelector(`.upload-card[data-hospital="${hospital}"]`);
-    const st = document.querySelector(`[data-status="${hospital}"]`);
-    const hasEd = !!STATE.parsed[hospital].ed;
-    const hasRad = !!STATE.parsed[hospital].rad;
-
-    card.classList.remove('has-both', 'partial');
-    if (hasEd && hasRad) {
-        card.classList.add('has-both');
-        const ed = STATE.parsed[hospital].ed.rows.length;
-        const rad = STATE.parsed[hospital].rad.rows.length;
-        st.textContent = `جاهز · ${rad} فحص أشعة · ${ed} سجل طوارئ`;
-        st.className = 'upload-status success';
-    } else if (hasEd || hasRad) {
-        card.classList.add('partial');
-        st.textContent = (hasEd ? 'الطوارئ: ✓' : 'الطوارئ: --') + ' · ' + (hasRad ? 'الأشعة: ✓' : 'الأشعة: --');
-        st.className = 'upload-status warning';
-    } else {
-        st.textContent = 'لم يتم الرفع';
-        st.className = 'upload-status';
-    }
-}
-
-function updateInfo() {
-    const ready = Object.keys(HOSPITALS).filter(k =>
-        STATE.parsed[k].ed && STATE.parsed[k].rad
-    ).length;
-    const total = Object.keys(HOSPITALS).length;
-    document.getElementById('hospitalsReady').textContent = `${ready} / ${total}`;
-    document.getElementById('btnAnalyze').disabled = ready === 0;
-}
-
-function resetAll() {
-    if (!confirm('هل تريد إعادة تعيين جميع البيانات؟')) return;
-    Object.keys(HOSPITALS).forEach(k => {
-        STATE.files[k] = { ed: null, rad: null };
-        STATE.parsed[k] = { ed: null, rad: null };
-        STATE.results[k] = null;
-    });
-    document.querySelectorAll('.upload-input').forEach(i => i.value = '');
-    renderUploadCards();
-    updateInfo();
-    document.getElementById('resultsSection').classList.remove('visible');
-    document.getElementById('emptyState').style.display = 'block';
-    document.getElementById('btnHajjSlide').disabled = true;
-    document.getElementById('btnDelaysSlide').disabled = true;
-}
-
-// ====================== DATE PARSING ======================
-// Radiology dates: "06-May-2026, 12:58 PM" OR Excel serial OR JS Date
-function parseRadDate(v) {
-    if (v == null || v === '') return null;
-    if (v instanceof Date) return isNaN(v) ? null : v;
-    if (typeof v === 'number') {
-        // Excel serial
-        return new Date(Math.round((v - 25569) * 86400 * 1000));
-    }
-    const s = String(v).trim();
-    // try "DD-Mon-YYYY, HH:MM AM/PM"
-    const m = s.match(/(\d{1,2})-(\w{3})-(\d{4}),?\s*(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
-    if (m) {
-        const months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
-        let h = parseInt(m[4]);
-        const min = parseInt(m[5]);
-        if (m[6]) {
-            const ap = m[6].toUpperCase();
-            if (ap === 'PM' && h < 12) h += 12;
-            if (ap === 'AM' && h === 12) h = 0;
-        }
-        return new Date(parseInt(m[3]), months[m[2].slice(0,3).replace(/^./, c => c.toUpperCase())] ?? 0, parseInt(m[1]), h, min);
-    }
-    // fallback
-    const d = new Date(s);
-    return isNaN(d) ? null : d;
-}
-
-// ED dates: Excel serial OR JS Date
-function parseEdDate(v) {
+// ====================== ANALYSIS ======================
+function parseDate(v) {
     if (v == null || v === '') return null;
     if (v instanceof Date) return isNaN(v) ? null : v;
     if (typeof v === 'number') {
@@ -1482,921 +865,834 @@ function parseEdDate(v) {
     return isNaN(d) ? null : d;
 }
 
-// strip ="..." wrapping if present
-function cleanId(v) {
-    if (v == null) return '';
-    let s = String(v).trim();
-    if (s.startsWith('=')) s = s.slice(1);
-    s = s.replace(/^"|"$/g, '');
-    return s.trim();
+function num(v) {
+    if (v == null || v === '') return null;
+    const n = Number(v);
+    return isNaN(n) ? null : n;
 }
 
-// ====================== ANALYZE ======================
-function analyzeAll() {
-    const ready = Object.keys(HOSPITALS).filter(k =>
-        STATE.parsed[k].ed && STATE.parsed[k].rad
-    );
+function bmiCat(b) {
+    if (b == null) return null;
+    if (b < 18.5) return 'نقص وزن';
+    if (b < 25) return 'طبيعي';
+    if (b < 30) return 'زيادة وزن';
+    if (b < 35) return 'سمنة درجة 1';
+    if (b < 40) return 'سمنة درجة 2';
+    return 'سمنة درجة 3';
+}
 
-    ready.forEach(hkey => {
-        STATE.results[hkey] = analyzeHospital(hkey);
+function bpCat(s, d) {
+    if (s == null || d == null) return null;
+    if (s < 120 && d < 80) return 'طبيعي';
+    if (s < 130 && d < 80) return 'مرتفع';
+    if (s < 140 || d < 90) return 'مرحلة 1';
+    if (s < 180 || d < 120) return 'مرحلة 2';
+    return 'أزمة';
+}
+
+function ageGrp(a) {
+    if (a == null) return null;
+    if (a < 30) return '18-29';
+    if (a < 40) return '30-39';
+    if (a < 50) return '40-49';
+    if (a < 60) return '50-59';
+    if (a < 70) return '60-69';
+    return '70+';
+}
+
+function buildAnalysis() {
+    const rows = STATE.raw.map(r => {
+        const sys = num(r['Systolic_BP']);
+        const dia = num(r['Diastolic_BP']);
+        const bmi = num(r['BMI']);
+        const age = num(r['age']);
+        return {
+            phc: String(r['PHCs']||'').trim(),
+            date: parseDate(r['Date Of Visit']),
+            pid: String(r['Patient ID']||'').trim(),
+            name: String(r['Patient Name']||'').trim(),
+            enc: String(r['Encounter Number']||'').trim(),
+            gender: String(r['Gender']||'').trim(),
+            age: age,
+            sys: sys,
+            dia: dia,
+            height: num(r['Height']),
+            weight: num(r['Weight']),
+            bmi: bmi,
+            plan: r['Health_Coach_Plan'] ? String(r['Health_Coach_Plan']).trim() : null,
+            achv: r['Health_Coach_Achievment'] ? String(r['Health_Coach_Achievment']).trim() : null,
+            coach: String(r['Name of Health Coach']||'').trim(),
+            ageGrp: ageGrp(age),
+            bmiCat: bmiCat(bmi),
+            bpCat: bpCat(sys, dia)
+        };
+    }).filter(r => r.pid);
+
+    const n = rows.length;
+
+    // KPIs
+    const uniquePat = new Set(rows.map(r => r.pid)).size;
+    const uniquePhc = new Set(rows.map(r => r.phc).filter(x => x)).size;
+    const uniqueCoach = new Set(rows.map(r => r.coach).filter(x => x)).size;
+    const withVitals = rows.filter(r => r.sys != null && r.dia != null && r.bmi != null).length;
+    const withPlan = rows.filter(r => r.plan).length;
+    const withAchv = rows.filter(r => r.achv).length;
+    const achieved = rows.filter(r => r.achv === 'Goal Achieved').length;
+    const noImprovement = rows.filter(r => r.achv === 'No improvement').length;
+
+    // Demographics
+    const byGender = group(rows, r => r.gender || 'غير محدد');
+    const byAge = group(rows, r => r.ageGrp || 'غير محدد');
+    const byPhc = group(rows, r => r.phc || 'غير محدد');
+    const byCoach = group(rows, r => r.coach || 'غير محدد');
+    const byBmi = group(rows.filter(r => r.bmiCat), r => r.bmiCat);
+    const byBp = group(rows.filter(r => r.bpCat), r => r.bpCat);
+
+    // Daily
+    const byDate = {};
+    rows.forEach(r => {
+        if (!r.date) return;
+        const k = r.date.toISOString().slice(0,10);
+        byDate[k] = (byDate[k]||0) + 1;
+    });
+    const dailyKeys = Object.keys(byDate).sort();
+
+    // Day of week
+    const dowNames = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+    const byDow = {};
+    dowNames.forEach(d => byDow[d] = 0);
+    rows.forEach(r => {
+        if (!r.date) return;
+        byDow[dowNames[r.date.getDay()]]++;
     });
 
-    // Hide unset hospitals
-    Object.keys(HOSPITALS).forEach(k => {
-        if (!ready.includes(k)) STATE.results[k] = null;
+    // PHC detailed
+    const phcDetails = Object.keys(byPhc).map(phc => {
+        const sub = rows.filter(r => r.phc === phc);
+        return {
+            phc,
+            total: sub.length,
+            patients: new Set(sub.map(r => r.pid)).size,
+            vitals: sub.filter(r => r.sys != null && r.dia != null && r.bmi != null).length,
+            plan: sub.filter(r => r.plan).length,
+            achv: sub.filter(r => r.achv).length,
+            goalAch: sub.filter(r => r.achv === 'Goal Achieved').length,
+            noImp: sub.filter(r => r.achv === 'No improvement').length,
+            coaches: new Set(sub.map(r => r.coach).filter(x => x)).size
+        };
+    }).sort((a,b) => b.total - a.total);
+
+    // Coach detailed
+    const coachDetails = Object.keys(byCoach).filter(c => c && c !== 'غير محدد').map(coach => {
+        const sub = rows.filter(r => r.coach === coach);
+        return {
+            coach,
+            total: sub.length,
+            patients: new Set(sub.map(r => r.pid)).size,
+            phcs: new Set(sub.map(r => r.phc).filter(x => x)).size,
+            vitals: sub.filter(r => r.sys != null && r.dia != null && r.bmi != null).length,
+            plan: sub.filter(r => r.plan).length,
+            goalAch: sub.filter(r => r.achv === 'Goal Achieved').length,
+            noImp: sub.filter(r => r.achv === 'No improvement').length
+        };
+    }).sort((a,b) => b.total - a.total);
+
+    // Issues
+    const issues = [];
+    rows.forEach(r => {
+        // Suspicious BMI
+        if (r.bmi != null && (r.bmi > 60 || r.bmi < 12)) {
+            issues.push({
+                pid: r.pid, name: r.name, phc: r.phc,
+                issue: 'BMI غير منطقي', detail: `BMI = ${r.bmi} (الطول ${r.height}، الوزن ${r.weight})`,
+                severity: 'bad'
+            });
+        }
+        // BP crisis
+        if (r.sys != null && r.dia != null && (r.sys >= 180 || r.dia >= 120)) {
+            issues.push({
+                pid: r.pid, name: r.name, phc: r.phc,
+                issue: 'ضغط دم خطر', detail: `${r.sys}/${r.dia} mmHg`,
+                severity: 'bad'
+            });
+        }
+        // Missing vitals
+        if (r.sys == null && r.dia == null && r.bmi == null) {
+            issues.push({
+                pid: r.pid, name: r.name, phc: r.phc,
+                issue: 'علامات حيوية غير مسجلة', detail: 'لا يوجد ضغط دم ولا BMI',
+                severity: 'amber'
+            });
+        }
     });
 
-    renderResults();
-    document.getElementById('resultsBadge').textContent = `${ready.length} مستشفى`;
+    // Duplicates (same patient, multiple visits)
+    const pidCount = {};
+    rows.forEach(r => { pidCount[r.pid] = (pidCount[r.pid]||0) + 1; });
+    const dups = Object.keys(pidCount).filter(p => pidCount[p] > 1);
+
+    // Numeric stats
+    const bmis = rows.filter(r => r.bmi != null && r.bmi < 60).map(r => r.bmi);
+    const sysVals = rows.filter(r => r.sys != null).map(r => r.sys);
+    const ages = rows.filter(r => r.age != null).map(r => r.age);
+
+    const mean = a => a.length ? a.reduce((s,v) => s+v, 0) / a.length : 0;
+    const median = a => {
+        if (!a.length) return 0;
+        const s = [...a].sort((x,y) => x-y);
+        return s[Math.floor(s.length/2)];
+    };
+
+    // Date range
+    const validDates = rows.map(r => r.date).filter(Boolean);
+    const minD = validDates.length ? new Date(Math.min(...validDates)) : null;
+    const maxD = validDates.length ? new Date(Math.max(...validDates)) : null;
+
+    return {
+        n, uniquePat, uniquePhc, uniqueCoach,
+        withVitals, withPlan, withAchv, achieved, noImprovement,
+        byGender, byAge, byPhc, byCoach, byBmi, byBp,
+        byDate, dailyKeys, byDow,
+        phcDetails, coachDetails,
+        issues, dups: dups.length,
+        bmiMean: mean(bmis), bmiMedian: median(bmis),
+        sysMean: mean(sysVals), ageMean: mean(ages),
+        minD, maxD,
+        rows
+    };
+}
+
+function group(arr, keyFn) {
+    const out = {};
+    arr.forEach(x => {
+        const k = keyFn(x);
+        out[k] = (out[k]||0) + 1;
+    });
+    return out;
+}
+
+// ====================== RENDER ======================
+function renderAll() {
+    const A = buildAnalysis();
     document.getElementById('emptyState').style.display = 'none';
     document.getElementById('resultsSection').classList.add('visible');
 
-    // total studies aggregated
-    const total = ready.reduce((s, k) => s + (STATE.results[k]?.summary.total_studies || 0), 0);
-    document.getElementById('totalStudies').textContent = total;
-
-    // Enable Hajj slide if any hospital has at least one matched study
-    const hasAny = ready.some(k => (STATE.results[k]?.summary.total_studies || 0) > 0);
-    document.getElementById('btnHajjSlide').disabled = !hasAny;
-    document.getElementById('btnDelaysSlide').disabled = !hasAny;
+    renderKPIs(A);
+    renderInsights(A);
+    renderDemographics(A);
+    renderClinical(A);
+    renderPHCs(A);
+    renderCoaches(A);
+    renderTemporal(A);
+    renderIssues(A);
 }
 
-function analyzeHospital(hkey) {
-    const edPayload = STATE.parsed[hkey].ed;
-    const radPayload = STATE.parsed[hkey].rad;
-    const ed = edPayload.rows;
-    const rad = radPayload.rows;
-
-    // Column positions (fixed, as confirmed by user):
-    //   ED file:    A=0 -> Patient ID
-    //   PACS file:  A=0 -> Patient ID, C=2 -> Order date, D=3 -> Study date, E=4 -> Report date
-    const ED_PID = 0;
-    const RAD_PID = 0;
-    const RAD_ORDER = 2;
-    const RAD_STUDY = 3;
-    const RAD_REPORT = 4;
-    // Optional columns (best-effort; only used for slide breakdowns)
-    const RAD_MOD_HINT = ['Modality type', 'Modality'];
-    const RAD_PROC_HINT = ['Procedure name', 'Procedure'];
-
-    function findColIdx(headers, candidates) {
-        if (!headers) return -1;
-        const norm = headers.map(h => String(h).toLowerCase().trim());
-        for (const c of candidates) {
-            const i = norm.indexOf(c.toLowerCase());
-            if (i >= 0) return i;
-        }
-        // partial
-        for (const c of candidates) {
-            const i = norm.findIndex(h => h.includes(c.toLowerCase()));
-            if (i >= 0) return i;
-        }
-        return -1;
-    }
-    const RAD_MOD = findColIdx(radPayload.headers, RAD_MOD_HINT);
-    const RAD_PROC = findColIdx(radPayload.headers, RAD_PROC_HINT);
-
-    const diag = {
-        ed_rows: ed.length,
-        rad_rows: rad.length,
-        ed_headers: edPayload.headers || [],
-        rad_headers: radPayload.headers || [],
-        rad_mod_idx: RAD_MOD,
-        rad_proc_idx: RAD_PROC,
-        warnings: []
-    };
-
-    // Build set of ED patient IDs from column A
-    const edIdSet = new Set();
-    ed.forEach(r => {
-        const id = cleanId(r[ED_PID]);
-        if (id) edIdSet.add(id);
-    });
-    diag.ed_unique_ids = edIdSet.size;
-
-    // Counters for filter pipeline
-    let rad_in_ed = 0, rad_dates_ok = 0, rad_kept = 0;
-    let rad_sample_ids = [];
-    let ed_sample_ids = [...edIdSet].slice(0, 5);
-
-    // Iterate radiology rows by position
-    const studies = [];
-    rad.forEach((r, i) => {
-        const pid = cleanId(r[RAD_PID]);
-        if (i < 5) rad_sample_ids.push(pid);
-        if (!pid || !edIdSet.has(pid)) return;
-        rad_in_ed++;
-        const orderDt = parseRadDate(r[RAD_ORDER]);
-        const studyDt = parseRadDate(r[RAD_STUDY]);
-        const reportDt = parseRadDate(r[RAD_REPORT]);
-        if (!orderDt || !studyDt || !reportDt) return;
-        rad_dates_ok++;
-        const o2a = (studyDt - orderDt) / 60000;
-        const a2r = (reportDt - studyDt) / 60000;
-        if (o2a < 0 || a2r < 0) return;
-        rad_kept++;
-        studies.push({
-            pid, orderDt, studyDt, reportDt,
-            modality: RAD_MOD >= 0 ? (r[RAD_MOD] || 'Unknown') : 'All',
-            procedure: RAD_PROC >= 0 ? (r[RAD_PROC] || 'Unknown') : 'Unknown',
-            o2a, a2r
-        });
-    });
-    diag.rad_in_ed = rad_in_ed;
-    diag.rad_dates_ok = rad_dates_ok;
-    diag.rad_kept = rad_kept;
-    diag.rad_sample_ids = rad_sample_ids;
-    diag.ed_sample_ids = ed_sample_ids;
-
-    // Backwards-compat flags for the empty-state UI
-    diag.ed_id_col = 'العمود A';
-    diag.rad_pid_col = 'العمود A';
-    diag.rad_order_col = 'العمود C';
-    diag.rad_study_col = 'العمود D';
-    diag.rad_report_col = 'العمود E';
-    diag.ed_cols = diag.ed_headers;
-    diag.rad_cols = diag.rad_headers;
-
-    console.log('[analyzeHospital]', hkey, diag);
-    return { studies, summary: summarize(studies), diag };
-}
-
-function findColumn(sample, candidates) {
-    if (!sample) return null;
-    const keys = Object.keys(sample);
-    // exact match first
-    for (const c of candidates) {
-        if (keys.includes(c)) return c;
-    }
-    // case-insensitive + trimmed
-    const lower = keys.map(k => ({ k, l: String(k).toLowerCase().trim() }));
-    for (const c of candidates) {
-        const f = lower.find(x => x.l === c.toLowerCase());
-        if (f) return f.k;
-    }
-    // partial match
-    for (const c of candidates) {
-        const f = lower.find(x => x.l.includes(c.toLowerCase()));
-        if (f) return f.k;
-    }
-    return null;
-}
-
-function summarize(studies) {
-    const n = studies.length;
-    if (n === 0) return { total_studies: 0 };
-
-    const o2aVals = studies.map(s => s.o2a).sort((a,b) => a-b);
-    const a2rVals = studies.map(s => s.a2r).sort((a,b) => a-b);
-
-    const median = arr => arr.length === 0 ? 0 : arr[Math.floor(arr.length/2)];
-    const mean = arr => arr.length === 0 ? 0 : arr.reduce((s,v) => s+v, 0) / arr.length;
-    const pct = (arr, p) => arr.length === 0 ? 0 : arr[Math.min(arr.length-1, Math.floor(arr.length*p))];
-
-    const o2aOk = studies.filter(s => s.o2a <= TARGET_O2A).length;
-    const a2rOk = studies.filter(s => s.a2r <= TARGET_A2R).length;
-
-    // Modality breakdown
-    const byMod = {};
-    studies.forEach(s => {
-        const m = s.modality || 'Unknown';
-        if (!byMod[m]) byMod[m] = [];
-        byMod[m].push(s);
-    });
-    const byModality = Object.keys(byMod).map(m => {
-        const arr = byMod[m];
-        return {
-            modality: m,
-            n: arr.length,
-            o2a_med: median(arr.map(x=>x.o2a).sort((a,b)=>a-b)),
-            o2a_mean: mean(arr.map(x=>x.o2a)),
-            a2r_med: median(arr.map(x=>x.a2r).sort((a,b)=>a-b)),
-            a2r_mean: mean(arr.map(x=>x.a2r)),
-            o2a_comp: 100*arr.filter(x=>x.o2a<=TARGET_O2A).length/arr.length,
-            a2r_comp: 100*arr.filter(x=>x.a2r<=TARGET_A2R).length/arr.length
-        };
-    }).sort((a,b)=>b.n-a.n);
-
-    // Procedure breakdown
-    const byProc = {};
-    studies.forEach(s => {
-        const p = s.procedure || 'Unknown';
-        if (!byProc[p]) byProc[p] = [];
-        byProc[p].push(s);
-    });
-    const topProcedures = Object.keys(byProc).map(p => {
-        const arr = byProc[p];
-        return {
-            name: p,
-            n: arr.length,
-            o2a_med: median(arr.map(x=>x.o2a).sort((a,b)=>a-b)),
-            a2r_med: median(arr.map(x=>x.a2r).sort((a,b)=>a-b)),
-            o2a_comp: 100*arr.filter(x=>x.o2a<=TARGET_O2A).length/arr.length,
-            a2r_comp: 100*arr.filter(x=>x.a2r<=TARGET_A2R).length/arr.length
-        };
-    }).sort((a,b)=>b.n-a.n).slice(0, 10);
-
-    // Buckets
-    const bucket_o2a = { '≤15':0,'16-30':0,'31-60':0,'>60':0 };
-    studies.forEach(s => {
-        if (s.o2a <= 15) bucket_o2a['≤15']++;
-        else if (s.o2a <= 30) bucket_o2a['16-30']++;
-        else if (s.o2a <= 60) bucket_o2a['31-60']++;
-        else bucket_o2a['>60']++;
-    });
-    const bucket_a2r = { '≤45':0,'46-90':0,'91-120':0,'>120':0 };
-    studies.forEach(s => {
-        if (s.a2r <= 45) bucket_a2r['≤45']++;
-        else if (s.a2r <= 90) bucket_a2r['46-90']++;
-        else if (s.a2r <= 120) bucket_a2r['91-120']++;
-        else bucket_a2r['>120']++;
-    });
-
-    // Hourly volume (24)
-    const hourly = Array(24).fill(0);
-    studies.forEach(s => hourly[s.orderDt.getHours()]++);
-
-    // Per-hour compliance (for Hajj-style heatmaps): one entry per hour 0..23
-    // count = number of studies that hour; o2a = % within 15 min; a2r = % within 45 min.
-    const byHour = Array.from({length: 24}, (_, h) => {
-        const arr = studies.filter(s => s.orderDt.getHours() === h);
-        const c = arr.length;
-        return {
-            hour: h,
-            count: c,
-            o2a_comp: c ? 100*arr.filter(x => x.o2a <= TARGET_O2A).length / c : null,
-            a2r_comp: c ? 100*arr.filter(x => x.a2r <= TARGET_A2R).length / c : null
-        };
-    });
-
-    // Delayed studies — beyond target for each stage (for the delays slide)
-    const delayed_o2a = studies
-        .filter(s => s.o2a > TARGET_O2A)
-        .map(s => ({
-            pid: s.pid,
-            procedure: s.procedure,
-            modality: s.modality,
-            mins: s.o2a,
-            orderDt: s.orderDt
-        }))
-        .sort((a, b) => b.mins - a.mins);
-    const delayed_a2r = studies
-        .filter(s => s.a2r > TARGET_A2R)
-        .map(s => ({
-            pid: s.pid,
-            procedure: s.procedure,
-            modality: s.modality,
-            mins: s.a2r,
-            orderDt: s.orderDt
-        }))
-        .sort((a, b) => b.mins - a.mins);
-
-    // Heatmap: 2h bin x modality, median o2a and a2r
-    const hourBins = [0,2,4,6,8,10,12,14,16,18,20,22];
-    const modalities = byModality.map(x => x.modality);
-    const hm_o2a = modalities.map(m => hourBins.map(hb => {
-        const cell = studies.filter(s => s.modality === m && s.orderDt.getHours() >= hb && s.orderDt.getHours() < hb+2);
-        if (cell.length === 0) return { v: null, n: 0 };
-        const vals = cell.map(x=>x.o2a).sort((a,b)=>a-b);
-        return { v: median(vals), n: cell.length };
-    }));
-    const hm_a2r = modalities.map(m => hourBins.map(hb => {
-        const cell = studies.filter(s => s.modality === m && s.orderDt.getHours() >= hb && s.orderDt.getHours() < hb+2);
-        if (cell.length === 0) return { v: null, n: 0 };
-        const vals = cell.map(x=>x.a2r).sort((a,b)=>a-b);
-        return { v: median(vals), n: cell.length };
-    }));
-
-    // Date range
-    const allDates = studies.map(s => s.orderDt);
-    const minD = new Date(Math.min(...allDates));
-    const maxD = new Date(Math.max(...allDates));
-
-    return {
-        total_studies: n,
-        unique_patients: new Set(studies.map(s=>s.pid)).size,
-        date_range: fmtDate(minD) + (fmtDate(minD) !== fmtDate(maxD) ? ' – ' + fmtDate(maxD) : ''),
-        o2a_median: median(o2aVals),
-        o2a_mean: mean(o2aVals),
-        o2a_p75: pct(o2aVals, 0.75),
-        o2a_p90: pct(o2aVals, 0.90),
-        o2a_comp_n: o2aOk,
-        o2a_comp_pct: 100*o2aOk/n,
-        a2r_median: median(a2rVals),
-        a2r_mean: mean(a2rVals),
-        a2r_p75: pct(a2rVals, 0.75),
-        a2r_p90: pct(a2rVals, 0.90),
-        a2r_comp_n: a2rOk,
-        a2r_comp_pct: 100*a2rOk/n,
-        byModality, topProcedures,
-        bucket_o2a, bucket_a2r,
-        hourly, hourBins, modalities,
-        hm_o2a, hm_a2r, byHour,
-        delayed_o2a, delayed_a2r
-    };
-}
-
-function fmtDate(d) {
+function fmtDateAr(d) {
     if (!d) return '--';
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    return d.getDate() + '/' + (d.getMonth()+1) + '/' + d.getFullYear();
 }
 
-// ====================== RENDER RESULT CARDS ======================
-function renderResults() {
-    const wrap = document.getElementById('hospitalsSection');
-    const html = Object.keys(HOSPITALS)
-        .filter(k => STATE.results[k])
-        .map(k => renderHospitalCard(k))
-        .join('');
-    wrap.innerHTML = html;
-}
+function pct(n, total) { return total ? Math.round(100*n/total) : 0; }
 
-function clsCompliance(pct, goodT=80, warnT=50) {
-    if (pct >= goodT) return 'emerald';
-    if (pct >= warnT) return 'amber';
+function cls(p, good=90, warn=60) {
+    if (p >= good) return 'emerald';
+    if (p >= warn) return 'amber';
     return 'rose';
 }
 
-function renderHospitalCard(hkey) {
-    const info = HOSPITALS[hkey];
-    const result = STATE.results[hkey];
-    const s = result.summary;
-    const d = result.diag || {};
+function renderKPIs(A) {
+    const v = pct(A.withVitals, A.n);
+    const p = pct(A.withPlan, A.n);
+    const a = pct(A.withAchv, A.n);
+    const ach = pct(A.achieved, Math.max(1, A.withAchv));
 
-    if (s.total_studies === 0) {
-        const reasons = [];
-        if (!d.ed_id_col) reasons.push('عمود رقم المريض غير موجود في ملف الطوارئ');
-        if (!d.rad_pid_col) reasons.push('عمود رقم المريض غير موجود في ملف الأشعة');
-        if (!d.rad_order_col || !d.rad_study_col || !d.rad_report_col) reasons.push('أعمدة التواريخ ناقصة في ملف الأشعة');
-        if (d.ed_id_col && d.rad_pid_col && d.rad_in_ed === 0) {
-            reasons.push(`لا يوجد تطابق بين أرقام المرضى في الملفين (تم فحص ${d.rad_rows} سجل أشعة مقابل ${d.ed_unique_ids} رقم طوارئ)`);
-        }
-        if (d.rad_in_ed > 0 && d.rad_dates_ok === 0) reasons.push('لم يتم قراءة أي تواريخ من ملف الأشعة بنجاح');
+    const dateRange = A.minD && A.maxD
+        ? fmtDateAr(A.minD) + ' – ' + fmtDateAr(A.maxD)
+        : '--';
 
-        return `
-        <div class="hospital-card">
-            <div class="hospital-header">
-                <div class="hospital-title">
-                    <h2>${info.ar}</h2>
-                    <div class="lab-tag">${info.en}</div>
-                </div>
-            </div>
-            <div class="hospital-body">
-                <div style="padding: 20px; color: var(--text-secondary); line-height: 1.7;">
-                    <h3 style="color: var(--accent-amber); margin-bottom: 12px; font-family: 'Cairo'; font-size: 15px;">⚠ لا توجد نتائج لهذا المستشفى</h3>
-                    <div style="margin-bottom: 14px;">
-                        <strong>السبب:</strong>
-                        <ul style="list-style: disc; padding-right: 22px; margin-top: 6px; font-size: 13px;">
-                            ${reasons.map(r => `<li style="padding: 2px 0;">${r}</li>`).join('')}
-                        </ul>
-                    </div>
-                    <details style="margin-top: 12px;">
-                        <summary style="cursor: pointer; font-size: 12px; color: var(--text-tertiary);">عرض التشخيص التقني</summary>
-                        <div style="background: var(--bg-input); border-radius: 6px; padding: 12px; margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; direction: ltr; text-align: left; line-height: 1.6;">
-                            <div>ED file: ${d.ed_rows} rows, id column = <code>${d.ed_id_col || '—'}</code>, ${d.ed_unique_ids} unique IDs</div>
-                            <div>RAD file: ${d.rad_rows} rows, id column = <code>${d.rad_pid_col || '—'}</code></div>
-                            <div>RAD matched to ED: ${d.rad_in_ed} rows</div>
-                            <div>With valid dates: ${d.rad_dates_ok} rows</div>
-                            <div>Kept after cleanup: ${d.rad_kept} rows</div>
-                            <div style="margin-top: 8px;">Sample ED IDs: ${(d.ed_sample_ids || []).join(', ')}</div>
-                            <div>Sample RAD IDs: ${(d.rad_sample_ids || []).join(', ')}</div>
-                            <div style="margin-top: 8px;">ED columns: ${(d.ed_cols || []).slice(0,8).join(', ')}${d.ed_cols && d.ed_cols.length > 8 ? '…' : ''}</div>
-                            <div>RAD columns: ${(d.rad_cols || []).slice(0,8).join(', ')}${d.rad_cols && d.rad_cols.length > 8 ? '…' : ''}</div>
-                        </div>
-                    </details>
-                </div>
-            </div>
-        </div>`;
-    }
-
-    const o2aCls = clsCompliance(s.o2a_comp_pct);
-    const a2rCls = clsCompliance(s.a2r_comp_pct);
-
-    const renderBucket = (label, n, color) => {
-        const p = 100 * n / s.total_studies;
-        return `
-        <div class="h-bucket">
-            <div class="sw ${color}"></div>
-            <div class="lbl">${label}</div>
-            <div class="bar"><span class="${color}" style="width:${Math.max(p,2)}%"></span></div>
-            <div class="n">${n} · ${Math.round(p)}%</div>
-        </div>`;
-    };
-
-    return `
-    <div class="hospital-card" data-h="${hkey}">
-        <div class="hospital-header">
-            <div class="hospital-title">
-                <h2>${info.ar}</h2>
-                <div class="lab-tag">${info.en} · ${s.date_range}</div>
-            </div>
-            <div class="hospital-actions">
-            </div>
+    document.getElementById('kpiStrip').innerHTML = `
+        <div class="kpi violet">
+            <div class="l">إجمالي الزيارات</div>
+            <div class="v">${A.n}<span class="u">زيارة</span></div>
+            <div class="sub">${A.uniquePat} مريض فريد · ${A.dups} مكرر</div>
         </div>
-        <div class="hospital-body">
-            <div class="h-kpi-strip">
-                <div class="h-kpi violet">
-                    <div class="l">إجمالي الفحوصات</div>
-                    <div class="v">${s.total_studies}<span class="u">فحص</span></div>
-                    <div class="sub">${s.unique_patients} مريض طوارئ</div>
-                </div>
-                <div class="h-kpi">
-                    <div class="l">طلب → تصوير (وسيط)</div>
-                    <div class="v">${Math.round(s.o2a_median)}<span class="u">دقيقة</span></div>
-                    <div class="sub">المتوسط ${s.o2a_mean.toFixed(1)} د · P90 = ${Math.round(s.o2a_p90)} د</div>
-                </div>
-                <div class="h-kpi amber">
-                    <div class="l">تصوير → تقرير (وسيط)</div>
-                    <div class="v">${Math.round(s.a2r_median)}<span class="u">دقيقة</span></div>
-                    <div class="sub">المتوسط ${s.a2r_mean.toFixed(1)} د · P90 = ${Math.round(s.a2r_p90)} د</div>
-                </div>
-                <div class="h-kpi ${o2aCls === 'emerald' ? 'emerald' : o2aCls === 'amber' ? 'amber' : 'rose'}">
-                    <div class="l">الالتزام بـ 15 د</div>
-                    <div class="v txt-${o2aCls}">${Math.round(s.o2a_comp_pct)}<span class="u">%</span></div>
-                    <div class="sub">${s.o2a_comp_n} / ${s.total_studies} ضمن المعيار</div>
-                </div>
-                <div class="h-kpi ${a2rCls === 'emerald' ? 'emerald' : a2rCls === 'amber' ? 'amber' : 'rose'}">
-                    <div class="l">الالتزام بـ 45 د</div>
-                    <div class="v txt-${a2rCls}">${Math.round(s.a2r_comp_pct)}<span class="u">%</span></div>
-                    <div class="sub">${s.a2r_comp_n} / ${s.total_studies} ضمن المعيار</div>
-                </div>
-            </div>
-
-            <div class="h-section">
-                <div class="h-panel">
-                    <div class="h-panel-head">
-                        <div class="ttl">من الطلب إلى التصوير</div>
-                        <div class="tg">Target ≤ 15 min</div>
-                    </div>
-                    <div class="h-stat-row">
-                        <div class="h-stat"><div class="l">Median</div><div class="v">${Math.round(s.o2a_median)}<span class="u">min</span></div></div>
-                        <div class="h-stat"><div class="l">Mean</div><div class="v">${Math.round(s.o2a_mean)}<span class="u">min</span></div></div>
-                        <div class="h-stat"><div class="l">P90</div><div class="v">${Math.round(s.o2a_p90)}<span class="u">min</span></div></div>
-                    </div>
-                    <div class="h-buckets">
-                        ${renderBucket('ضمن المعيار (≤15 د)', s.bucket_o2a['≤15'], 'emerald')}
-                        ${renderBucket('16 – 30 دقيقة', s.bucket_o2a['16-30'], 'amber')}
-                        ${renderBucket('31 – 60 دقيقة', s.bucket_o2a['31-60'], 'orange')}
-                        ${renderBucket('أكثر من 60 دقيقة', s.bucket_o2a['>60'], 'rose')}
-                    </div>
-                </div>
-
-                <div class="h-panel">
-                    <div class="h-panel-head">
-                        <div class="ttl">من التصوير إلى التقرير الأولي</div>
-                        <div class="tg">Target ≤ 45 min</div>
-                    </div>
-                    <div class="h-stat-row">
-                        <div class="h-stat"><div class="l">Median</div><div class="v">${Math.round(s.a2r_median)}<span class="u">min</span></div></div>
-                        <div class="h-stat"><div class="l">Mean</div><div class="v">${Math.round(s.a2r_mean)}<span class="u">min</span></div></div>
-                        <div class="h-stat"><div class="l">P90</div><div class="v">${Math.round(s.a2r_p90)}<span class="u">min</span></div></div>
-                    </div>
-                    <div class="h-buckets">
-                        ${renderBucket('ضمن المعيار (≤45 د)', s.bucket_a2r['≤45'], 'emerald')}
-                        ${renderBucket('46 – 90 دقيقة', s.bucket_a2r['46-90'], 'amber')}
-                        ${renderBucket('91 – 120 دقيقة', s.bucket_a2r['91-120'], 'orange')}
-                        ${renderBucket('أكثر من 120 دقيقة', s.bucket_a2r['>120'], 'rose')}
-                    </div>
-                </div>
-            </div>
+        <div class="kpi cyan">
+            <div class="l">المراكز الصحية</div>
+            <div class="v">${A.uniquePhc}<span class="u">مركز</span></div>
+            <div class="sub">${A.uniqueCoach} مدرب صحي</div>
         </div>
-    </div>`;
-}
-
-// ====================== HAJJ-STYLE SLIDE BUILDER ======================
-// One consolidated meeting slide that mirrors the lab dashboard:
-//   Page 1: indicator explainer + comparison table for all hospitals
-//   Page 2: heatmap - hour x hospital, compliance with the 15-min order->acquisition target
-//   Page 3: heatmap - hour x hospital, compliance with the 45-min acquisition->report target
-function openHajjSlide() {
-    const wrap = document.getElementById('slidePagesWrap');
-
-    // Gather all hospitals that actually have results (>0 studies), sorted by Arabic name
-    const rows = Object.keys(HOSPITALS)
-        .filter(k => STATE.results[k] && STATE.results[k].summary.total_studies > 0)
-        .map(k => ({ key: k, info: HOSPITALS[k], s: STATE.results[k].summary }))
-        .sort((a, b) => a.info.ar.localeCompare(b.info.ar, 'ar'));
-
-    if (rows.length === 0) {
-        alert('لا يوجد مستشفيات بنتائج بعد. ارفع الملفات واضغط "تحليل البيانات".');
-        return;
-    }
-
-    wrap.innerHTML = '<div class="hajj-slide">'
-        + buildSlidePage1_table(rows)
-        + buildSlidePage2_heatmapCombined(rows)
-        + '</div>';
-
-    document.getElementById('slideModalTitle').textContent = 'سلايد الاجتماع — مؤشرات أشعة الطوارئ';
-    document.getElementById('btnSlideExport').textContent = 'حفظ صورتين PNG';
-    document.getElementById('slideModal').classList.add('active');
-    document.getElementById('slideModal').scrollTop = 0;
-}
-
-// Color helpers shared by all pages
-function pctColor(v) {
-    if (v == null) return '#9CA3AF';
-    if (v >= 90) return '#10B981';
-    if (v >= 70) return '#F59E0B';
-    return '#EF4444';
-}
-function avgColor(v) { // smaller is better (minutes)
-    if (v == null) return '#9CA3AF';
-    if (v <= 15) return '#10B981';
-    if (v <= 30) return '#F59E0B';
-    return '#EF4444';
-}
-function heatColor(v) {
-    if (v == null) return '#F1F5F9';
-    if (v >= 95) return '#10B981';
-    if (v >= 85) return '#F59E0B';
-    return '#EF4444';
-}
-function heatTextColor(v) { return v == null ? '#94A3B8' : '#FFFFFF'; }
-
-function fmtPct(v) { return v == null ? '—' : Math.round(v) + '%'; }
-function fmtMin(v) { return v == null ? '—' : Math.round(v); }
-
-// Cell: number on top, colored progress bar underneath. Identical to the lab dashboard.
-function cellPct(v) {
-    const c = pctColor(v);
-    const fill = v == null ? 0 : Math.min(100, Math.max(0, v));
-    return `
-        <div class="m-cell">
-            <div class="m-val" style="color:${c};">${fmtPct(v)}</div>
-            <div class="m-bar"><div class="m-bar-fill" style="width:${fill}%; background:${c};"></div></div>
-        </div>`;
-}
-// Cell for "minutes" — smaller is better. Bar fills proportionally to a 60-min reference.
-function cellMin(v) {
-    const c = avgColor(v);
-    const fill = v == null ? 0 : Math.min(100, (v / 60) * 100);
-    return `
-        <div class="m-cell">
-            <div class="m-val" style="color:${c};">${fmtMin(v)}</div>
-            <div class="m-bar"><div class="m-bar-fill" style="width:${fill}%; background:${c};"></div></div>
-        </div>`;
-}
-
-// ---------- PAGE 1: explainer + comparison table ----------
-function buildSlidePage1_table(rows) {
-    const tbody = rows.map(r => {
-        const s = r.s;
-        const overall = (s.o2a_comp_pct + s.a2r_comp_pct) / 2;
-        return `
-            <tr>
-                <td class="hosp-name">${r.info.ar}</td>
-                <td>${cellPct(s.o2a_comp_pct)}</td>
-                <td>${cellPct(s.a2r_comp_pct)}</td>
-                <td>${cellPct(overall)}</td>
-                <td>${cellMin(s.o2a_median)}</td>
-                <td>${cellMin(s.a2r_median)}</td>
-            </tr>`;
-    }).join('');
-
-    return `
-    <div class="hajj-slide-page" data-page="1">
-        <div class="hajj-card">
-            <div class="hajj-card-header">
-                <div class="hajj-card-title">مؤشرات أداء أشعة الطوارئ</div>
-                <div class="hajj-card-sub">من الطلب حتى صدور التقرير الأولي · تجمع المدينة المنورة الصحي</div>
-            </div>
-
-            <div class="hajj-info">
-                <div class="hajj-info-title">شرح المؤشرات</div>
-                <div class="hajj-info-grid">
-                    <div class="hajj-info-row">
-                        <span class="hajj-info-num">١</span>
-                        <span class="hajj-info-text">من إنشاء الطلب إلى إجراء التصوير</span>
-                        <span class="hajj-info-target">١٥ دقيقة</span>
-                    </div>
-                    <div class="hajj-info-row">
-                        <span class="hajj-info-num">٢</span>
-                        <span class="hajj-info-text">من التصوير إلى صدور التقرير الأولي</span>
-                        <span class="hajj-info-target">٤٥ دقيقة</span>
-                    </div>
-                    <div class="hajj-info-row strong">
-                        <span class="hajj-info-num">الإجمالي</span>
-                        <span class="hajj-info-text">من الطلب إلى ظهور التقرير</span>
-                        <span class="hajj-info-target">٦٠ دقيقة</span>
-                    </div>
-                </div>
-            </div>
-
-            <table class="hajj-table">
-                <thead>
-                    <tr>
-                        <th class="hosp-col">المستشفى</th>
-                        <th>
-                            <div class="th-main">الالتزام · الطلب → التصوير</div>
-                            <div class="th-target">المستهدف ١٥ دقيقة</div>
-                        </th>
-                        <th>
-                            <div class="th-main">الالتزام · التصوير → التقرير</div>
-                            <div class="th-target">المستهدف ٤٥ دقيقة</div>
-                        </th>
-                        <th class="th-strong">
-                            <div class="th-main">مؤشر الالتزام الكلي</div>
-                            <div class="th-target">متوسط المرحلتين</div>
-                        </th>
-                        <th>
-                            <div class="th-main">وسيط زمن التصوير</div>
-                            <div class="th-target">دقائق · أفضل ≤ ١٥</div>
-                        </th>
-                        <th>
-                            <div class="th-main">وسيط زمن التقرير</div>
-                            <div class="th-target">دقائق · أفضل ≤ ٤٥</div>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>${tbody}</tbody>
-            </table>
-
-            <div class="hajj-legend">
-                <span><span class="leg-dot" style="background:#10B981;"></span>ضمن المستهدف</span>
-                <span><span class="leg-dot" style="background:#F59E0B;"></span>قريب من المستهدف</span>
-                <span><span class="leg-dot" style="background:#EF4444;"></span>خارج المستهدف</span>
-            </div>
+        <div class="kpi ${cls(v)}">
+            <div class="l">اكتمال العلامات الحيوية</div>
+            <div class="v txt-${cls(v)}">${v}<span class="u">%</span></div>
+            <div class="sub">${A.withVitals} / ${A.n} زيارة كاملة</div>
         </div>
-    </div>`;
-}
-
-// ---------- PAGE 2/3: hour x hospital heatmap ----------
-// Reverse the hours so the table reads right-to-left like the lab dashboard sample.
-function buildHeatmap(rows, key, title, subtitle, target) {
-    // Build hours from 23 down to 0 (RTL columns: rightmost is 00)
-    const hours = Array.from({length: 24}, (_, i) => 23 - i);
-    const headerCells = hours.map(h => `<th class="hh-hour">${String(h).padStart(2, '0')}</th>`).join('');
-
-    const body = rows.map(r => {
-        const cells = hours.map(h => {
-            const hd = r.s.byHour ? r.s.byHour[h] : null;
-            const compVal = hd ? (key === 'o2a' ? hd.o2a_comp : hd.a2r_comp) : null;
-            const count = hd ? hd.count : 0;
-            if (count === 0) return `<td class="hh-cell empty" style="background:${heatColor(null)};"></td>`;
-            const bg = heatColor(compVal);
-            const tc = heatTextColor(compVal);
-            return `<td class="hh-cell" style="background:${bg}; color:${tc};">
-                <div class="hh-pct">${Math.round(compVal)}%</div>
-                <div class="hh-cnt">${count}</div>
-            </td>`;
-        }).join('');
-        return `<tr><td class="hh-name">${r.info.ar}</td>${cells}</tr>`;
-    }).join('');
-
-    return `
-        <div class="hajj-card">
-            <div class="hajj-card-header">
-                <div class="hajj-card-title">${title}</div>
-                <div class="hajj-card-sub">${subtitle}</div>
-            </div>
-
-            <div class="hajj-info">
-                <div class="hajj-info-title">نسبة الالتزام بـ ${target} في كل ساعة من اليوم</div>
-                <div style="font-size: 14px; color: #4A5A6B; line-height: 1.6;">
-                    كل خانة تمثّل ساعة واحدة في يوم لمستشفى معيّن. الرقم العلوي = نسبة الفحوصات التي أُنجزت ضمن ${target} في تلك الساعة، الرقم السفلي = عدد الفحوصات في تلك الساعة. الخانات الفارغة تعني عدم وجود فحوصات في تلك الساعة.
-                </div>
-            </div>
-
-            <table class="hajj-heat">
-                <thead>
-                    <tr>
-                        <th class="hh-corner">المستشفى</th>
-                        ${headerCells}
-                    </tr>
-                </thead>
-                <tbody>${body}</tbody>
-            </table>
-
-            <div class="hajj-legend">
-                <span><span class="leg-dot" style="background:#10B981;"></span>الالتزام ٩٥٪ فأكثر</span>
-                <span><span class="leg-dot" style="background:#F59E0B;"></span>الالتزام ٨٥–٩٤٪</span>
-                <span><span class="leg-dot" style="background:#EF4444;"></span>الالتزام أقل من ٨٥٪</span>
-                <span><span class="leg-dot" style="background:#F1F5F9; border:1px solid #CBD5E0;"></span>لا توجد فحوصات</span>
-            </div>
+        <div class="kpi ${cls(p, 95, 70)}">
+            <div class="l">خطة التدريب موثقة</div>
+            <div class="v txt-${cls(p, 95, 70)}">${p}<span class="u">%</span></div>
+            <div class="sub">${A.withPlan} / ${A.n} زيارة</div>
+        </div>
+        <div class="kpi ${cls(a)}">
+            <div class="l">النتيجة مسجلة</div>
+            <div class="v txt-${cls(a)}">${a}<span class="u">%</span></div>
+            <div class="sub">${A.withAchv} / ${A.n} زيارة</div>
+        </div>
+        <div class="kpi ${cls(ach, 50, 25)}">
+            <div class="l">تحقيق الهدف</div>
+            <div class="v txt-${cls(ach, 50, 25)}">${ach}<span class="u">%</span></div>
+            <div class="sub">${A.achieved} حقق · ${A.noImprovement} لم يتحسن</div>
         </div>
     `;
 }
 
-function buildSlidePage2_heatmapCombined(rows) {
-    const top = buildHeatmap(
-        rows, 'o2a',
-        'الخريطة الحرارية — من الطلب إلى التصوير',
-        'الالتزام بمستهدف الـ ١٥ دقيقة لكل ساعة من اليوم',
-        '١٥ دقيقة'
-    );
-    const bottom = buildHeatmap(
-        rows, 'a2r',
-        'الخريطة الحرارية — من التصوير إلى التقرير',
-        'الالتزام بمستهدف الـ ٤٥ دقيقة لكل ساعة من اليوم',
-        '٤٥ دقيقة'
-    );
-    // Use the .tall variant so both heatmaps fit vertically; gap between them.
-    return `
-    <div class="hajj-slide-page tall" data-page="2">
-        <div style="display:flex; flex-direction:column; gap:24px; width:100%;">
-            ${top}
-            ${bottom}
+function renderInsights(A) {
+    const insights = [];
+
+    const vitalsPct = pct(A.withVitals, A.n);
+    const planPct = pct(A.withPlan, A.n);
+    const achvPct = pct(A.withAchv, A.n);
+    const achievedRate = pct(A.achieved, Math.max(1, A.withAchv));
+
+    // Documentation
+    if (achvPct < 50) {
+        insights.push({type: 'bad', icon: '!',
+            ttl: 'فجوة كبيرة في توثيق النتائج',
+            txt: `${A.n - A.withAchv} زيارة من أصل ${A.n} (${100-achvPct}%) ما تم تسجيل نتيجتها. هذا أهم تحدي وارد في البيانات.`});
+    }
+
+    if (vitalsPct < 70) {
+        insights.push({type: 'warn', icon: '⚠',
+            ttl: 'العلامات الحيوية ناقصة',
+            txt: `${A.n - A.withVitals} زيارة بدون ضغط دم أو BMI. هذا يخلي تقييم الحالة الصحية والمتابعة صعب.`});
+    }
+
+    // Top PHC
+    if (A.phcDetails.length > 0) {
+        const top = A.phcDetails[0];
+        insights.push({type: 'info', icon: '★',
+            ttl: 'المركز الأعلى نشاطاً',
+            txt: `${top.phc} عنده ${top.total} زيارة (${pct(top.total, A.n)}% من الإجمالي)، يخدم ${top.patients} مريض عبر ${top.coaches} مدرب.`});
+    }
+
+    // Best achiever
+    if (A.phcDetails.length > 0) {
+        const phcWithGoals = A.phcDetails.filter(p => p.goalAch > 0).sort((a,b) => b.goalAch - a.goalAch);
+        if (phcWithGoals.length > 0) {
+            const best = phcWithGoals[0];
+            insights.push({type: 'good', icon: '✓',
+                ttl: 'الأعلى في تحقيق الأهداف',
+                txt: `${best.phc} حقق ${best.goalAch} هدف من أصل ${best.total} زيارة (${pct(best.goalAch, best.total)}%)، الأفضل في الشبكة.`});
+        }
+    }
+
+    // Gender skew
+    const femalePct = pct(A.byGender['Female']||0, A.n);
+    if (femalePct >= 65) {
+        insights.push({type: 'info', icon: 'i',
+            ttl: 'هيمنة المرضى من الإناث',
+            txt: `${femalePct}% من الزيارات للإناث. ممكن نحتاج حملات توعية موجهة للذكور لرفع المشاركة.`});
+    }
+
+    // BMI concern
+    const obesity = (A.byBmi['سمنة درجة 1']||0) + (A.byBmi['سمنة درجة 2']||0) + (A.byBmi['سمنة درجة 3']||0);
+    const withBmi = Object.values(A.byBmi).reduce((s,v) => s+v, 0);
+    if (withBmi > 0) {
+        const obP = pct(obesity, withBmi);
+        if (obP >= 40) {
+            insights.push({type: 'bad', icon: '!',
+                ttl: 'انتشار عالي للسمنة',
+                txt: `${obP}% من المرضى المسجلين عندهم سمنة (${obesity} من ${withBmi}). يحتاجون تدخل تثقيفي مكثف.`});
+        }
+    }
+
+    // BP concern
+    const stage12 = (A.byBp['مرحلة 1']||0) + (A.byBp['مرحلة 2']||0) + (A.byBp['أزمة']||0);
+    const withBp = Object.values(A.byBp).reduce((s,v) => s+v, 0);
+    if (withBp > 0 && pct(stage12, withBp) >= 30) {
+        insights.push({type: 'warn', icon: '⚠',
+            ttl: 'مرضى بضغط دم مرتفع',
+            txt: `${stage12} مريض (${pct(stage12, withBp)}% من المسجلين) في مرحلة ارتفاع ضغط مؤكدة. متابعة طبية ضرورية.`});
+    }
+
+    // Coach workload imbalance
+    if (A.coachDetails.length >= 3) {
+        const top = A.coachDetails[0];
+        const median = A.coachDetails[Math.floor(A.coachDetails.length/2)];
+        if (top.total >= median.total * 3) {
+            insights.push({type: 'warn', icon: '⚠',
+                ttl: 'عبء عمل غير متوازن',
+                txt: `${top.coach} عنده ${top.total} زيارة، بينما الوسيط ${median.total} فقط. ممكن نحتاج إعادة توزيع.`});
+        }
+    }
+
+    // Data quality
+    if (A.issues.length > 0) {
+        insights.push({type: 'warn', icon: '!',
+            ttl: 'سجلات تحتاج مراجعة',
+            txt: `${A.issues.length} سجل عنده مشاكل (BMI غير منطقي، ضغط دم خطر، أو علامات حيوية مفقودة). راجع جدول الجودة بالأسفل.`});
+    }
+
+    // Render
+    document.getElementById('insightsBadge').textContent = insights.length + ' ملاحظة';
+    document.getElementById('insightsGrid').innerHTML = insights.map(i => `
+        <div class="insight ${i.type}">
+            <div class="icon">${i.icon}</div>
+            <div class="body">
+                <div class="ttl">${i.ttl}</div>
+                <div class="txt">${i.txt}</div>
+            </div>
         </div>
-    </div>`;
+    `).join('');
 }
 
-// ====================== DELAYS SLIDE ======================
-// One slide per (hospital, stage) — only hospitals that actually have delays.
-// Each slide lists patient IDs that breached the target for that stage.
-function openDelaysSlide() {
-    const wrap = document.getElementById('slidePagesWrap');
+// ====================== CHARTS ======================
+const CHART_COLORS = ['#10B981','#F59E0B','#EF4444','#3B82F6','#8B5CF6','#06B6D4','#EC4899','#FB923C','#A4ADC2','#84cc16'];
+const CHART_FONT = { family: 'Tajawal, sans-serif', size: 11 };
 
-    const rows = Object.keys(HOSPITALS)
-        .filter(k => STATE.results[k] && STATE.results[k].summary.total_studies > 0)
-        .map(k => ({ key: k, info: HOSPITALS[k], s: STATE.results[k].summary }))
-        .sort((a, b) => a.info.ar.localeCompare(b.info.ar, 'ar'));
+function defaultOpts(extra = {}) {
+    return Object.assign({
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                labels: {
+                    color: '#A4ADC2',
+                    font: CHART_FONT,
+                    padding: 12,
+                    boxWidth: 14
+                },
+                position: 'bottom'
+            },
+            tooltip: {
+                backgroundColor: '#0C111E',
+                borderColor: 'rgba(255,255,255,0.12)',
+                borderWidth: 1,
+                titleColor: '#F4F6FB',
+                bodyColor: '#A4ADC2',
+                titleFont: { family: 'Cairo, sans-serif', size: 12, weight: 'bold' },
+                bodyFont: CHART_FONT,
+                padding: 10
+            }
+        },
+        scales: {
+            x: {
+                grid: { color: 'rgba(255,255,255,0.04)' },
+                ticks: { color: '#6B7388', font: CHART_FONT }
+            },
+            y: {
+                grid: { color: 'rgba(255,255,255,0.04)' },
+                ticks: { color: '#6B7388', font: CHART_FONT },
+                beginAtZero: true
+            }
+        }
+    }, extra);
+}
 
-    if (rows.length === 0) {
-        alert('لا يوجد مستشفيات بنتائج بعد. ارفع الملفات واضغط "تحليل البيانات".');
+function destroyChart(id) {
+    if (STATE.charts[id]) { STATE.charts[id].destroy(); STATE.charts[id] = null; }
+}
+
+function renderDemographics(A) {
+    // Gender (doughnut)
+    destroyChart('chGender');
+    const gKeys = Object.keys(A.byGender);
+    STATE.charts['chGender'] = new Chart(document.getElementById('chGender'), {
+        type: 'doughnut',
+        data: {
+            labels: gKeys.map(k => k === 'Female' ? 'إناث' : k === 'Male' ? 'ذكور' : k),
+            datasets: [{
+                data: gKeys.map(k => A.byGender[k]),
+                backgroundColor: ['#EC4899','#3B82F6','#6B7388'],
+                borderColor: '#141B2D',
+                borderWidth: 2
+            }]
+        },
+        options: defaultOpts({
+            scales: {},
+            cutout: '60%'
+        })
+    });
+
+    // Age (bar)
+    destroyChart('chAge');
+    const ageOrder = ['18-29','30-39','40-49','50-59','60-69','70+'];
+    STATE.charts['chAge'] = new Chart(document.getElementById('chAge'), {
+        type: 'bar',
+        data: {
+            labels: ageOrder,
+            datasets: [{
+                label: 'المرضى',
+                data: ageOrder.map(k => A.byAge[k] || 0),
+                backgroundColor: '#8B5CF6',
+                borderRadius: 4
+            }]
+        },
+        options: defaultOpts({ plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0C111E', borderColor: 'rgba(255,255,255,0.12)', borderWidth: 1, titleColor: '#F4F6FB', bodyColor: '#A4ADC2', titleFont: { family: 'Cairo, sans-serif', size: 12, weight: 'bold' }, bodyFont: CHART_FONT, padding: 10 } } })
+    });
+
+    // Daily (line)
+    destroyChart('chDaily');
+    const ds = A.dailyKeys;
+    STATE.charts['chDaily'] = new Chart(document.getElementById('chDaily'), {
+        type: 'line',
+        data: {
+            labels: ds.map(d => d.slice(5)),
+            datasets: [{
+                label: 'الزيارات',
+                data: ds.map(d => A.byDate[d]),
+                borderColor: '#06B6D4',
+                backgroundColor: 'rgba(6,182,212,0.15)',
+                fill: true,
+                tension: 0.3,
+                pointBackgroundColor: '#06B6D4',
+                pointBorderColor: '#06B6D4',
+                pointRadius: 4
+            }]
+        },
+        options: defaultOpts({ plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0C111E', borderColor: 'rgba(255,255,255,0.12)', borderWidth: 1, titleColor: '#F4F6FB', bodyColor: '#A4ADC2', titleFont: { family: 'Cairo, sans-serif', size: 12, weight: 'bold' }, bodyFont: CHART_FONT, padding: 10 } } })
+    });
+}
+
+function renderClinical(A) {
+    // BMI chart
+    destroyChart('chBMI');
+    const bmiOrder = ['نقص وزن','طبيعي','زيادة وزن','سمنة درجة 1','سمنة درجة 2','سمنة درجة 3'];
+    const bmiColors = ['#3B82F6','#10B981','#F59E0B','#FB923C','#EF4444','#dc2626'];
+    const bmiData = bmiOrder.map(k => A.byBmi[k] || 0);
+    const bmiTotal = bmiData.reduce((s,v)=>s+v,0);
+
+    STATE.charts['chBMI'] = new Chart(document.getElementById('chBMI'), {
+        type: 'doughnut',
+        data: {
+            labels: bmiOrder,
+            datasets: [{
+                data: bmiData,
+                backgroundColor: bmiColors,
+                borderColor: '#141B2D',
+                borderWidth: 2
+            }]
+        },
+        options: defaultOpts({ scales: {}, cutout: '55%' })
+    });
+
+    // BMI buckets table
+    const bmiBucketsHtml = bmiOrder.map((k, i) => {
+        const n = A.byBmi[k] || 0;
+        const p = bmiTotal ? Math.round(100*n/bmiTotal) : 0;
+        const colorMap = ['blue','emerald','amber','orange','rose','rose'];
+        return `<div class="bucket">
+            <div class="sw ${colorMap[i]}"></div>
+            <div class="lbl">${k}</div>
+            <div class="bar"><span class="${colorMap[i]}" style="width:${Math.max(p,2)}%"></span></div>
+            <div class="n">${n} · ${p}%</div>
+        </div>`;
+    }).join('');
+    document.getElementById('bmiBuckets').innerHTML = bmiBucketsHtml;
+
+    // BP chart
+    destroyChart('chBP');
+    const bpOrder = ['طبيعي','مرتفع','مرحلة 1','مرحلة 2','أزمة'];
+    const bpColors = ['#10B981','#F59E0B','#FB923C','#EF4444','#7f1d1d'];
+    const bpData = bpOrder.map(k => A.byBp[k] || 0);
+    const bpTotal = bpData.reduce((s,v)=>s+v,0);
+
+    STATE.charts['chBP'] = new Chart(document.getElementById('chBP'), {
+        type: 'doughnut',
+        data: {
+            labels: bpOrder,
+            datasets: [{
+                data: bpData,
+                backgroundColor: bpColors,
+                borderColor: '#141B2D',
+                borderWidth: 2
+            }]
+        },
+        options: defaultOpts({ scales: {}, cutout: '55%' })
+    });
+
+    const bpBucketsHtml = bpOrder.map((k, i) => {
+        const n = A.byBp[k] || 0;
+        const p = bpTotal ? Math.round(100*n/bpTotal) : 0;
+        const colorMap = ['emerald','amber','orange','rose','rose'];
+        return `<div class="bucket">
+            <div class="sw ${colorMap[i]}"></div>
+            <div class="lbl">${k}</div>
+            <div class="bar"><span class="${colorMap[i]}" style="width:${Math.max(p,2)}%"></span></div>
+            <div class="n">${n} · ${p}%</div>
+        </div>`;
+    }).join('');
+    document.getElementById('bpBuckets').innerHTML = bpBucketsHtml;
+}
+
+function renderPHCs(A) {
+    document.getElementById('phcBadge').textContent = A.phcDetails.length + ' مركز';
+
+    // PHC bar chart
+    destroyChart('chPHC');
+    const phcLabels = A.phcDetails.map(p => p.phc);
+    STATE.charts['chPHC'] = new Chart(document.getElementById('chPHC'), {
+        type: 'bar',
+        data: {
+            labels: phcLabels,
+            datasets: [{
+                label: 'الزيارات',
+                data: A.phcDetails.map(p => p.total),
+                backgroundColor: '#8B5CF6',
+                borderRadius: 4
+            }]
+        },
+        options: defaultOpts({
+            indexAxis: 'y',
+            plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0C111E', borderColor: 'rgba(255,255,255,0.12)', borderWidth: 1, titleColor: '#F4F6FB', bodyColor: '#A4ADC2', titleFont: { family: 'Cairo, sans-serif', size: 12, weight: 'bold' }, bodyFont: CHART_FONT, padding: 10 } }
+        })
+    });
+
+    // Documentation completeness chart (stacked bar)
+    destroyChart('chDoc');
+    STATE.charts['chDoc'] = new Chart(document.getElementById('chDoc'), {
+        type: 'bar',
+        data: {
+            labels: ['علامات حيوية', 'خطة تدريب', 'تسجيل النتيجة'],
+            datasets: [
+                {
+                    label: 'مكتمل',
+                    data: [A.withVitals, A.withPlan, A.withAchv],
+                    backgroundColor: '#10B981',
+                    borderRadius: 4
+                },
+                {
+                    label: 'ناقص',
+                    data: [A.n - A.withVitals, A.n - A.withPlan, A.n - A.withAchv],
+                    backgroundColor: '#EF4444',
+                    borderRadius: 4
+                }
+            ]
+        },
+        options: defaultOpts({
+            indexAxis: 'y',
+            scales: {
+                x: { stacked: true, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6B7388', font: CHART_FONT } },
+                y: { stacked: true, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6B7388', font: CHART_FONT } }
+            }
+        })
+    });
+
+    // PHC table
+    const tbl = `
+        <thead><tr>
+            <th>المركز</th>
+            <th>زيارات</th>
+            <th>مرضى</th>
+            <th>اكتمال العلامات</th>
+            <th>الخطة موثقة</th>
+            <th>النتيجة مسجلة</th>
+            <th>تحقق الهدف</th>
+            <th>لم يتحسن</th>
+            <th>المدربين</th>
+        </tr></thead>
+        <tbody>
+            ${A.phcDetails.map(p => {
+                const vp = pct(p.vitals, p.total);
+                const pp = pct(p.plan, p.total);
+                const ap = pct(p.achv, p.total);
+                return `<tr>
+                    <td class="bold">${p.phc}</td>
+                    <td class="num">${p.total}</td>
+                    <td class="num">${p.patients}</td>
+                    <td class="num"><span class="tag ${cls(vp)}">${vp}%</span></td>
+                    <td class="num"><span class="tag ${cls(pp, 95, 70)}">${pp}%</span></td>
+                    <td class="num"><span class="tag ${cls(ap)}">${ap}%</span></td>
+                    <td class="num">${p.goalAch > 0 ? `<span class="tag emerald">${p.goalAch}</span>` : '<span class="tag muted">0</span>'}</td>
+                    <td class="num">${p.noImp > 0 ? `<span class="tag rose">${p.noImp}</span>` : '<span class="tag muted">0</span>'}</td>
+                    <td class="num">${p.coaches}</td>
+                </tr>`;
+            }).join('')}
+        </tbody>
+    `;
+    document.getElementById('phcTable').innerHTML = tbl;
+}
+
+function renderCoaches(A) {
+    document.getElementById('coachBadge').textContent = A.coachDetails.length + ' مدرب';
+
+    // Coach bar chart
+    destroyChart('chCoach');
+    STATE.charts['chCoach'] = new Chart(document.getElementById('chCoach'), {
+        type: 'bar',
+        data: {
+            labels: A.coachDetails.map(c => c.coach.length > 20 ? c.coach.slice(0,20)+'…' : c.coach),
+            datasets: [{
+                label: 'الزيارات',
+                data: A.coachDetails.map(c => c.total),
+                backgroundColor: '#06B6D4',
+                borderRadius: 4
+            }]
+        },
+        options: defaultOpts({
+            indexAxis: 'y',
+            plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0C111E', borderColor: 'rgba(255,255,255,0.12)', borderWidth: 1, titleColor: '#F4F6FB', bodyColor: '#A4ADC2', titleFont: { family: 'Cairo, sans-serif', size: 12, weight: 'bold' }, bodyFont: CHART_FONT, padding: 10 } }
+        })
+    });
+
+    // Achievement chart
+    destroyChart('chAchieve');
+    const achLabels = A.coachDetails.filter(c => c.goalAch > 0 || c.noImp > 0).map(c => c.coach.split(' ')[0]);
+    const achData = A.coachDetails.filter(c => c.goalAch > 0 || c.noImp > 0);
+
+    STATE.charts['chAchieve'] = new Chart(document.getElementById('chAchieve'), {
+        type: 'bar',
+        data: {
+            labels: achLabels,
+            datasets: [
+                {
+                    label: 'حقق الهدف',
+                    data: achData.map(c => c.goalAch),
+                    backgroundColor: '#10B981',
+                    borderRadius: 4
+                },
+                {
+                    label: 'لم يتحسن',
+                    data: achData.map(c => c.noImp),
+                    backgroundColor: '#EF4444',
+                    borderRadius: 4
+                }
+            ]
+        },
+        options: defaultOpts({
+            scales: {
+                x: { stacked: false, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6B7388', font: CHART_FONT } },
+                y: { stacked: false, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6B7388', font: CHART_FONT }, beginAtZero: true }
+            }
+        })
+    });
+
+    // Coach table
+    const tbl = `
+        <thead><tr>
+            <th>المدرب</th>
+            <th>زيارات</th>
+            <th>مرضى</th>
+            <th>مراكز</th>
+            <th>اكتمال العلامات</th>
+            <th>الخطة موثقة</th>
+            <th>حقق هدف</th>
+            <th>لم يتحسن</th>
+            <th>التقييم</th>
+        </tr></thead>
+        <tbody>
+            ${A.coachDetails.map(c => {
+                const vp = pct(c.vitals, c.total);
+                const pp = pct(c.plan, c.total);
+                const goalRate = c.goalAch + c.noImp > 0 ? pct(c.goalAch, c.goalAch + c.noImp) : null;
+                let perfTag = '<span class="tag muted">غير مقيم</span>';
+                if (goalRate !== null) {
+                    if (goalRate >= 70) perfTag = `<span class="tag emerald">ممتاز ${goalRate}%</span>`;
+                    else if (goalRate >= 40) perfTag = `<span class="tag amber">متوسط ${goalRate}%</span>`;
+                    else perfTag = `<span class="tag rose">يحتاج دعم ${goalRate}%</span>`;
+                }
+                return `<tr>
+                    <td class="bold">${c.coach}</td>
+                    <td class="num">${c.total}</td>
+                    <td class="num">${c.patients}</td>
+                    <td class="num">${c.phcs}</td>
+                    <td class="num"><span class="tag ${cls(vp)}">${vp}%</span></td>
+                    <td class="num"><span class="tag ${cls(pp, 95, 70)}">${pp}%</span></td>
+                    <td class="num">${c.goalAch > 0 ? `<span class="tag emerald">${c.goalAch}</span>` : '<span class="tag muted">0</span>'}</td>
+                    <td class="num">${c.noImp > 0 ? `<span class="tag rose">${c.noImp}</span>` : '<span class="tag muted">0</span>'}</td>
+                    <td>${perfTag}</td>
+                </tr>`;
+            }).join('')}
+        </tbody>
+    `;
+    document.getElementById('coachTable').innerHTML = tbl;
+}
+
+function renderTemporal(A) {
+    // DOW chart
+    destroyChart('chDOW');
+    const dowKeys = Object.keys(A.byDow);
+    STATE.charts['chDOW'] = new Chart(document.getElementById('chDOW'), {
+        type: 'bar',
+        data: {
+            labels: dowKeys,
+            datasets: [{
+                label: 'الزيارات',
+                data: dowKeys.map(k => A.byDow[k]),
+                backgroundColor: dowKeys.map(k => A.byDow[k] === Math.max(...dowKeys.map(x => A.byDow[x])) ? '#8B5CF6' : '#475569'),
+                borderRadius: 4
+            }]
+        },
+        options: defaultOpts({ plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0C111E', borderColor: 'rgba(255,255,255,0.12)', borderWidth: 1, titleColor: '#F4F6FB', bodyColor: '#A4ADC2', titleFont: { family: 'Cairo, sans-serif', size: 12, weight: 'bold' }, bodyFont: CHART_FONT, padding: 10 } } })
+    });
+
+    // Scatter age vs BMI
+    destroyChart('chScatter');
+    const scatterData = A.rows.filter(r => r.age != null && r.bmi != null && r.bmi < 60).map(r => ({
+        x: r.age, y: r.bmi,
+        gender: r.gender
+    }));
+    STATE.charts['chScatter'] = new Chart(document.getElementById('chScatter'), {
+        type: 'scatter',
+        data: {
+            datasets: [
+                {
+                    label: 'إناث',
+                    data: scatterData.filter(p => p.gender === 'Female').map(p => ({x: p.x, y: p.y})),
+                    backgroundColor: 'rgba(236,72,153,0.7)',
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                },
+                {
+                    label: 'ذكور',
+                    data: scatterData.filter(p => p.gender === 'Male').map(p => ({x: p.x, y: p.y})),
+                    backgroundColor: 'rgba(59,130,246,0.7)',
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                }
+            ]
+        },
+        options: defaultOpts({
+            scales: {
+                x: { title: { display: true, text: 'العمر', color: '#A4ADC2' }, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6B7388', font: CHART_FONT } },
+                y: { title: { display: true, text: 'BMI', color: '#A4ADC2' }, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6B7388', font: CHART_FONT } }
+            }
+        })
+    });
+}
+
+function renderIssues(A) {
+    document.getElementById('dqBadge').textContent = A.issues.length + ' سجل';
+
+    if (A.issues.length === 0) {
+        document.getElementById('issuesTable').innerHTML = `
+            <thead><tr><th>الحالة</th></tr></thead>
+            <tbody><tr><td style="text-align: center; padding: 30px; color: var(--accent-emerald);">✓ ما فيه أي سجلات تحتاج مراجعة. جودة البيانات ممتازة.</td></tr></tbody>
+        `;
         return;
     }
 
-    // Two slides total: one for each stage, with all hospitals grouped inside.
-    const pages =
-        buildDelaysCombinedSlide(rows, 'o2a', 1) +
-        buildDelaysCombinedSlide(rows, 'a2r', 2);
-
-    wrap.innerHTML = '<div class="hajj-slide">' + pages + '</div>';
-    document.getElementById('slideModalTitle').textContent = 'سلايد التأخرات — أرقام الملفات المتأخرة';
-    document.getElementById('btnSlideExport').textContent = 'حفظ صورتين PNG';
-    document.getElementById('slideModal').classList.add('active');
-    document.getElementById('slideModal').scrollTop = 0;
-}
-
-// Severity bucket given the delay magnitude vs target
-function severityClass(mins, target) {
-    const over = mins - target;
-    if (over <= target * 0.5) return 'sev-1';
-    if (over <= target * 1.5) return 'sev-2';
-    return 'sev-3';
-}
-
-function formatDelay(mins) {
-    if (mins < 60) return Math.round(mins) + ' د';
-    const h = Math.floor(mins / 60);
-    const m = Math.round(mins % 60);
-    return h + 'س ' + (m > 0 ? m + 'د' : '');
-}
-
-function fmtDateTime(d) {
-    if (!d) return '';
-    const pad = n => String(n).padStart(2, '0');
-    return `${pad(d.getDate())}/${pad(d.getMonth()+1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-// Build one combined slide for a stage, showing all hospitals' delayed PIDs.
-function buildDelaysCombinedSlide(rows, key, pageNum) {
-    const isO2a = key === 'o2a';
-    const target = isO2a ? TARGET_O2A : TARGET_A2R;
-    const stageName = isO2a ? 'من الطلب إلى التصوير' : 'من التصوير إلى التقرير';
-    const stageTargetLabel = isO2a ? '١٥ دقيقة' : '٤٥ دقيقة';
-
-    // Aggregate: total delayed across all hospitals + per-hospital counts
-    const totalDelayed = rows.reduce((s, r) => s + (isO2a ? r.s.delayed_o2a.length : r.s.delayed_a2r.length), 0);
-    const totalStudies = rows.reduce((s, r) => s + r.s.total_studies, 0);
-    const onTime = totalStudies - totalDelayed;
-
-    // Pick a grid density that scales with total card count
-    let gridCls = 'delay-grid';
-    if (totalDelayed > 30) gridCls += ' ultra';
-    else if (totalDelayed > 16) gridCls += ' compact';
-
-    // Build hospital sections
-    const sections = rows.map(r => {
-        const delays = isO2a ? r.s.delayed_o2a : r.s.delayed_a2r;
-        if (delays.length === 0) {
-            return `
-                <div class="hosp-section">
-                    <div class="hosp-section-head">
-                        <div class="name">${r.info.ar}</div>
-                        <div class="count clean">✓ بدون تأخرات (${r.s.total_studies} فحص)</div>
-                    </div>
-                </div>`;
-        }
-        const cards = delays.map(d => {
-            const sev = severityClass(d.mins, target);
-            const proc = d.procedure || d.modality || 'فحص';
-            return `
-                <div class="delay-card ${sev}">
-                    <div class="top">
-                        <div class="pid">${d.pid}</div>
-                        <div class="delay">+${formatDelay(d.mins - target)}</div>
-                    </div>
-                    <div class="proc">${proc}</div>
-                    <div class="when">${fmtDateTime(d.orderDt)} · ${formatDelay(d.mins)}</div>
-                </div>`;
-        }).join('');
-        return `
-            <div class="hosp-section">
-                <div class="hosp-section-head">
-                    <div class="name">${r.info.ar}</div>
-                    <div class="count">${delays.length} تأخير من أصل ${r.s.total_studies} فحص</div>
-                </div>
-                <div class="${gridCls}">${cards}</div>
-            </div>`;
-    }).join('');
-
-    const body = totalDelayed === 0
-        ? `<div class="delay-empty">
-                <div class="icon">✓</div>
-                <div class="msg">جميع الفحوصات ضمن المستهدف</div>
-                <div class="sub">لا توجد ملفات تجاوزت ${stageTargetLabel} في هذه المرحلة</div>
-            </div>`
-        : `
-            <div class="delay-summary-bar">
-                <div class="item">
-                    <div class="lbl">عدد التأخرات</div>
-                    <div class="val rose">${totalDelayed}</div>
-                </div>
-                <div class="item">
-                    <div class="lbl">ضمن المعيار</div>
-                    <div class="val" style="color:#059669;">${onTime}</div>
-                </div>
-                <div class="item">
-                    <div class="lbl">إجمالي الفحوصات</div>
-                    <div class="val">${totalStudies}</div>
-                </div>
-                <div class="item">
-                    <div class="lbl">عدد المستشفيات</div>
-                    <div class="val">${rows.length}</div>
-                </div>
-            </div>
-            ${sections}`;
-
-    return `
-    <div class="hajj-slide-page tall" data-page="${pageNum}">
-        <div class="hajj-card">
-            <div class="hajj-card-header">
-                <div class="hajj-card-title">التأخرات · ${stageName}</div>
-                <div class="hajj-card-sub">أرقام الملفات التي تجاوزت المستهدف ${stageTargetLabel} · جميع المستشفيات</div>
-            </div>
-
-            <div class="delay-stage-banner ${isO2a ? 'stage-o2a' : 'stage-a2r'}">
-                <div class="lbl">${stageName}</div>
-                <div class="meta">
-                    <span>المستهدف: <b>${stageTargetLabel}</b></span>
-                    <span>إجمالي التأخرات: <b>${totalDelayed}</b></span>
-                </div>
-            </div>
-
-            ${body}
-        </div>
-    </div>`;
-}
-
-// ====================== PNG EXPORT ======================
-async function exportSlidePngs() {
-    const pages = document.querySelectorAll('.hajj-slide-page');
-    if (!pages.length) return;
-    const btn = document.getElementById('btnSlideExport');
-    btn.disabled = true;
-    const oldText = btn.textContent;
-    btn.textContent = 'جاري التصدير...';
-
-    // Disable the scale transform on the wrapper for capture, then restore.
-    const slide = document.querySelector('.hajj-slide');
-    const oldTransform = slide ? slide.style.transform : null;
-    const oldMarginBottom = slide ? slide.style.marginBottom : null;
-    if (slide) { slide.style.transform = 'none'; slide.style.marginBottom = '0'; }
-
-    try {
-        for (let i = 0; i < pages.length; i++) {
-            btn.textContent = `جاري حفظ الصورة ${i+1}/${pages.length}...`;
-            const page = pages[i];
-            // Capture actual rendered size — tall delays pages grow beyond 1080.
-            const w = page.offsetWidth || 1920;
-            const h = page.offsetHeight || 1080;
-            const canvas = await html2canvas(page, {
-                width: w, height: h,
-                scale: 2,
-                backgroundColor: '#FFFFFF',
-                useCORS: true,
-                logging: false
-            });
-            const link = document.createElement('a');
-            link.download = `radiology-slide-${i+1}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-            await new Promise(r => setTimeout(r, 400));
-        }
-    } catch (e) {
-        console.error(e);
-        alert('فشل التصدير: ' + e.message);
-    }
-
-    if (slide) {
-        slide.style.transform = oldTransform || '';
-        slide.style.marginBottom = oldMarginBottom || '';
-    }
-    btn.disabled = false;
-    btn.textContent = oldText;
+    const tbl = `
+        <thead><tr>
+            <th>رقم المريض</th>
+            <th>الاسم</th>
+            <th>المركز</th>
+            <th>المشكلة</th>
+            <th>التفاصيل</th>
+            <th>الخطورة</th>
+        </tr></thead>
+        <tbody>
+            ${A.issues.map(i => `
+                <tr>
+                    <td class="num">${i.pid}</td>
+                    <td>${i.name}</td>
+                    <td>${i.phc}</td>
+                    <td class="bold">${i.issue}</td>
+                    <td style="color: var(--text-secondary); font-size: 12px;">${i.detail}</td>
+                    <td><span class="tag ${i.severity === 'bad' ? 'rose' : 'amber'}">${i.severity === 'bad' ? 'عاجل' : 'متوسط'}</span></td>
+                </tr>
+            `).join('')}
+        </tbody>
+    `;
+    document.getElementById('issuesTable').innerHTML = tbl;
 }
 
 document.addEventListener('DOMContentLoaded', init);
