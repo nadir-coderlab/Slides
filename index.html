@@ -66,6 +66,153 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+/* ===== LOGIN SCREEN ===== */
+.login-screen {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #0A0E1A 0%, #141B2D 50%, #1a1f3a 100%);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow: auto;
+}
+.login-screen.hidden { display: none; }
+.login-bg-pattern {
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 20% 30%, rgba(139,92,246,0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(6,182,212,0.12) 0%, transparent 50%),
+        radial-gradient(circle at 50% 100%, rgba(16,185,129,0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+.login-card {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-medium);
+    border-radius: 16px;
+    padding: 40px 36px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    z-index: 1;
+}
+.login-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+.login-logo {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: inline-block;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--accent-violet), #06B6D4);
+    border-radius: 16px;
+    line-height: 1;
+}
+.login-title {
+    font-family: 'Cairo', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+}
+.login-subtitle {
+    font-size: 13px;
+    color: var(--text-tertiary);
+}
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.login-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.login-field label {
+    font-family: 'Cairo', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+.login-field input {
+    background: var(--bg-input);
+    border: 1px solid var(--border-medium);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px;
+    color: var(--text-primary);
+    direction: ltr;
+    text-align: right;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.login-field input:focus {
+    outline: none;
+    border-color: var(--accent-violet);
+    box-shadow: 0 0 0 3px rgba(139,92,246,0.15);
+}
+.login-error {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #fca5a5;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+}
+.login-btn {
+    margin-top: 8px;
+    background: linear-gradient(135deg, var(--accent-violet), #7c3aed);
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    color: white;
+    font-family: 'Cairo', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(139,92,246,0.3);
+}
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(139,92,246,0.5);
+}
+.login-btn:active { transform: translateY(0); }
+.login-footer {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-subtle);
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-tertiary);
+}
+
+/* Logout button */
+.logout-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 12px;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: var(--radius-sm);
+    color: #fca5a5;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.logout-btn:hover {
+    background: rgba(239,68,68,0.2);
+    border-color: rgba(239,68,68,0.5);
+}
+
 #initShield {
     position: fixed; inset: 0;
     background: var(--bg-primary);
@@ -83,6 +230,11 @@ body {
     animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+}
 #initShield .label {
     font-family: 'Cairo', sans-serif;
     font-size: 14px; color: var(--text-secondary);
@@ -950,6 +1102,190 @@ table.data-tbl {
     gap: 12px;
 }
 .slide-page.mobile-page .slide-section-h { font-size: 18px; }
+
+/* ============================================
+   MOBILE RESPONSIVE - شاشات الجوال والتابلت
+============================================ */
+
+/* TABLET: 768px - 1024px */
+@media (max-width: 1024px) {
+    .cmd-main { padding: 20px 16px 60px; }
+    .kpi-strip { grid-template-columns: repeat(3, 1fr); }
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+    .grid-2-1 { grid-template-columns: 1fr; }
+    .indicator-stages-grid { grid-template-columns: repeat(2, 1fr); }
+    .insights-grid { grid-template-columns: 1fr; }
+}
+
+/* MOBILE: under 768px */
+@media (max-width: 768px) {
+    /* Header */
+    .cmd-header { padding: 14px 16px; }
+    .cmd-header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .cmd-titles h1 { font-size: 16px; line-height: 1.3; }
+    .cmd-titles .super { font-size: 10px; }
+    .cmd-titles .subtitle { font-size: 11px; }
+    .cmd-status {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .cmd-pill { font-size: 11px; padding: 6px 10px; }
+    .logout-btn { padding: 6px 10px; font-size: 11px; }
+
+    /* Main */
+    .cmd-main { padding: 16px 12px 60px; }
+
+    /* Sections */
+    .section-title { margin-top: 22px; margin-bottom: 14px; flex-wrap: wrap; }
+    .section-title h2 { font-size: 15px; }
+    .section-title .badge { font-size: 10px; }
+
+    /* Indicator */
+    .indicator-explainer { padding: 16px 18px; }
+    .indicator-explainer h2 { font-size: 14px; }
+    .indicator-explainer .indicator-text { font-size: 12px; }
+    .indicator-stages-grid { grid-template-columns: 1fr; gap: 10px; }
+    .indicator-stage-box { padding: 12px 14px; }
+    .indicator-stage-box .num { font-size: 24px; }
+    .indicator-stage-box .nm { font-size: 12px; }
+
+    /* Upload */
+    .upload-mega-card { padding: 24px 16px; }
+    .upload-mega-card h3 { font-size: 14px; }
+    .upload-mega-card p { font-size: 12px; }
+    .upload-mega-label { padding: 10px 22px; font-size: 12px; }
+
+    /* KPIs - 2 cols on phone */
+    .kpi-strip {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    .kpi { padding: 12px 14px; }
+    .kpi .l { font-size: 9px; }
+    .kpi .v { font-size: 22px; }
+    .kpi .sub { font-size: 10px; }
+
+    /* Grids stack */
+    .grid-2, .grid-3, .grid-2-1 {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    /* Panels */
+    .panel { padding: 14px 16px; }
+    .panel-head { margin-bottom: 12px; padding-bottom: 8px; }
+    .panel-head .ttl { font-size: 13px; }
+    .panel-head .tg { font-size: 10px; }
+
+    /* Charts smaller */
+    .chart-wrap { height: 240px; }
+    .chart-wrap.tall { height: 280px; }
+    .chart-wrap.short { height: 200px; }
+
+    /* Buckets */
+    .bucket {
+        grid-template-columns: 14px 1fr 90px 50px;
+        gap: 8px;
+        font-size: 11px;
+    }
+    .bucket .lbl { font-size: 11px; }
+    .bucket .n { font-size: 10px; }
+
+    /* Tables - horizontal scroll */
+    .tbl-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -16px;
+        padding: 0 16px;
+    }
+    table.data-tbl { font-size: 11px; min-width: 600px; }
+    .data-tbl thead th { font-size: 10px; padding: 8px 8px; }
+    .data-tbl tbody td { padding: 8px 8px; }
+    .tag { font-size: 9.5px; padding: 2px 6px; }
+
+    /* Insights */
+    .insights-grid { grid-template-columns: 1fr; gap: 8px; }
+    .insight { padding: 12px 14px; gap: 10px; }
+    .insight .icon { width: 24px; height: 24px; font-size: 14px; }
+    .insight .ttl { font-size: 12px; }
+    .insight .txt { font-size: 11px; }
+
+    /* Empty state */
+    .empty-state { padding: 50px 16px; }
+    .empty-state h3 { font-size: 15px; }
+    .empty-state p { font-size: 12px; }
+
+    /* Export menu - full screen on mobile */
+    .export-menu-wrap {
+        position: static;
+    }
+    .export-menu {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        max-height: 85vh;
+        border-radius: 16px 16px 0 0;
+        min-width: 100%;
+        transform: translateY(100%);
+        box-shadow: 0 -8px 32px rgba(0,0,0,0.5);
+    }
+    .export-menu.open { transform: translateY(0); }
+    .export-menu-header {
+        padding: 18px 18px 12px;
+        text-align: center;
+        position: relative;
+    }
+    .export-menu-header::before {
+        content: '';
+        position: absolute;
+        top: 8px; left: 50%;
+        transform: translateX(-50%);
+        width: 40px; height: 4px;
+        background: var(--border-medium);
+        border-radius: 999px;
+    }
+    .export-option { padding: 12px; }
+    .export-option .opt-icon { width: 40px; height: 40px; font-size: 20px; }
+    .export-option .opt-title { font-size: 13px; }
+    .export-option .opt-desc { font-size: 11px; }
+
+    /* Login screen mobile */
+    .login-card { padding: 30px 24px; }
+    .login-title { font-size: 18px; }
+    .login-logo { font-size: 36px; padding: 12px; }
+
+    /* Export overlay */
+    .export-overlay .status { font-size: 14px; }
+    .export-overlay .substatus { font-size: 12px; text-align: center; padding: 0 20px; }
+    .export-overlay .progress-bar { width: 220px; }
+}
+
+/* Very small phones */
+@media (max-width: 380px) {
+    .kpi-strip { grid-template-columns: 1fr; }
+    .kpi .v { font-size: 24px; }
+    .cmd-titles h1 { font-size: 14px; }
+    .upload-mega-label { padding: 10px 18px; font-size: 11px; }
+}
+
+/* Mobile backdrop for export menu */
+.export-menu-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 199;
+}
+@media (max-width: 768px) {
+    .export-menu-backdrop.show { display: block; }
+}
     display: grid;
     grid-template-columns: 100px repeat(7, 1fr);
     gap: 4px;
@@ -990,6 +1326,35 @@ table.data-tbl {
 
 <body>
 
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="login-screen">
+    <div class="login-bg-pattern"></div>
+    <div class="login-card">
+        <div class="login-header">
+            <div class="login-logo">🏥</div>
+            <div class="login-title">إدارة التثقيف الصحي</div>
+            <div class="login-subtitle">سجّل الدخول للوصول إلى الداشبورد</div>
+        </div>
+        <form class="login-form" id="loginForm" autocomplete="off">
+            <div class="login-field">
+                <label>اسم المستخدم</label>
+                <input type="text" id="loginUser" placeholder="أدخل اسم المستخدم" autocomplete="off" required>
+            </div>
+            <div class="login-field">
+                <label>كلمة المرور</label>
+                <input type="password" id="loginPass" placeholder="أدخل كلمة المرور" autocomplete="off" required>
+            </div>
+            <div class="login-error" id="loginError" style="display: none;">
+                اسم المستخدم أو كلمة المرور غير صحيحة
+            </div>
+            <button type="submit" class="login-btn">دخول</button>
+        </form>
+        <div class="login-footer">
+            إدارة التثقيف الصحي · جميع الحقوق محفوظة
+        </div>
+    </div>
+</div>
+
 <div id="initShield">
     <div class="ring"></div>
     <div class="label">جاري التحميل...</div>
@@ -1005,6 +1370,10 @@ table.data-tbl {
         <div class="cmd-status">
             <div class="cmd-pill"><span class="dot"></span><span>النظام جاهز</span></div>
             <div class="cmd-pill" id="datePill">--</div>
+            <button class="logout-btn" id="logoutBtn" title="تسجيل الخروج" style="display: none;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                <span>خروج</span>
+            </button>
             <div class="export-menu-wrap" id="exportMenuWrap" style="display:none;">
                 <button class="export-trigger" id="exportTrigger">
                     <span>تصدير</span>
@@ -1325,6 +1694,9 @@ table.data-tbl {
     <div class="progress-bar"><div class="progress-fill" id="exportProgress"></div></div>
 </div>
 
+<!-- Backdrop for mobile export menu -->
+<div class="export-menu-backdrop" id="exportBackdrop"></div>
+
 <!-- HIDDEN SLIDES CONTAINER (rendered off-screen for export) -->
 <div id="slidesContainer" style="position: fixed; left: -99999px; top: 0; width: 1920px;"></div>
 
@@ -1335,6 +1707,61 @@ const STATE = {
     headers: [],
     charts: {}
 };
+
+// ====================== AUTHENTICATION ======================
+const AUTH_CONFIG = {
+    username: 'N',
+    password: '123',
+    sessionKey: 'hc_dashboard_auth'
+};
+
+function checkAuth() {
+    // Check if already logged in (session storage - clears on tab close)
+    const auth = sessionStorage.getItem(AUTH_CONFIG.sessionKey);
+    if (auth === 'true') {
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('logoutBtn').style.display = 'flex';
+        return true;
+    }
+    document.getElementById('loginScreen').classList.remove('hidden');
+    document.getElementById('logoutBtn').style.display = 'none';
+    return false;
+}
+
+function setupLogin() {
+    const form = document.getElementById('loginForm');
+    const errorEl = document.getElementById('loginError');
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const user = document.getElementById('loginUser').value.trim();
+        const pass = document.getElementById('loginPass').value.trim();
+
+        if (user === AUTH_CONFIG.username && pass === AUTH_CONFIG.password) {
+            sessionStorage.setItem(AUTH_CONFIG.sessionKey, 'true');
+            errorEl.style.display = 'none';
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('logoutBtn').style.display = 'flex';
+            // Focus the dashboard
+            document.getElementById('loginUser').value = '';
+            document.getElementById('loginPass').value = '';
+        } else {
+            errorEl.style.display = 'block';
+            // Shake animation
+            const card = document.querySelector('.login-card');
+            card.style.animation = 'none';
+            setTimeout(() => { card.style.animation = 'shake 0.4s'; }, 10);
+        }
+    });
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        if (confirm('هل تريد تسجيل الخروج؟')) {
+            sessionStorage.removeItem(AUTH_CONFIG.sessionKey);
+            location.reload();
+        }
+    });
+}
 
 // ====================== INIT ======================
 function init() {
@@ -2245,25 +2672,37 @@ function renderIssues(A) {
 function initExportMenu() {
     const trigger = document.getElementById('exportTrigger');
     const menu = document.getElementById('exportMenu');
+    const backdrop = document.getElementById('exportBackdrop');
+
+    const openMenu = () => {
+        menu.classList.add('open');
+        trigger.classList.add('active');
+        backdrop.classList.add('show');
+    };
+    const closeMenu = () => {
+        menu.classList.remove('open');
+        trigger.classList.remove('active');
+        backdrop.classList.remove('show');
+    };
 
     trigger.addEventListener('click', (e) => {
         e.stopPropagation();
-        menu.classList.toggle('open');
-        trigger.classList.toggle('active');
+        if (menu.classList.contains('open')) closeMenu();
+        else openMenu();
     });
+
+    backdrop.addEventListener('click', closeMenu);
 
     document.addEventListener('click', (e) => {
         if (!menu.contains(e.target) && !trigger.contains(e.target)) {
-            menu.classList.remove('open');
-            trigger.classList.remove('active');
+            closeMenu();
         }
     });
 
     document.querySelectorAll('.export-option').forEach(opt => {
         opt.addEventListener('click', () => {
             const action = opt.dataset.action;
-            menu.classList.remove('open');
-            trigger.classList.remove('active');
+            closeMenu();
             handleExport(action);
         });
     });
@@ -3101,6 +3540,8 @@ async function exportExcelReport() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    setupLogin();
+    checkAuth();
     init();
     initExportMenu();
 });
