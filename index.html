@@ -21,6 +21,9 @@ if (typeof XLSX === 'undefined') {
 }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 
 <style>
 :root {
@@ -127,6 +130,157 @@ body {
 .cmd-pill .dot {
     width: 8px; height: 8px; border-radius: 50%;
     background: var(--accent-emerald);
+}
+
+/* EXPORT MENU */
+.export-menu-wrap {
+    position: relative;
+}
+.export-trigger {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 16px;
+    background: linear-gradient(135deg, var(--accent-violet), #7c3aed);
+    border: 1px solid var(--accent-violet);
+    border-radius: var(--radius-sm);
+    color: white;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 12.5px; font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(139,92,246,0.3);
+}
+.export-trigger:hover {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    box-shadow: 0 4px 12px rgba(139,92,246,0.5);
+    transform: translateY(-1px);
+}
+.export-trigger svg { transition: transform 0.2s; }
+.export-trigger.active svg { transform: rotate(180deg); }
+
+.export-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-lg);
+    min-width: 320px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all 0.2s;
+    z-index: 200;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+.export-menu.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+.export-menu-header {
+    padding: 14px 18px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-subtle);
+}
+.export-menu-section {
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.export-menu-section:last-child { border-bottom: none; }
+.export-section-title {
+    padding: 4px 12px 8px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.export-option {
+    width: 100%;
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.15s;
+    text-align: right;
+    direction: rtl;
+}
+.export-option:hover {
+    background: var(--bg-card-elevated);
+}
+.export-option .opt-icon {
+    font-size: 22px;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg-input);
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+}
+.export-option .opt-body { flex: 1; }
+.export-option .opt-title {
+    font-family: 'Cairo', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+.export-option .opt-desc {
+    font-size: 11px;
+    color: var(--text-tertiary);
+}
+
+/* EXPORT PROGRESS OVERLAY */
+.export-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,14,26,0.92);
+    backdrop-filter: blur(6px);
+    z-index: 9000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 24px;
+}
+.export-overlay.active { display: flex; }
+.export-overlay .spinner {
+    width: 60px; height: 60px;
+    border: 4px solid rgba(139,92,246,0.2);
+    border-top-color: var(--accent-violet);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+.export-overlay .status {
+    font-family: 'Cairo', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+.export-overlay .substatus {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+.export-overlay .progress-bar {
+    width: 280px;
+    height: 6px;
+    background: var(--bg-input);
+    border-radius: 999px;
+    overflow: hidden;
+}
+.export-overlay .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-violet), #06B6D4);
+    border-radius: 999px;
+    width: 0%;
+    transition: width 0.3s;
 }
 
 .cmd-main {
@@ -496,8 +650,306 @@ table.data-tbl {
     line-height: 1.6;
 }
 
-/* Heatmap */
-.heatmap-grid {
+/* ===== SLIDE STYLES FOR EXPORT (1920x1080) ===== */
+.slide-page {
+    width: 1920px;
+    min-height: 1080px;
+    background: #FFFFFF;
+    padding: 60px 72px;
+    box-sizing: border-box;
+    font-family: 'Cairo', 'Tajawal', sans-serif;
+    direction: rtl;
+    color: #1A2433;
+}
+.slide-header {
+    border-bottom: 3px solid #063A58;
+    padding-bottom: 22px;
+    margin-bottom: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+.slide-header-text { text-align: right; }
+.slide-title {
+    font-family: 'Cairo', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: #063A58;
+    margin-bottom: 6px;
+}
+.slide-subtitle {
+    font-size: 18px;
+    color: #4A5A6B;
+    font-weight: 500;
+}
+.slide-brand {
+    font-family: 'Cairo', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #063A58;
+    padding: 8px 16px;
+    background: #F0F4F8;
+    border-radius: 6px;
+}
+.slide-info {
+    background: #F0F4F8;
+    border: 1px solid #D5DEE7;
+    border-right: 5px solid #063A58;
+    border-radius: 10px;
+    padding: 18px 24px;
+    margin-bottom: 22px;
+}
+.slide-info-title {
+    font-family: 'Cairo', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #063A58;
+    margin-bottom: 12px;
+}
+.slide-info-text {
+    font-size: 15px;
+    color: #4A5A6B;
+    line-height: 1.7;
+}
+
+/* KPI cards for slides */
+.slide-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.slide-kpi {
+    background: #FFFFFF;
+    border: 1px solid #E5EAF0;
+    border-top: 4px solid #063A58;
+    border-radius: 10px;
+    padding: 20px 18px;
+    text-align: center;
+}
+.slide-kpi.emerald { border-top-color: #10B981; }
+.slide-kpi.amber { border-top-color: #F59E0B; }
+.slide-kpi.rose { border-top-color: #EF4444; }
+.slide-kpi.violet { border-top-color: #8B5CF6; }
+.slide-kpi.cyan { border-top-color: #06B6D4; }
+.slide-kpi .lbl {
+    font-size: 13px;
+    color: #4A5A6B;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+.slide-kpi .val {
+    font-family: 'Cairo', sans-serif;
+    font-size: 38px;
+    font-weight: 900;
+    color: #063A58;
+    line-height: 1;
+}
+.slide-kpi.emerald .val { color: #059669; }
+.slide-kpi.amber .val { color: #B45309; }
+.slide-kpi.rose .val { color: #B91C1C; }
+.slide-kpi .unit { font-size: 15px; font-weight: 600; color: #6B7280; }
+.slide-kpi .sub {
+    font-size: 12px;
+    color: #6B7280;
+    margin-top: 8px;
+}
+
+/* Slide tables */
+.slide-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 20px;
+}
+.slide-table thead th {
+    background: #063A58;
+    color: #FFFFFF;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 14px 12px;
+    text-align: center;
+    border-left: 1px solid rgba(255,255,255,0.15);
+}
+.slide-table thead th:last-child { border-left: none; }
+.slide-table thead th:first-child {
+    border-top-right-radius: 8px;
+    text-align: right;
+    padding-right: 22px;
+}
+.slide-table thead th:last-child { border-top-left-radius: 8px; }
+.slide-table tbody tr:nth-child(even) { background: #F7FAFC; }
+.slide-table tbody tr:nth-child(odd) { background: #FFFFFF; }
+.slide-table tbody tr:last-child td:first-child { border-bottom-right-radius: 8px; }
+.slide-table tbody tr:last-child td:last-child { border-bottom-left-radius: 8px; }
+.slide-table td {
+    padding: 14px 12px;
+    text-align: center;
+    font-size: 15px;
+    border-bottom: 1px solid #E5EAF0;
+}
+.slide-table tbody tr:last-child td { border-bottom: none; }
+.slide-table td.first-col {
+    text-align: right;
+    padding-right: 22px;
+    font-weight: 700;
+    color: #1A2433;
+}
+.slide-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Cairo', sans-serif;
+}
+.slide-tag.green { background: #D1FAE5; color: #047857; }
+.slide-tag.yellow { background: #FEF3C7; color: #B45309; }
+.slide-tag.red { background: #FEE2E2; color: #B91C1C; }
+.slide-tag.gray { background: #F3F4F6; color: #6B7280; }
+.slide-tag.blue { background: #DBEAFE; color: #1E40AF; }
+
+/* Slide insight cards */
+.slide-insights {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+.slide-insight {
+    background: #FFFFFF;
+    border: 1px solid #E5EAF0;
+    border-right: 5px solid #063A58;
+    border-radius: 8px;
+    padding: 18px 22px;
+}
+.slide-insight.good { border-right-color: #10B981; background: #ECFDF5; }
+.slide-insight.warn { border-right-color: #F59E0B; background: #FFFBEB; }
+.slide-insight.bad { border-right-color: #EF4444; background: #FEF2F2; }
+.slide-insight.info { border-right-color: #3B82F6; background: #EFF6FF; }
+.slide-insight .ttl {
+    font-family: 'Cairo', sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    color: #063A58;
+    margin-bottom: 8px;
+}
+.slide-insight .txt {
+    font-size: 14px;
+    color: #1A2433;
+    line-height: 1.7;
+}
+
+/* Slide footer */
+.slide-footer {
+    margin-top: 30px;
+    padding-top: 16px;
+    border-top: 1px solid #E5EAF0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #6B7280;
+}
+.slide-page-num {
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    color: #063A58;
+}
+
+/* Slide section title */
+.slide-section-h {
+    font-family: 'Cairo', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    color: #063A58;
+    margin-bottom: 16px;
+    padding-right: 16px;
+    border-right: 5px solid #063A58;
+}
+
+/* Distribution panels for slides */
+.slide-dist-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+.slide-dist-panel {
+    background: #FFFFFF;
+    border: 1px solid #E5EAF0;
+    border-radius: 10px;
+    padding: 20px;
+}
+.slide-dist-title {
+    font-family: 'Cairo', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #063A58;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #E5EAF0;
+}
+.slide-bucket {
+    display: grid;
+    grid-template-columns: 18px 1fr 120px 80px;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 14px;
+}
+.slide-bucket .sw {
+    width: 14px; height: 14px; border-radius: 3px;
+}
+.slide-bucket .lbl { color: #1A2433; font-weight: 600; }
+.slide-bucket .bar {
+    height: 8px; background: #F3F4F6;
+    border-radius: 999px; overflow: hidden;
+}
+.slide-bucket .bar > span {
+    display: block; height: 100%; border-radius: 999px;
+}
+.slide-bucket .n {
+    font-family: 'Cairo', sans-serif;
+    font-size: 14px; color: #1A2433;
+    font-weight: 700; text-align: left;
+    direction: ltr;
+}
+.col-green { background: #10B981 !important; }
+.col-yellow { background: #F59E0B !important; }
+.col-orange { background: #FB923C !important; }
+.col-red { background: #EF4444 !important; }
+.col-blue { background: #3B82F6 !important; }
+.col-purple { background: #8B5CF6 !important; }
+.col-pink { background: #EC4899 !important; }
+.col-gray { background: #6B7280 !important; }
+
+/* Mobile PDF specific styles */
+.slide-page.mobile-page {
+    width: 800px;
+    padding: 32px 28px;
+}
+.slide-page.mobile-page .slide-title { font-size: 28px; }
+.slide-page.mobile-page .slide-subtitle { font-size: 14px; }
+.slide-page.mobile-page .slide-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+.slide-page.mobile-page .slide-kpi { padding: 14px 12px; }
+.slide-page.mobile-page .slide-kpi .val { font-size: 28px; }
+.slide-page.mobile-page .slide-kpi .lbl { font-size: 11px; }
+.slide-page.mobile-page .slide-table thead th { font-size: 11px; padding: 8px 6px; }
+.slide-page.mobile-page .slide-table td { font-size: 11px; padding: 8px 6px; }
+.slide-page.mobile-page .slide-insights {
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+.slide-page.mobile-page .slide-insight { padding: 12px 14px; }
+.slide-page.mobile-page .slide-insight .ttl { font-size: 13px; }
+.slide-page.mobile-page .slide-insight .txt { font-size: 11px; }
+.slide-page.mobile-page .slide-dist-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+.slide-page.mobile-page .slide-section-h { font-size: 18px; }
     display: grid;
     grid-template-columns: 100px repeat(7, 1fr);
     gap: 4px;
@@ -553,6 +1005,87 @@ table.data-tbl {
         <div class="cmd-status">
             <div class="cmd-pill"><span class="dot"></span><span>النظام جاهز</span></div>
             <div class="cmd-pill" id="datePill">--</div>
+            <div class="export-menu-wrap" id="exportMenuWrap" style="display:none;">
+                <button class="export-trigger" id="exportTrigger">
+                    <span>تصدير</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                </button>
+                <div class="export-menu" id="exportMenu">
+                    <div class="export-menu-header">خيارات التصدير</div>
+
+                    <div class="export-menu-section">
+                        <div class="export-section-title">PDF</div>
+                        <button class="export-option" data-action="pdf-desktop">
+                            <div class="opt-icon">🖥️</div>
+                            <div class="opt-body">
+                                <div class="opt-title">PDF للكمبيوتر</div>
+                                <div class="opt-desc">A4 أفقي · جودة عالية · للطباعة</div>
+                            </div>
+                        </button>
+                        <button class="export-option" data-action="pdf-mobile">
+                            <div class="opt-icon">📱</div>
+                            <div class="opt-body">
+                                <div class="opt-title">PDF للجوال</div>
+                                <div class="opt-desc">A4 طولي · محسّن للموبايل</div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="export-menu-section">
+                        <div class="export-section-title">سلايدات الاجتماع</div>
+                        <button class="export-option" data-action="slides-pdf">
+                            <div class="opt-icon">📊</div>
+                            <div class="opt-body">
+                                <div class="opt-title">سلايدات PDF</div>
+                                <div class="opt-desc">مقاس 1920×1080 · جاهز للعرض</div>
+                            </div>
+                        </button>
+                        <button class="export-option" data-action="slides-pptx">
+                            <div class="opt-icon">📑</div>
+                            <div class="opt-body">
+                                <div class="opt-title">PowerPoint (PPTX)</div>
+                                <div class="opt-desc">قابل للتعديل · 6 سلايدات</div>
+                            </div>
+                        </button>
+                        <button class="export-option" data-action="slides-png">
+                            <div class="opt-icon">🖼️</div>
+                            <div class="opt-body">
+                                <div class="opt-title">صور PNG (سلايدات)</div>
+                                <div class="opt-desc">6 صور منفصلة</div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="export-menu-section">
+                        <div class="export-section-title">صور</div>
+                        <button class="export-option" data-action="png-full">
+                            <div class="opt-icon">📷</div>
+                            <div class="opt-body">
+                                <div class="opt-title">صورة كاملة للداشبورد</div>
+                                <div class="opt-desc">PNG واحد بالكامل</div>
+                            </div>
+                        </button>
+                        <button class="export-option" data-action="png-sections">
+                            <div class="opt-icon">🧩</div>
+                            <div class="opt-body">
+                                <div class="opt-title">صورة لكل قسم</div>
+                                <div class="opt-desc">صور منفصلة لكل جزء</div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="export-menu-section">
+                        <div class="export-section-title">بيانات</div>
+                        <button class="export-option" data-action="excel-report">
+                            <div class="opt-icon">📗</div>
+                            <div class="opt-body">
+                                <div class="opt-title">تقرير Excel</div>
+                                <div class="opt-desc">كل التحليلات والجداول</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </header>
@@ -783,6 +1316,17 @@ table.data-tbl {
     </section>
 
 </main>
+
+<!-- EXPORT PROGRESS OVERLAY -->
+<div class="export-overlay" id="exportOverlay">
+    <div class="spinner"></div>
+    <div class="status" id="exportStatus">جاري التصدير...</div>
+    <div class="substatus" id="exportSubstatus">يرجى الانتظار</div>
+    <div class="progress-bar"><div class="progress-fill" id="exportProgress"></div></div>
+</div>
+
+<!-- HIDDEN SLIDES CONTAINER (rendered off-screen for export) -->
+<div id="slidesContainer" style="position: fixed; left: -99999px; top: 0; width: 1920px;"></div>
 
 <script>
 // ====================== STATE ======================
@@ -1074,8 +1618,10 @@ function group(arr, keyFn) {
 // ====================== RENDER ======================
 function renderAll() {
     const A = buildAnalysis();
+    STATE.analysis = A;
     document.getElementById('emptyState').style.display = 'none';
     document.getElementById('resultsSection').classList.add('visible');
+    document.getElementById('exportMenuWrap').style.display = 'block';
 
     renderKPIs(A);
     renderInsights(A);
@@ -1695,7 +2241,869 @@ function renderIssues(A) {
     document.getElementById('issuesTable').innerHTML = tbl;
 }
 
-document.addEventListener('DOMContentLoaded', init);
+// ====================== EXPORT SYSTEM ======================
+function initExportMenu() {
+    const trigger = document.getElementById('exportTrigger');
+    const menu = document.getElementById('exportMenu');
+
+    trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        menu.classList.toggle('open');
+        trigger.classList.toggle('active');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!menu.contains(e.target) && !trigger.contains(e.target)) {
+            menu.classList.remove('open');
+            trigger.classList.remove('active');
+        }
+    });
+
+    document.querySelectorAll('.export-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+            const action = opt.dataset.action;
+            menu.classList.remove('open');
+            trigger.classList.remove('active');
+            handleExport(action);
+        });
+    });
+}
+
+function showOverlay(status, sub) {
+    document.getElementById('exportStatus').textContent = status;
+    document.getElementById('exportSubstatus').textContent = sub || '';
+    document.getElementById('exportProgress').style.width = '0%';
+    document.getElementById('exportOverlay').classList.add('active');
+}
+function updateOverlay(status, sub, pct) {
+    if (status) document.getElementById('exportStatus').textContent = status;
+    if (sub !== undefined) document.getElementById('exportSubstatus').textContent = sub;
+    if (pct !== undefined) document.getElementById('exportProgress').style.width = pct + '%';
+}
+function hideOverlay() {
+    document.getElementById('exportOverlay').classList.remove('active');
+}
+
+async function handleExport(action) {
+    try {
+        switch(action) {
+            case 'pdf-desktop': await exportPdfDesktop(); break;
+            case 'pdf-mobile': await exportPdfMobile(); break;
+            case 'slides-pdf': await exportSlidesPdf(); break;
+            case 'slides-pptx': await exportSlidesPptx(); break;
+            case 'slides-png': await exportSlidesPng(); break;
+            case 'png-full': await exportPngFull(); break;
+            case 'png-sections': await exportPngSections(); break;
+            case 'excel-report': await exportExcelReport(); break;
+        }
+    } catch(e) {
+        console.error(e);
+        alert('فشل التصدير: ' + e.message);
+    } finally {
+        hideOverlay();
+    }
+}
+
+// ---------- HELPER: capture an element to canvas ----------
+async function captureElement(el, scale = 2) {
+    // Wait one paint cycle so charts finish drawing
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    return await html2canvas(el, {
+        scale: scale,
+        backgroundColor: el.style.background || (el.classList.contains('slide-page') ? '#FFFFFF' : '#0A0E1A'),
+        useCORS: true,
+        logging: false,
+        width: el.offsetWidth,
+        height: el.offsetHeight,
+        windowWidth: el.offsetWidth,
+        windowHeight: el.offsetHeight
+    });
+}
+
+function downloadCanvas(canvas, filename) {
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+}
+
+function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = url;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+// ---------- BUILD SLIDE HTML (used for slides export + PDFs) ----------
+function buildAllSlides(A, mobile = false) {
+    const mobileCls = mobile ? ' mobile-page' : '';
+    const dateStr = new Date().toLocaleDateString('ar-SA');
+
+    // KPI calculations
+    const vp = pct(A.withVitals, A.n);
+    const pp = pct(A.withPlan, A.n);
+    const ap = pct(A.withAchv, A.n);
+    const achRate = pct(A.achieved, Math.max(1, A.withAchv));
+
+    // Slide 1: Cover + Overview KPIs
+    const slide1 = `
+    <div class="slide-page${mobileCls}" data-slide="1">
+        <div class="slide-header">
+            <div class="slide-header-text">
+                <div class="slide-title">إدارة التثقيف الصحي</div>
+                <div class="slide-subtitle">داشبورد تحليل زيارات Health Coach في مراكز الرعاية الأولية</div>
+            </div>
+            <div class="slide-brand">${dateStr}</div>
+        </div>
+
+        <div class="slide-info">
+            <div class="slide-info-title">ملخص تنفيذي</div>
+            <div class="slide-info-text">
+                تحليل شامل لـ <b>${A.n} زيارة</b> Health Coach موزعة على <b>${A.uniquePhc} مركز</b> رعاية أولية،
+                نفّذها <b>${A.uniqueCoach} مدرب صحي</b>، خدمت <b>${A.uniquePat} مريض</b> فريد
+                ${A.minD && A.maxD ? `خلال الفترة <b>${fmtDateAr(A.minD)} – ${fmtDateAr(A.maxD)}</b>` : ''}.
+            </div>
+        </div>
+
+        <div class="slide-section-h">المؤشرات الرئيسية</div>
+        <div class="slide-kpi-grid">
+            <div class="slide-kpi violet">
+                <div class="lbl">إجمالي الزيارات</div>
+                <div class="val">${A.n}<span class="unit">زيارة</span></div>
+                <div class="sub">${A.uniquePat} مريض</div>
+            </div>
+            <div class="slide-kpi cyan">
+                <div class="lbl">المراكز الصحية</div>
+                <div class="val">${A.uniquePhc}</div>
+                <div class="sub">${A.uniqueCoach} مدرب</div>
+            </div>
+            <div class="slide-kpi ${cls(vp)}">
+                <div class="lbl">العلامات الحيوية</div>
+                <div class="val">${vp}<span class="unit">%</span></div>
+                <div class="sub">${A.withVitals} / ${A.n}</div>
+            </div>
+            <div class="slide-kpi ${cls(pp, 95, 70)}">
+                <div class="lbl">خطة موثقة</div>
+                <div class="val">${pp}<span class="unit">%</span></div>
+                <div class="sub">${A.withPlan} / ${A.n}</div>
+            </div>
+            <div class="slide-kpi ${cls(ap)}">
+                <div class="lbl">النتيجة مسجلة</div>
+                <div class="val">${ap}<span class="unit">%</span></div>
+                <div class="sub">${A.withAchv} / ${A.n}</div>
+            </div>
+            <div class="slide-kpi ${cls(achRate, 50, 25)}">
+                <div class="lbl">تحقيق الهدف</div>
+                <div class="val">${achRate}<span class="unit">%</span></div>
+                <div class="sub">${A.achieved} حقق</div>
+            </div>
+        </div>
+
+        <div class="slide-section-h">أهم الملاحظات</div>
+        <div class="slide-insights">
+            ${buildSlideInsights(A).slice(0, mobile ? 4 : 6).map(i => `
+                <div class="slide-insight ${i.type}">
+                    <div class="ttl">${i.ttl}</div>
+                    <div class="txt">${i.txt}</div>
+                </div>
+            `).join('')}
+        </div>
+
+        <div class="slide-footer">
+            <div>إدارة التثقيف الصحي</div>
+            <div class="slide-page-num">صفحة 1 من 6</div>
+        </div>
+    </div>`;
+
+    // Slide 2: Demographics
+    const genderTotal = Object.values(A.byGender).reduce((s,v)=>s+v,0);
+    const ageOrder = ['18-29','30-39','40-49','50-59','60-69','70+'];
+
+    const slide2 = `
+    <div class="slide-page${mobileCls}" data-slide="2">
+        <div class="slide-header">
+            <div class="slide-header-text">
+                <div class="slide-title">التوزيعات الديموغرافية</div>
+                <div class="slide-subtitle">الجنس · الفئات العمرية · الزيارات اليومية</div>
+            </div>
+            <div class="slide-brand">${dateStr}</div>
+        </div>
+
+        <div class="slide-dist-grid">
+            <div class="slide-dist-panel">
+                <div class="slide-dist-title">توزيع الجنس</div>
+                ${Object.keys(A.byGender).map(g => {
+                    const n = A.byGender[g];
+                    const p = pct(n, genderTotal);
+                    const color = g === 'Female' ? 'pink' : g === 'Male' ? 'blue' : 'gray';
+                    const lbl = g === 'Female' ? 'إناث' : g === 'Male' ? 'ذكور' : g;
+                    return `<div class="slide-bucket">
+                        <div class="sw col-${color}"></div>
+                        <div class="lbl">${lbl}</div>
+                        <div class="bar"><span class="col-${color}" style="width:${Math.max(p,2)}%"></span></div>
+                        <div class="n">${n} · ${p}%</div>
+                    </div>`;
+                }).join('')}
+            </div>
+
+            <div class="slide-dist-panel">
+                <div class="slide-dist-title">الفئات العمرية</div>
+                ${ageOrder.map(g => {
+                    const n = A.byAge[g] || 0;
+                    const p = pct(n, A.n);
+                    return `<div class="slide-bucket">
+                        <div class="sw col-purple"></div>
+                        <div class="lbl">${g} سنة</div>
+                        <div class="bar"><span class="col-purple" style="width:${Math.max(p,2)}%"></span></div>
+                        <div class="n">${n} · ${p}%</div>
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>
+
+        <div class="slide-section-h" style="margin-top: 24px;">توزيع الزيارات على أيام الأسبوع</div>
+        <div class="slide-dist-panel">
+            ${Object.keys(A.byDow).map(d => {
+                const n = A.byDow[d];
+                const max = Math.max(...Object.values(A.byDow));
+                const p = max ? Math.round(100*n/max) : 0;
+                const isMax = n === max && n > 0;
+                return `<div class="slide-bucket">
+                    <div class="sw ${isMax ? 'col-purple' : 'col-gray'}"></div>
+                    <div class="lbl">${d}</div>
+                    <div class="bar"><span class="${isMax ? 'col-purple' : 'col-gray'}" style="width:${Math.max(p,2)}%"></span></div>
+                    <div class="n">${n}</div>
+                </div>`;
+            }).join('')}
+        </div>
+
+        <div class="slide-footer">
+            <div>إدارة التثقيف الصحي</div>
+            <div class="slide-page-num">صفحة 2 من 6</div>
+        </div>
+    </div>`;
+
+    // Slide 3: Clinical (BMI + BP)
+    const bmiOrder = ['نقص وزن','طبيعي','زيادة وزن','سمنة درجة 1','سمنة درجة 2','سمنة درجة 3'];
+    const bmiColors = {'نقص وزن':'blue','طبيعي':'green','زيادة وزن':'yellow','سمنة درجة 1':'orange','سمنة درجة 2':'red','سمنة درجة 3':'red'};
+    const bmiTotal = Object.values(A.byBmi).reduce((s,v)=>s+v,0);
+
+    const bpOrder = ['طبيعي','مرتفع','مرحلة 1','مرحلة 2','أزمة'];
+    const bpColors = {'طبيعي':'green','مرتفع':'yellow','مرحلة 1':'orange','مرحلة 2':'red','أزمة':'red'};
+    const bpTotal = Object.values(A.byBp).reduce((s,v)=>s+v,0);
+
+    const slide3 = `
+    <div class="slide-page${mobileCls}" data-slide="3">
+        <div class="slide-header">
+            <div class="slide-header-text">
+                <div class="slide-title">المؤشرات السريرية</div>
+                <div class="slide-subtitle">تصنيفات مؤشر كتلة الجسم وضغط الدم</div>
+            </div>
+            <div class="slide-brand">${dateStr}</div>
+        </div>
+
+        <div class="slide-info">
+            <div class="slide-info-title">ملاحظة مهمة</div>
+            <div class="slide-info-text">
+                البيانات السريرية مسجلة لـ <b>${bmiTotal} مريض</b> من أصل <b>${A.n} زيارة</b>
+                (${pct(bmiTotal, A.n)}% فقط). تحسين توثيق القياسات أولوية ملحة.
+            </div>
+        </div>
+
+        <div class="slide-dist-grid">
+            <div class="slide-dist-panel">
+                <div class="slide-dist-title">تصنيفات مؤشر كتلة الجسم (BMI)</div>
+                ${bmiOrder.map(k => {
+                    const n = A.byBmi[k] || 0;
+                    const p = bmiTotal ? Math.round(100*n/bmiTotal) : 0;
+                    const color = bmiColors[k];
+                    return `<div class="slide-bucket">
+                        <div class="sw col-${color}"></div>
+                        <div class="lbl">${k}</div>
+                        <div class="bar"><span class="col-${color}" style="width:${Math.max(p,2)}%"></span></div>
+                        <div class="n">${n} · ${p}%</div>
+                    </div>`;
+                }).join('')}
+            </div>
+
+            <div class="slide-dist-panel">
+                <div class="slide-dist-title">تصنيفات ضغط الدم</div>
+                ${bpOrder.map(k => {
+                    const n = A.byBp[k] || 0;
+                    const p = bpTotal ? Math.round(100*n/bpTotal) : 0;
+                    const color = bpColors[k];
+                    return `<div class="slide-bucket">
+                        <div class="sw col-${color}"></div>
+                        <div class="lbl">${k}</div>
+                        <div class="bar"><span class="col-${color}" style="width:${Math.max(p,2)}%"></span></div>
+                        <div class="n">${n} · ${p}%</div>
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>
+
+        <div class="slide-footer">
+            <div>إدارة التثقيف الصحي</div>
+            <div class="slide-page-num">صفحة 3 من 6</div>
+        </div>
+    </div>`;
+
+    // Slide 4: PHC Performance Table
+    const slide4 = `
+    <div class="slide-page${mobileCls}" data-slide="4">
+        <div class="slide-header">
+            <div class="slide-header-text">
+                <div class="slide-title">أداء مراكز الرعاية الأولية</div>
+                <div class="slide-subtitle">جودة التوثيق ومعدلات تحقيق الأهداف لكل مركز</div>
+            </div>
+            <div class="slide-brand">${dateStr}</div>
+        </div>
+
+        <table class="slide-table">
+            <thead><tr>
+                <th>المركز</th>
+                <th>الزيارات</th>
+                <th>المرضى</th>
+                <th>العلامات الحيوية</th>
+                <th>الخطة موثقة</th>
+                <th>النتيجة</th>
+                <th>تحقق الهدف</th>
+                <th>لم يتحسن</th>
+            </tr></thead>
+            <tbody>
+                ${A.phcDetails.map(p => {
+                    const v = pct(p.vitals, p.total);
+                    const pl = pct(p.plan, p.total);
+                    const ac = pct(p.achv, p.total);
+                    const tg = (val, good=90, warn=60) => val >= good ? 'green' : val >= warn ? 'yellow' : 'red';
+                    return `<tr>
+                        <td class="first-col">${p.phc}</td>
+                        <td><b>${p.total}</b></td>
+                        <td>${p.patients}</td>
+                        <td><span class="slide-tag ${tg(v)}">${v}%</span></td>
+                        <td><span class="slide-tag ${tg(pl, 95, 70)}">${pl}%</span></td>
+                        <td><span class="slide-tag ${tg(ac)}">${ac}%</span></td>
+                        <td>${p.goalAch > 0 ? `<span class="slide-tag green">${p.goalAch}</span>` : '<span class="slide-tag gray">0</span>'}</td>
+                        <td>${p.noImp > 0 ? `<span class="slide-tag red">${p.noImp}</span>` : '<span class="slide-tag gray">0</span>'}</td>
+                    </tr>`;
+                }).join('')}
+            </tbody>
+        </table>
+
+        <div class="slide-footer">
+            <div>إدارة التثقيف الصحي</div>
+            <div class="slide-page-num">صفحة 4 من 6</div>
+        </div>
+    </div>`;
+
+    // Slide 5: Coach Performance
+    const topCoaches = A.coachDetails.slice(0, mobile ? 8 : 15);
+    const slide5 = `
+    <div class="slide-page${mobileCls}" data-slide="5">
+        <div class="slide-header">
+            <div class="slide-header-text">
+                <div class="slide-title">أداء المدربين الصحيين</div>
+                <div class="slide-subtitle">عبء العمل وكفاءة كل مدرب</div>
+            </div>
+            <div class="slide-brand">${dateStr}</div>
+        </div>
+
+        <table class="slide-table">
+            <thead><tr>
+                <th>المدرب</th>
+                <th>الزيارات</th>
+                <th>المرضى</th>
+                <th>المراكز</th>
+                <th>العلامات</th>
+                <th>الخطة</th>
+                <th>حقق هدف</th>
+                <th>التقييم</th>
+            </tr></thead>
+            <tbody>
+                ${topCoaches.map(c => {
+                    const v = pct(c.vitals, c.total);
+                    const pl = pct(c.plan, c.total);
+                    const tg = (val, good=90, warn=60) => val >= good ? 'green' : val >= warn ? 'yellow' : 'red';
+                    const goalRate = c.goalAch + c.noImp > 0 ? pct(c.goalAch, c.goalAch + c.noImp) : null;
+                    let perfTag = '<span class="slide-tag gray">غير مقيم</span>';
+                    if (goalRate !== null) {
+                        if (goalRate >= 70) perfTag = `<span class="slide-tag green">ممتاز</span>`;
+                        else if (goalRate >= 40) perfTag = `<span class="slide-tag yellow">متوسط</span>`;
+                        else perfTag = `<span class="slide-tag red">يحتاج دعم</span>`;
+                    }
+                    return `<tr>
+                        <td class="first-col">${c.coach}</td>
+                        <td><b>${c.total}</b></td>
+                        <td>${c.patients}</td>
+                        <td>${c.phcs}</td>
+                        <td><span class="slide-tag ${tg(v)}">${v}%</span></td>
+                        <td><span class="slide-tag ${tg(pl, 95, 70)}">${pl}%</span></td>
+                        <td>${c.goalAch > 0 ? `<span class="slide-tag green">${c.goalAch}</span>` : '<span class="slide-tag gray">0</span>'}</td>
+                        <td>${perfTag}</td>
+                    </tr>`;
+                }).join('')}
+            </tbody>
+        </table>
+
+        <div class="slide-footer">
+            <div>إدارة التثقيف الصحي</div>
+            <div class="slide-page-num">صفحة 5 من 6</div>
+        </div>
+    </div>`;
+
+    // Slide 6: Data Quality & Issues
+    const slide6 = `
+    <div class="slide-page${mobileCls}" data-slide="6">
+        <div class="slide-header">
+            <div class="slide-header-text">
+                <div class="slide-title">جودة البيانات والتوصيات</div>
+                <div class="slide-subtitle">السجلات التي تحتاج مراجعة + خطة التحسين</div>
+            </div>
+            <div class="slide-brand">${dateStr}</div>
+        </div>
+
+        <div class="slide-info">
+            <div class="slide-info-title">حالة جودة البيانات</div>
+            <div class="slide-info-text">
+                <b>${A.issues.length} سجل</b> يحتاج مراجعة من أصل ${A.n} زيارة.
+                ${A.issues.length === 0 ? 'جودة البيانات ممتازة.' :
+                  `${A.issues.filter(i => i.severity === 'bad').length} حالة عاجلة و${A.issues.filter(i => i.severity === 'amber').length} حالة متوسطة الخطورة.`}
+            </div>
+        </div>
+
+        ${A.issues.length > 0 ? `
+        <table class="slide-table">
+            <thead><tr>
+                <th>رقم المريض</th>
+                <th>المركز</th>
+                <th>المشكلة</th>
+                <th>التفاصيل</th>
+                <th>الخطورة</th>
+            </tr></thead>
+            <tbody>
+                ${A.issues.slice(0, mobile ? 8 : 15).map(i => `
+                    <tr>
+                        <td class="first-col">${i.pid}</td>
+                        <td>${i.phc}</td>
+                        <td><b>${i.issue}</b></td>
+                        <td style="font-size: 13px;">${i.detail}</td>
+                        <td><span class="slide-tag ${i.severity === 'bad' ? 'red' : 'yellow'}">${i.severity === 'bad' ? 'عاجل' : 'متوسط'}</span></td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+        ` : `<div style="text-align: center; padding: 80px 30px; background: #ECFDF5; border: 2px dashed #10B981; border-radius: 12px; color: #047857;">
+            <div style="font-size: 48px; margin-bottom: 16px;">✓</div>
+            <div style="font-size: 24px; font-weight: 800;">جودة البيانات ممتازة</div>
+            <div style="font-size: 14px; margin-top: 8px;">لا توجد سجلات تحتاج مراجعة</div>
+        </div>`}
+
+        <div class="slide-section-h" style="margin-top: 24px;">التوصيات</div>
+        <div class="slide-insights">
+            ${buildRecommendations(A).slice(0, mobile ? 4 : 4).map(r => `
+                <div class="slide-insight ${r.type}">
+                    <div class="ttl">${r.ttl}</div>
+                    <div class="txt">${r.txt}</div>
+                </div>
+            `).join('')}
+        </div>
+
+        <div class="slide-footer">
+            <div>إدارة التثقيف الصحي</div>
+            <div class="slide-page-num">صفحة 6 من 6</div>
+        </div>
+    </div>`;
+
+    return [slide1, slide2, slide3, slide4, slide5, slide6];
+}
+
+function buildSlideInsights(A) {
+    const insights = [];
+    const vp = pct(A.withVitals, A.n);
+    const pp = pct(A.withPlan, A.n);
+    const ap = pct(A.withAchv, A.n);
+    const achRate = pct(A.achieved, Math.max(1, A.withAchv));
+
+    if (ap < 50) insights.push({type:'bad', ttl:'فجوة كبيرة في توثيق النتائج',
+        txt: `${A.n - A.withAchv} زيارة (${100-ap}%) بدون نتيجة مسجلة.`});
+    if (vp < 70) insights.push({type:'warn', ttl:'العلامات الحيوية ناقصة',
+        txt: `${A.n - A.withVitals} زيارة بدون ضغط دم أو BMI.`});
+    if (A.phcDetails.length > 0) {
+        const top = A.phcDetails[0];
+        insights.push({type:'info', ttl:'المركز الأعلى نشاطاً',
+            txt: `${top.phc}: ${top.total} زيارة (${pct(top.total, A.n)}% من الإجمالي).`});
+    }
+    if (A.phcDetails.length > 0) {
+        const best = A.phcDetails.filter(p => p.goalAch > 0).sort((a,b) => b.goalAch - a.goalAch)[0];
+        if (best) insights.push({type:'good', ttl:'الأعلى في تحقيق الأهداف',
+            txt: `${best.phc}: ${best.goalAch} هدف من ${best.total} زيارة.`});
+    }
+    const obesity = (A.byBmi['سمنة درجة 1']||0) + (A.byBmi['سمنة درجة 2']||0) + (A.byBmi['سمنة درجة 3']||0);
+    const wbmi = Object.values(A.byBmi).reduce((s,v)=>s+v,0);
+    if (wbmi && pct(obesity, wbmi) >= 40) {
+        insights.push({type:'bad', ttl:'انتشار عالي للسمنة',
+            txt: `${pct(obesity, wbmi)}% من المرضى المسجلين عندهم سمنة.`});
+    }
+    const stage12 = (A.byBp['مرحلة 1']||0) + (A.byBp['مرحلة 2']||0) + (A.byBp['أزمة']||0);
+    const wbp = Object.values(A.byBp).reduce((s,v)=>s+v,0);
+    if (wbp && pct(stage12, wbp) >= 30) {
+        insights.push({type:'warn', ttl:'ارتفاع ضغط الدم منتشر',
+            txt: `${stage12} مريض في مرحلة ارتفاع ضغط مؤكدة.`});
+    }
+    return insights;
+}
+
+function buildRecommendations(A) {
+    const recs = [];
+    const ap = pct(A.withAchv, A.n);
+    const vp = pct(A.withVitals, A.n);
+
+    if (ap < 60) {
+        recs.push({type:'bad', ttl:'تحسين توثيق النتائج فوراً',
+            txt: 'وضع آلية إلزامية لتسجيل نتيجة كل زيارة قبل الإغلاق. تدريب المدربين على أهمية التوثيق.'});
+    }
+    if (vp < 80) {
+        recs.push({type:'warn', ttl:'إلزام تسجيل العلامات الحيوية',
+            txt: 'جعل حقول الضغط والوزن والطول إلزامية في النظام، مع توفير الأجهزة اللازمة.'});
+    }
+    if (A.issues.length > 0) {
+        recs.push({type:'warn', ttl:'مراجعة السجلات المشكوك فيها',
+            txt: `${A.issues.length} سجل يحتاج تدقيق فوري لتصحيح الأخطاء.`});
+    }
+    if (A.coachDetails.length >= 3) {
+        const top = A.coachDetails[0];
+        const median = A.coachDetails[Math.floor(A.coachDetails.length/2)];
+        if (top.total >= median.total * 3) {
+            recs.push({type:'info', ttl:'إعادة توزيع عبء العمل',
+                txt: `أعلى مدرب عنده ${top.total} زيارة بينما الوسيط ${median.total}. خطة توزيع أكثر عدلاً.`});
+        }
+    }
+    recs.push({type:'good', ttl:'الاستفادة من الممارسات الناجحة',
+        txt: 'دراسة منهج المدربين الأعلى أداءً ونشر تجاربهم على باقي الفريق.'});
+    return recs;
+}
+
+// ---------- 1. PDF DESKTOP (A4 landscape, slide pages) ----------
+async function exportPdfDesktop() {
+    if (!STATE.analysis) return;
+    showOverlay('جاري تصدير PDF للكمبيوتر', 'بناء السلايدات...');
+
+    const container = document.getElementById('slidesContainer');
+    container.innerHTML = '<div id="exportSlides">' + buildAllSlides(STATE.analysis, false).join('') + '</div>';
+
+    await new Promise(r => setTimeout(r, 300));
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const pages = container.querySelectorAll('.slide-page');
+
+    for (let i = 0; i < pages.length; i++) {
+        updateOverlay(null, `صفحة ${i+1} من ${pages.length}`, (i / pages.length) * 100);
+        const canvas = await captureElement(pages[i], 2);
+        const img = canvas.toDataURL('image/jpeg', 0.92);
+        if (i > 0) pdf.addPage('a4', 'landscape');
+        // A4 landscape: 297 x 210mm. Image: 1920x1080 ratio. Fit width.
+        const w = 297;
+        const h = (canvas.height / canvas.width) * w;
+        const y = (210 - h) / 2;
+        pdf.addImage(img, 'JPEG', 0, Math.max(0, y), w, h);
+    }
+
+    updateOverlay('جاري الحفظ...', '', 95);
+    pdf.save('داشبورد_التثقيف_الصحي_كمبيوتر.pdf');
+    container.innerHTML = '';
+    updateOverlay('تم!', 'تم تحميل الملف', 100);
+    await new Promise(r => setTimeout(r, 600));
+}
+
+// ---------- 2. PDF MOBILE (A4 portrait) ----------
+async function exportPdfMobile() {
+    if (!STATE.analysis) return;
+    showOverlay('جاري تصدير PDF للجوال', 'بناء السلايدات...');
+
+    const container = document.getElementById('slidesContainer');
+    container.style.width = '800px';
+    container.innerHTML = '<div id="exportSlidesMobile">' + buildAllSlides(STATE.analysis, true).join('') + '</div>';
+
+    await new Promise(r => setTimeout(r, 300));
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pages = container.querySelectorAll('.slide-page');
+
+    for (let i = 0; i < pages.length; i++) {
+        updateOverlay(null, `صفحة ${i+1} من ${pages.length}`, (i / pages.length) * 100);
+        const canvas = await captureElement(pages[i], 2);
+        const img = canvas.toDataURL('image/jpeg', 0.92);
+        if (i > 0) pdf.addPage('a4', 'portrait');
+        // A4 portrait: 210 x 297mm
+        const w = 210;
+        const h = (canvas.height / canvas.width) * w;
+        if (h > 297) {
+            // scale by height
+            const realH = 297;
+            const realW = (canvas.width / canvas.height) * realH;
+            pdf.addImage(img, 'JPEG', (210 - realW) / 2, 0, realW, realH);
+        } else {
+            pdf.addImage(img, 'JPEG', 0, (297 - h) / 2, w, h);
+        }
+    }
+
+    updateOverlay('جاري الحفظ...', '', 95);
+    pdf.save('داشبورد_التثقيف_الصحي_جوال.pdf');
+    container.innerHTML = '';
+    container.style.width = '1920px';
+    updateOverlay('تم!', 'تم تحميل الملف', 100);
+    await new Promise(r => setTimeout(r, 600));
+}
+
+// ---------- 3. SLIDES PDF (1920x1080 exact) ----------
+async function exportSlidesPdf() {
+    if (!STATE.analysis) return;
+    showOverlay('جاري تصدير سلايدات PDF', 'بناء السلايدات...');
+
+    const container = document.getElementById('slidesContainer');
+    container.innerHTML = '<div id="exportSlides">' + buildAllSlides(STATE.analysis, false).join('') + '</div>';
+
+    await new Promise(r => setTimeout(r, 300));
+
+    const { jsPDF } = window.jspdf;
+    // 1920x1080 px = 16:9 ratio. Use custom format in mm: 508 x 285.75 (1920px @ 96dpi)
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1920, 1080] });
+    const pages = container.querySelectorAll('.slide-page');
+
+    for (let i = 0; i < pages.length; i++) {
+        updateOverlay(null, `سلايد ${i+1} من ${pages.length}`, (i / pages.length) * 100);
+        const canvas = await captureElement(pages[i], 1.5);
+        const img = canvas.toDataURL('image/jpeg', 0.92);
+        if (i > 0) pdf.addPage([1920, 1080], 'landscape');
+        pdf.addImage(img, 'JPEG', 0, 0, 1920, 1080);
+    }
+
+    updateOverlay('جاري الحفظ...', '', 95);
+    pdf.save('سلايدات_التثقيف_الصحي.pdf');
+    container.innerHTML = '';
+    updateOverlay('تم!', 'تم تحميل الملف', 100);
+    await new Promise(r => setTimeout(r, 600));
+}
+
+// ---------- 4. SLIDES PPTX ----------
+async function exportSlidesPptx() {
+    if (!STATE.analysis) return;
+    showOverlay('جاري تصدير PowerPoint', 'بناء السلايدات...');
+
+    const container = document.getElementById('slidesContainer');
+    container.innerHTML = '<div id="exportSlides">' + buildAllSlides(STATE.analysis, false).join('') + '</div>';
+
+    await new Promise(r => setTimeout(r, 300));
+
+    const pptx = new PptxGenJS();
+    pptx.layout = 'LAYOUT_WIDE'; // 13.333 x 7.5 inches = 16:9
+    pptx.defineLayout({ name: 'CUSTOM_HD', width: 13.333, height: 7.5 });
+    pptx.layout = 'CUSTOM_HD';
+
+    const pages = container.querySelectorAll('.slide-page');
+    for (let i = 0; i < pages.length; i++) {
+        updateOverlay(null, `سلايد ${i+1} من ${pages.length}`, (i / pages.length) * 100);
+        const canvas = await captureElement(pages[i], 1.5);
+        const dataUrl = canvas.toDataURL('image/png');
+
+        const slide = pptx.addSlide();
+        slide.addImage({ data: dataUrl, x: 0, y: 0, w: 13.333, h: 7.5 });
+    }
+
+    updateOverlay('جاري الحفظ...', '', 95);
+    await pptx.writeFile({ fileName: 'سلايدات_التثقيف_الصحي.pptx' });
+    container.innerHTML = '';
+    updateOverlay('تم!', 'تم تحميل الملف', 100);
+    await new Promise(r => setTimeout(r, 600));
+}
+
+// ---------- 5. SLIDES PNG ----------
+async function exportSlidesPng() {
+    if (!STATE.analysis) return;
+    showOverlay('جاري تصدير صور السلايدات', 'بناء السلايدات...');
+
+    const container = document.getElementById('slidesContainer');
+    container.innerHTML = '<div id="exportSlides">' + buildAllSlides(STATE.analysis, false).join('') + '</div>';
+
+    await new Promise(r => setTimeout(r, 300));
+
+    const pages = container.querySelectorAll('.slide-page');
+    for (let i = 0; i < pages.length; i++) {
+        updateOverlay(null, `صورة ${i+1} من ${pages.length}`, (i / pages.length) * 100);
+        const canvas = await captureElement(pages[i], 2);
+        downloadCanvas(canvas, `سلايد_${i+1}.png`);
+        await new Promise(r => setTimeout(r, 400));
+    }
+
+    container.innerHTML = '';
+    updateOverlay('تم!', `تم حفظ ${pages.length} صور`, 100);
+    await new Promise(r => setTimeout(r, 600));
+}
+
+// ---------- 6. PNG FULL DASHBOARD ----------
+async function exportPngFull() {
+    showOverlay('جاري التقاط الداشبورد', 'يرجى الانتظار...');
+    updateOverlay(null, '', 30);
+
+    // Capture the entire results section + KPIs etc
+    const main = document.querySelector('.cmd-main');
+    await new Promise(r => setTimeout(r, 200));
+    const canvas = await captureElement(main, 1.5);
+    updateOverlay(null, 'جاري الحفظ...', 90);
+    downloadCanvas(canvas, 'داشبورد_التثقيف_الصحي.png');
+    updateOverlay('تم!', '', 100);
+    await new Promise(r => setTimeout(r, 600));
+}
+
+// ---------- 7. PNG SECTIONS ----------
+async function exportPngSections() {
+    showOverlay('جاري تصدير صور الأقسام', 'بناء الصور...');
+
+    const sections = [
+        { sel: '.kpi-strip', name: '01_KPIs' },
+        { sel: '.insights-grid', name: '02_الملاحظات', parent: '.panel' },
+        { sel: '.grid-3', name: '03_التوزيعات' },
+        { sel: '.grid-2', name: '04_المؤشرات_السريرية', idx: 0 },
+        { sel: '.grid-2-1', name: '05_أداء_المراكز' },
+        { sel: '#phcTable', name: '06_جدول_المراكز', parent: '.panel' },
+        { sel: '#coachTable', name: '07_جدول_المدربين', parent: '.panel' },
+        { sel: '#issuesTable', name: '08_جودة_البيانات', parent: '.panel' }
+    ];
+
+    let captured = 0;
+    for (let i = 0; i < sections.length; i++) {
+        const s = sections[i];
+        let el;
+        if (s.idx !== undefined) {
+            const all = document.querySelectorAll(s.sel);
+            el = all[s.idx];
+        } else if (s.parent) {
+            el = document.querySelector(s.sel)?.closest(s.parent);
+        } else {
+            el = document.querySelector(s.sel);
+        }
+        if (!el) continue;
+        updateOverlay(null, `قسم ${i+1} من ${sections.length}`, (i / sections.length) * 100);
+        const canvas = await captureElement(el, 2);
+        downloadCanvas(canvas, `${s.name}.png`);
+        captured++;
+        await new Promise(r => setTimeout(r, 400));
+    }
+
+    updateOverlay('تم!', `تم حفظ ${captured} صور`, 100);
+    await new Promise(r => setTimeout(r, 600));
+}
+
+// ---------- 8. EXCEL REPORT ----------
+async function exportExcelReport() {
+    if (!STATE.analysis) return;
+    showOverlay('جاري بناء تقرير Excel', '');
+    const A = STATE.analysis;
+    const wb = XLSX.utils.book_new();
+
+    // Sheet 1: Summary
+    updateOverlay(null, 'ملخص تنفيذي...', 15);
+    const summaryData = [
+        ['تقرير إدارة التثقيف الصحي'],
+        [''],
+        ['الفترة', A.minD && A.maxD ? fmtDateAr(A.minD) + ' - ' + fmtDateAr(A.maxD) : '--'],
+        ['تاريخ التقرير', new Date().toLocaleDateString('ar-SA')],
+        [''],
+        ['المؤشر', 'القيمة', 'النسبة'],
+        ['إجمالي الزيارات', A.n, '100%'],
+        ['المرضى الفريدون', A.uniquePat, ''],
+        ['المراكز الصحية', A.uniquePhc, ''],
+        ['المدربين الصحيين', A.uniqueCoach, ''],
+        ['اكتمال العلامات الحيوية', A.withVitals, pct(A.withVitals, A.n) + '%'],
+        ['خطة التدريب موثقة', A.withPlan, pct(A.withPlan, A.n) + '%'],
+        ['النتيجة مسجلة', A.withAchv, pct(A.withAchv, A.n) + '%'],
+        ['حقق الهدف', A.achieved, pct(A.achieved, Math.max(1,A.withAchv)) + ' من المسجلين'],
+        ['لم يتحسن', A.noImprovement, pct(A.noImprovement, Math.max(1,A.withAchv)) + ' من المسجلين'],
+        ['سجلات تحتاج مراجعة', A.issues.length, ''],
+    ];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summaryData), 'الملخص');
+
+    // Sheet 2: PHCs
+    updateOverlay(null, 'أداء المراكز...', 30);
+    const phcData = [
+        ['المركز','الزيارات','المرضى','اكتمال العلامات','الخطة موثقة','النتيجة مسجلة','حقق الهدف','لم يتحسن','المدربين'],
+        ...A.phcDetails.map(p => [
+            p.phc, p.total, p.patients,
+            pct(p.vitals, p.total) + '%',
+            pct(p.plan, p.total) + '%',
+            pct(p.achv, p.total) + '%',
+            p.goalAch, p.noImp, p.coaches
+        ])
+    ];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(phcData), 'أداء المراكز');
+
+    // Sheet 3: Coaches
+    updateOverlay(null, 'أداء المدربين...', 45);
+    const coachData = [
+        ['المدرب','الزيارات','المرضى','المراكز','اكتمال العلامات','الخطة','حقق الهدف','لم يتحسن','نسبة النجاح'],
+        ...A.coachDetails.map(c => {
+            const gr = c.goalAch + c.noImp > 0 ? pct(c.goalAch, c.goalAch + c.noImp) + '%' : 'غير مقيم';
+            return [c.coach, c.total, c.patients, c.phcs,
+                    pct(c.vitals, c.total) + '%',
+                    pct(c.plan, c.total) + '%',
+                    c.goalAch, c.noImp, gr];
+        })
+    ];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(coachData), 'أداء المدربين');
+
+    // Sheet 4: Demographics
+    updateOverlay(null, 'الديموغرافيا...', 60);
+    const demoData = [
+        ['التوزيع الديموغرافي'],
+        [''],
+        ['الجنس', 'العدد', 'النسبة'],
+        ...Object.keys(A.byGender).map(g => [g === 'Female' ? 'إناث' : g === 'Male' ? 'ذكور' : g, A.byGender[g], pct(A.byGender[g], A.n) + '%']),
+        [''],
+        ['الفئة العمرية', 'العدد', 'النسبة'],
+        ...['18-29','30-39','40-49','50-59','60-69','70+'].map(g => [g + ' سنة', A.byAge[g]||0, pct(A.byAge[g]||0, A.n) + '%']),
+        [''],
+        ['يوم الأسبوع', 'العدد'],
+        ...Object.keys(A.byDow).map(d => [d, A.byDow[d]])
+    ];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(demoData), 'الديموغرافيا');
+
+    // Sheet 5: Clinical
+    updateOverlay(null, 'المؤشرات السريرية...', 75);
+    const bmiTotal = Object.values(A.byBmi).reduce((s,v)=>s+v,0);
+    const bpTotal = Object.values(A.byBp).reduce((s,v)=>s+v,0);
+    const clinData = [
+        ['المؤشرات السريرية'],
+        [''],
+        ['تصنيف BMI', 'العدد', 'النسبة'],
+        ...['نقص وزن','طبيعي','زيادة وزن','سمنة درجة 1','سمنة درجة 2','سمنة درجة 3'].map(k => [k, A.byBmi[k]||0, bmiTotal ? Math.round(100*(A.byBmi[k]||0)/bmiTotal) + '%' : '0%']),
+        [''],
+        ['تصنيف ضغط الدم', 'العدد', 'النسبة'],
+        ...['طبيعي','مرتفع','مرحلة 1','مرحلة 2','أزمة'].map(k => [k, A.byBp[k]||0, bpTotal ? Math.round(100*(A.byBp[k]||0)/bpTotal) + '%' : '0%'])
+    ];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(clinData), 'المؤشرات السريرية');
+
+    // Sheet 6: Issues
+    updateOverlay(null, 'جودة البيانات...', 90);
+    const issuesData = [
+        ['رقم المريض','الاسم','المركز','المشكلة','التفاصيل','الخطورة'],
+        ...A.issues.map(i => [i.pid, i.name, i.phc, i.issue, i.detail, i.severity === 'bad' ? 'عاجل' : 'متوسط'])
+    ];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(issuesData), 'جودة البيانات');
+
+    updateOverlay('جاري الحفظ...', '', 95);
+    XLSX.writeFile(wb, 'تقرير_التثقيف_الصحي.xlsx');
+    updateOverlay('تم!', 'تم تحميل الملف', 100);
+    await new Promise(r => setTimeout(r, 600));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+    initExportMenu();
+});
 </script>
 
 </body>
